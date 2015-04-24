@@ -3,16 +3,23 @@ compiler:
 - gcc
 
 before_install:
+  # g++4.8.1
+
+
   - sudo apt-get update -qq
-  - if [ "$CXX" == "g++" ]; then sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test;
-    fi
+
+before_install:
+
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
+
   - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu/ trusty main restricted" -y
   - sudo add-apt-repository --yes ppa:kalakris/cmake
   - sudo apt-get update -qq
 
 install:
   - sudo apt-get install -qq g++-4.8
-  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50;
+  - export CXX="g++-4.8"
   - sudo apt-get install libboost-thread-dev libboost-system-dev libboost-test-dev
   - sudo dpkg -S /usr/include/boost/version.hpp
   - sudo apt-get install cmake
