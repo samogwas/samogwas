@@ -2,31 +2,26 @@ language: cpp
 compiler:
 - gcc
 
-before_install:
-  # g++4.8.1
-
-
-  - sudo apt-get update -qq
 
 before_install:
-
   - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
-
   - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu/ trusty main restricted" -y
   - sudo add-apt-repository --yes ppa:kalakris/cmake
   - sudo apt-get update -qq
+  - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
+  - if [ "$CXX" = "g++" ]; then export CC="gcc-4.8" CXX="g++-4.8"; fi
+  - export CXX="g++-4.8"
+  - sudo apt-get install -yqq git cmake autoconf libtool python-dev
+
 
 install:
-  - sudo apt-get install -qq g++-4.8
-  - export CXX="g++-4.8"
   - sudo apt-get install libboost-thread-dev libboost-system-dev libboost-test-dev
   - sudo dpkg -S /usr/include/boost/version.hpp
-  - sudo apt-get install cmake
 
 # test test test
 script: 
-  - mkdir build && cd build && cmake ..
+  - $CXX --version
+  - mkdir -p build && cd build && cmake ..
   - make -j4 && ./tests/boosttest-tests-samogwas_test_suite 
 
 notifications:
