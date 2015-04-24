@@ -7,7 +7,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ### DEPENDENCIES
 # boost
-find_package(Boost 1.55 REQUIRED)
+find_package(Boost 1.54 REQUIRED)
 
 #probt
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/dependencies/" )

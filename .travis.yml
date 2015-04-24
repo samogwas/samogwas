@@ -11,9 +11,8 @@ before_install:
   - sudo apt-get update -qq
 
 install:
-  - if [ "$CXX" == "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++
-    /usr/bin/g++-4.8 50; fi
+  - then sudo apt-get install -qq g++-4.8
+  - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50;
   - sudo apt-get install libboost-thread-dev libboost-system-dev libboost-test-dev
   - sudo dpkg -S /usr/include/boost/version.hpp
   - sudo apt-get install cmake
