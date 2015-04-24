@@ -30,3 +30,7 @@
 *~
 build
 
+# but not these guys
+!libspl.so
+!libtcc.so
+libboost_serialization.so.1.54.0
