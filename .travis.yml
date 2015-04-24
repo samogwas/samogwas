@@ -1,0 +1,23 @@
+
+language: cpp
+
+compiler:
+  - gcc
+
+before_install:
+  - sudo apt-add-repository "deb http://archive.ubuntu.com/ubuntu/ trusty main restricted" -y
+  - sudo apt-get update -qq
+  - sudo apt-get install libboost-thread-dev libboost-system-dev libboost-test-dev
+  - dpkg -S /usr/include/boost/version.hpp
+
+# test test test
+script: 
+  - mkdir build && cd build && cmake ..
+  - make -j4 && ./tests/boosttest-tests-samogwas_test_suite 
+
+notifications:
+  email:
+    recipients: license.to.kill.dr.no@gmail.com 
+    on_success: change
+    on_failure: always
+
