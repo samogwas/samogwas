@@ -25,6 +25,16 @@ using namespace samogwas_test;
 typedef plSymbol RandVar;
 
 BOOST_AUTO_TEST_SUITE( Graph_Suite )
+
+inline Node& createLatentNode( std::shared_ptr<Graph> graph,
+                               const unsigned cardinality,
+                               const std::string label = "",
+                               const int position = -1, const int level = 1 ) {
+  assert(level >= 1);
+  return createNode(graph, cardinality, label, position, level );
+}
+
+
 BOOST_AUTO_TEST_CASE( Test_Node_Build ) {
   const int CARD = 3, N = 1000;
   std::vector<double> prob { 0.3, 0.5, 0.2 };
@@ -55,7 +65,8 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy ) {
   std::vector<int> dataVec {0,0,1,1,2,2,3};  
   auto graph = std::make_shared<Graph>();
   Node node = createNode( graph, dataVec, CARD, "aNode", 12, 0);
-  BOOST_CHECK_CLOSE( compute_node_entropy(node), 1.351784, 0.00001);
+  ComputeNodeEntropy compute_node_entropy;
+  BOOST_CHECK_CLOSE( compute_node_entropy.compute(node), 1.351784, 0.00001);
 }
 
 BOOST_AUTO_TEST_CASE( Test_Node_Joint_Entropy ) {
@@ -66,9 +77,11 @@ BOOST_AUTO_TEST_CASE( Test_Node_Joint_Entropy ) {
   auto graph = std::make_shared<Graph>();
   Node nB = createNode( graph, datB, CARD, "B", 12, 0);
   Node nA = createNode( graph, datA, CARD, "A", 12, 0);
+  ComputeNodeEntropy compute_node_entropy;
+
   double jEntropy = ComputeNodeJointEntropy().compute_leaf_leaf(nA,nB,datA,datB); 
-  BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy(nB), 1.351784, 0.00001);
-  BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy(nA), 1.277034, 0.00001);
+  BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy.compute(nB), 1.351784, 0.00001);
+  BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy.compute(nA), 1.277034, 0.00001);
   BOOST_CHECK_CLOSE_FRACTION( jEntropy, 1.549826, 0.00001);
 }
 
