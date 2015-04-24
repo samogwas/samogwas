@@ -22,7 +22,7 @@ install:
 script: 
   - $CXX --version
   - mkdir -p build && cd build && cmake ..
-  - make -j4 && ./tests/boosttest-tests-samogwas_test_suite 
+  - make && ./tests/boosttest-tests-samogwas_test_suite 
 
 notifications:
   email:
