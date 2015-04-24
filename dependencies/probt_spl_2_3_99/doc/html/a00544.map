@@ -1,0 +1,6 @@
+<map id="plExternalFunctionFromSource" name="plExternalFunctionFromSource">
+<area shape="rect" id="node5" href="$a00066.html" title="A special kind of plExternalFunction defined by dynamically compiling C source code provided by the u..." alt="" coords="20,304,191,331"/>
+<area shape="rect" id="node2" href="$a00065.html" title="A function defined by the user, generaly used to define a plCndDeterministic. " alt="" coords="40,155,169,181"/>
+<area shape="rect" id="node3" href="$a00146.html" title="A User Function Object. " alt="" coords="50,80,160,107"/>
+<area shape="rect" id="node4" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="70,5,140,32"/>
+</map>

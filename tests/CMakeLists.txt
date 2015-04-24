@@ -11,18 +11,19 @@ set(LIB_DIR "${PROJECT_SOURCE_DIR}/dependencies/" )
 
 include_directories( 
   "${Boost_INCLUDE_DIR}"
+  "${PROJECT_SOURCE_DIR}/core/include" 
+  "${CMAKE_CURRENT_SOURCE_DIR}" 
 )
 
 
 file(GLOB_RECURSE TESTS ./* )
-
-#add_executable( test_samogwas ${TESTS} )
-#target_link_libraries( test_samogwas boost_unit_test_framework )
+file(GLOB_RECURSE SOURCE "${PROJECT_SOURCE_DIR}/core/src/*.cpp" )
 
 add_boost_test( samogwas_test_suite
-    SOURCES ${TESTS}
+    SOURCES ${TESTS} ${SOURCE}
+    LIBRARIES spl	
     TESTS
-     Test_Clustering_Test/test_case1
-     Test_Statistics_Test/test_case1
+    Test_Clustering_Test/test_case1
+    sTest_Statistics_Test/test_case1
 )
 

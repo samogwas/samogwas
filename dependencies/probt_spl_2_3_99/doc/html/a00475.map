@@ -1,0 +1,8 @@
+<map id="plDataDescriptor" name="plDataDescriptor">
+<area shape="rect" id="node3" href="$a00041.html" title="A data descriptor for data in CSV (comma&#45;separated values) format. " alt="" coords="314,5,462,32"/>
+<area shape="rect" id="node4" href="$a00042.html" title="A data descriptor for data in CSV (comma&#45;separated values) format. " alt="" coords="303,56,473,83"/>
+<area shape="rect" id="node5" href="$a00110.html" title="This class implements a data descriptor for STL data matrices with possibly missing values..." alt="" coords="294,107,482,133"/>
+<area shape="rect" id="node6" href="$a00113.html" title="This class implements a data descriptor for Mysql databases. " alt="" coords="311,157,465,184"/>
+<area shape="rect" id="node7" href="$a00125.html" title="This class implements a data descriptor for ODBC data sources. " alt="" coords="309,208,467,235"/>
+<area shape="rect" id="node2" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="6,107,77,133"/>
+</map>

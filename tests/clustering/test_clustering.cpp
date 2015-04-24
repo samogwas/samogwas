@@ -10,7 +10,6 @@ BOOST_AUTO_TEST_SUITE( Test_Clustering_Test )
 
 BOOST_AUTO_TEST_CASE( test_case1 )
 {
-
   BOOST_CHECK_EQUAL(1,2);
 }
 

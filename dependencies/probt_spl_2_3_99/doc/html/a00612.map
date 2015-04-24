@@ -1,0 +1,5 @@
+<map id="plLearnFrozenDistribution" name="plLearnFrozenDistribution">
+<area shape="rect" id="node2" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="39,155,141,181"/>
+<area shape="rect" id="node3" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="53,80,127,107"/>
+<area shape="rect" id="node4" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="55,5,125,32"/>
+</map>

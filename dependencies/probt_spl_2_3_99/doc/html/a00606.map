@@ -1,0 +1,41 @@
+<map id="plLearner" name="plLearner">
+<area shape="rect" id="node3" href="$a00061.html" title="This class implements a generic EM (Expectation&#45;Maximization) learning algorithm (using incomplete da..." alt="" coords="265,240,359,267"/>
+<area shape="rect" id="node4" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="261,291,363,317"/>
+<area shape="rect" id="node40" href="$a00139.html" title="This is the main interface of ProBT Structure Learning functionality. " alt="" coords="248,341,376,368"/>
+<area shape="rect" id="node2" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="6,291,77,317"/>
+<area shape="rect" id="node5" href="$a00086.html" title="This is an abstract class for all conditional learning objects. " alt="" coords="446,181,573,208"/>
+<area shape="rect" id="node13" href="$a00088.html" title="This class allows to learn a set of conditional and non&#45;conditional distributions in the same time..." alt="" coords="439,265,579,292"/>
+<area shape="rect" id="node14" href="$a00091.html" title="This class implements a learning object that learns nothing. " alt="" coords="424,316,595,343"/>
+<area shape="rect" id="node15" href="$a00121.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects. " alt="" coords="434,479,585,505"/>
+<area shape="rect" id="node6" href="$a00087.html" title="This class implements conditional learning objects as a map. " alt="" coords="664,11,827,37"/>
+<area shape="rect" id="node8" href="$a00097.html" title="This implements the learning part of the linear regression model (aka Linear Gaussian). " alt="" coords="663,80,828,107"/>
+<area shape="rect" id="node9" href="$a00098.html" title="Implements a family of linear regressions (over a set of quantitative variables), indexed by a set of..." alt="" coords="643,131,847,157"/>
+<area shape="rect" id="node10" href="$a00102.html" title="This class implements the learning part of the NoisyOR discrimination model. " alt="" coords="686,181,805,208"/>
+<area shape="rect" id="node11" href="$a00105.html" title="This implements the learning part of the Softmax (aka multinomial logistic or multinomial logit) regr..." alt="" coords="689,232,802,259"/>
+<area shape="rect" id="node12" href="$a00106.html" title="Implements a family of softmax regressions (over a set of quantitative variables), indexed by a set of categorical variables. " alt="" coords="669,283,821,309"/>
+<area shape="rect" id="node7" href="$a00028.html" title="This template class implements conditional learning objects. " alt="" coords="913,5,1071,32"/>
+<area shape="rect" id="node16" href="$a00014.html" title="This is the base class of all non&#45;conditional incremental (adaptive) learning objects using a Bayesia..." alt="" coords="676,343,815,369"/>
+<area shape="rect" id="node28" href="$a00100.html" title="This class implements the Mixture Model unsupervised learning. " alt="" coords="674,512,817,539"/>
+<area shape="rect" id="node30" href="$a00111.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects using the Maxim..." alt="" coords="685,801,805,828"/>
+<area shape="rect" id="node17" href="$a00007.html" title="This class allows to make a Bayesian estimation of a one&#45;dimensional Normal distribution with fixed m..." alt="" coords="900,57,1084,98"/>
+<area shape="rect" id="node18" href="$a00008.html" title="This class allows to make a Bayesian estimation of a one&#45;dimensional Normal distribution with fixed s..." alt="" coords="900,122,1084,163"/>
+<area shape="rect" id="node19" href="$a00009.html" title="This class allows to make a Bayesian estimation of a Binomial distribution when the prior distributio..." alt="" coords="917,188,1067,215"/>
+<area shape="rect" id="node20" href="$a00010.html" title="This class allows to make a Bayesian estimation of an Exponential distribution when the prior distrib..." alt="" coords="907,239,1077,265"/>
+<area shape="rect" id="node21" href="$a00011.html" title="This class allows to make a Bayesian estimation of Gamma distributions. " alt="" coords="919,289,1065,316"/>
+<area shape="rect" id="node22" href="$a00012.html" title="This class allows to make a Bayesian estimation of a log&#45;normal distribution with fixed shape paramet..." alt="" coords="897,341,1087,382"/>
+<area shape="rect" id="node23" href="$a00013.html" title="This class allows to make a Bayesian estimation of a n&#45;dimensional Normal distribution with fixed cov..." alt="" coords="899,406,1085,447"/>
+<area shape="rect" id="node24" href="$a00015.html" title="This class allows to make a Bayesian estimation of Poisson distributions. " alt="" coords="918,472,1066,499"/>
+<area shape="rect" id="node25" href="$a00016.html" title="This class allows to make a Bayesian estimation of multinomial (ProbTable) distributions using Multin..." alt="" coords="912,523,1072,549"/>
+<area shape="rect" id="node26" href="$a00096.html" title="This class allows to make a Bayesian estimation of multinomial (ProbTable) distributions using Lidsto..." alt="" coords="1137,523,1250,549"/>
+<area shape="rect" id="node27" href="$a00095.html" title="This class allows to make a Bayesian estimation of multinomial (ProbTable) distributions using Laplac..." alt="" coords="1299,523,1408,549"/>
+<area shape="rect" id="node29" href="$a00093.html" title="This class implements the Gaussian Mixture Model unsupervised learning. " alt="" coords="944,573,1040,600"/>
+<area shape="rect" id="node31" href="$a00084.html" title="This class allows to learn one&#45;dimensional Normal (Gaussian) distributions. " alt="" coords="932,624,1052,651"/>
+<area shape="rect" id="node32" href="$a00085.html" title="This class allows to learn Beta distributions. " alt="" coords="947,675,1037,701"/>
+<area shape="rect" id="node33" href="$a00090.html" title="This class allows to learn exponential distributions. " alt="" coords="926,725,1058,752"/>
+<area shape="rect" id="node34" href="$a00092.html" title="This class implements Gamma distributions ML learning. " alt="" coords="937,776,1047,803"/>
+<area shape="rect" id="node35" href="$a00094.html" title="The class for learning n dimensionnal histograms. " alt="" coords="930,827,1054,853"/>
+<area shape="rect" id="node36" href="$a00099.html" title="This class allows to learn log&#45;normal distributions. " alt="" coords="929,877,1055,904"/>
+<area shape="rect" id="node37" href="$a00101.html" title="This class allows to learn multi&#45;dimensional Normal (Gaussian) distributions. " alt="" coords="931,928,1053,955"/>
+<area shape="rect" id="node38" href="$a00104.html" title="This class allows to learn Poisson distributions. " alt="" coords="937,979,1047,1005"/>
+<area shape="rect" id="node39" href="$a00107.html" title="A class for learning sparse histograms. " alt="" coords="909,1029,1075,1056"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="plCSVDataDescriptor" name="plCSVDataDescriptor">
+<area shape="rect" id="node2" href="$a00044.html" title="This abstract template class defines a sequential data container. " alt="" coords="5,80,125,107"/>
+<area shape="rect" id="node3" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="30,5,100,32"/>
+<area shape="rect" id="node4" href="$a00138.html" title="Interface for a data descriptor able to return lines of data as uninterpreted raw string vectors..." alt="" coords="149,80,303,107"/>
+</map>

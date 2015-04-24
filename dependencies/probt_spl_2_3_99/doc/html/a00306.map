@@ -1,0 +1,22 @@
+<map id="plBeta.h" name="plBeta.h">
+<area shape="rect" id="node3" href="$a00201_source.html" title="plDistribution.h" alt="" coords="1397,155,1507,181"/>
+<area shape="rect" id="node39" href="$a00284_source.html" title="plSymbol.h" alt="" coords="215,304,301,331"/>
+<area shape="rect" id="node40" href="$a00221.html" title="plGamma.h" alt="" coords="719,80,808,107"/>
+<area shape="rect" id="node4" href="$a00187.html" title="plComputableObject.h" alt="" coords="1099,229,1249,256"/>
+<area shape="rect" id="node10" href="$a00255.html" title="Definition of mathematical macros and typedefs. " alt="" coords="1367,603,1439,629"/>
+<area shape="rect" id="node20" href="$a00297_source.html" title="plVariablesConjunction.h" alt="" coords="770,379,936,405"/>
+<area shape="rect" id="node31" href="$a00294_source.html" title="plValues.h" alt="" coords="813,304,895,331"/>
+<area shape="rect" id="node33" href="$a00196_source.html" title="plDataValues.h" alt="" coords="1398,379,1508,405"/>
+<area shape="rect" id="node37" href="$a00286.html" title="plTechniquesTypes.h" alt="" coords="1793,528,1940,555"/>
+<area shape="rect" id="node38" href="$a00268.html" title="plPlotData.h" alt="" coords="1883,229,1977,256"/>
+<area shape="rect" id="node5" href="$a00263_source.html" title="plObject.h" alt="" coords="542,677,623,704"/>
+<area shape="rect" id="node18" href="$a00278.html" title="plSignature.h" alt="" coords="1136,677,1235,704"/>
+<area shape="rect" id="node36" href="$a00258_source.html" title="plMutable.h" alt="" coords="1206,379,1295,405"/>
+<area shape="rect" id="node8" href="$a00203_source.html" title="plDLLExport.h" alt="" coords="995,752,1100,779"/>
+<area shape="rect" id="node9" href="$a00281.html" title="Default values for serialization&#45;related macros. " alt="" coords="717,752,784,779"/>
+<area shape="rect" id="node14" href="$a00287_source.html" title="plTimer.h" alt="" coords="1601,677,1676,704"/>
+<area shape="rect" id="node26" href="$a00298.html" title="plVariableType.h" alt="" coords="246,603,364,629"/>
+<area shape="rect" id="node27" href="$a00288_source.html" title="plType.h" alt="" coords="245,453,317,480"/>
+<area shape="rect" id="node28" href="$a00193_source.html" title="plData.h" alt="" coords="441,528,511,555"/>
+<area shape="rect" id="node29" href="$a00208.html" title="plError.h" alt="" coords="441,603,511,629"/>
+</map>

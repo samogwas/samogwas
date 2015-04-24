@@ -1,0 +1,1632 @@
+
+V1 : This version is considered the first stable version.
+
+V1-1: Major changes in: 
+
+      (1) memory management for shared objects (types, variables, external functions),
+      (2) new distribution functions such as beta, binomial
+      (3) learning methods, Adding Poisson and Binomial Bayesian learning classes
+      (4) macros for MS Visual C++ DLL building
+
+V1-1-1: Fixing rename bug.
+
+V1-1-2: This version compiles in the following platforms and systems:
+
+	1) Linux gcc-4.0 and gcc-3.4
+	2) Mac OSX gcc-4.0 and gcc-3.4 both using makefile or Xcode
+	3) Windows Mingw5.0.0 with gcc 3.4.2
+
+V1-1-3: Solves some  Windows Visual C++ .NET 7.0 compilation problems. ATTENTION this is a time limited version expiring by 30/06/2007
+
+V1-1-4: Same than V1-1-3 but not time limited
+
+V1-1-5: This is a time limited version expiring by 30/06/2007. It resolves a bug problem on the compilation of conditional kernels. THIS VERSION DIDN'T SURVIVE IN LINUX DUE TO A COMPILATION PROBLEM.
+
+V1-1-6: Same than V1-1-5 but not time limited. THIS VERSION DIDN'T SURVIVE IN LINUX DUE TO A COMPILATION PROBLEM.
+
+V1-1-7: This version corrects the compilation problem of verson V1-1-6.
+
+V1-1-8: This version corrects some API issues in the plKalmanFilter class.
+
+V1-1-9: This version fixes a bug in the symbolic simplification part.
+
+V1-2-0: This version fixes a memory leak bug
+
+V1-2-1: The version before to_data_values changes
+
+V1-2-2: expires on July 30th
+
+V1-2-3: 
+      - Some changes to KPL break the serialization format (kplCndUniform*,
+        kplVariable)
+      - Implemented parameter accessors to almost all PL objects. This is
+        particularly usefull for inspecting objects read from a serialization
+        archive.
+      - Fixed serialization of models using our PLPROBA custom floating-point
+        representation
+      - Bug fixes in plBayesLearnProbTable, plDirichlet, plFloatMatrix
+      - Added a weight parameter in plKalkmanFilter for update (observation)
+      - Improved VC8 solution for building with our without MYSQL support
+      - Lots of small documentation, style and typo cleanups
+
+V1-2-4: BROKEN VERSION! DO NOT USE!
+
+      - Lots of serialization format changes
+      - Serialized models now contains the ProBT release number used to
+        generated them, and refuse to load on any other version
+      - Changes in plProgram to allow derived classes to add their own data
+        in the serialization archives
+      - Additions and bug fixes to the new introspection API
+      - plLearn.h doesn't exist anoymore. pl.h now includes all learning 
+        related headers
+      - Fixed export of some learning classes on VisualC++
+      - Fixed a reference counting error in plValues::rename() (could lead to
+        both memory leak and invalid memory access)
+      - Fixed a corner case bug (calling plValues::operator=() after
+        plValues(plValues&,plDataValue*) could cause a crash)
+      - Throw an error if plCndKernel::instantiate called with empty values
+      - Fix: also throw an error if the cnd_kernel was not initialized, or the
+        result parameter is from the wrong type
+      - Fixed serialization of empty plValues
+      - Fixed illegal memory access in functional dirac simplification code
+      - API change: plComputableObject::isConditional() renamed to 
+        is_conditional(), and isNull() renamed to is_null()
+      - Marked some conversion constructors as explicit (implicit conversion
+        can sometimes be triggered accidentally and lead to problems very 
+        difficult to debug)
+      - Documentation fixes
+      - Lots of code simplifications
+
+V1-2-5:
+
+      - Fixes important bugs of previous version: copying empty computable
+        object caused crashes, 
+      - Fixed linking of dynamic version of SPL in makefile
+      - New data descriptor classes, for learning from data. Implemented
+        for SQL databases, CSV files, and c++ matrices.
+      - Class renaming and API changes in all learning classes, in order to
+        use the new data descriptors. The learning classes do not have any
+        dependancy on SQL themselves, which helps simplify the build process.
+      - Changed the print-names of conditional kernels to match the
+        convention already used in the ExcelModeler. This will help the later
+        to use the introspection methods in order to reconstruct the excel
+        sheets from a plJointDistribution.
+      - documentation fixes
+      - added missing DLL exports for windows
+
+V1-3-0: 
+
+      - Introduce new release versioning scheme: the revision number is
+        now for bug fixes only.  Any change in functionality now correspond
+        to an increment in minor or major version.
+      - Lots of new features and API improvements in the learning sub-system.
+        Notably, we can now use the EM algorithm to learn a complete description
+        from complete or incomplete data (coming from an SQL server, a CSV data
+        file, etc...)
+      - plLearnDistribVector and plLearner are now serializable
+      - Result of questions using exact inferance are now serializable
+      - Simplified XML serialization format
+      - Completed the introspection API
+      - Renamed plValues::empty() into plValues::is_empty()
+      - Renamed plType::empty() into plType::is_empty()
+      - Renamed plType::is_valid() into plType::value_is_valid()
+      - Renamed plVariablesConjunction::isDiscretized() into is_discretized()
+      - Make sure our constructors don't get used accidentally as implicit
+        conversions.
+      - Fixed bugs and completed API for introspection of kernel dictionaries
+      - Fixed copying and assignment of empty plComputableObject, plKernel and 
+        plCndKernel objects.
+      - Fixed some DLL symbol export problems on win32
+      - Fixed memory leaks in serialization and dynamic compilation systems
+      - Lots of code refactoring on reference counting 
+      - Documentation improvements
+      - Improved unix makefiles
+
+V1-4-0: 
+
+      GENERAL FIXES:
+      - Fixing display of plValues over zero variable. Fixes #20.
+      - Adding resize for methods accepting vector as output parameters
+      - Fixed plVariablesConjunction::operator[]
+      - Fixed a bug in kplMonteCarloExpression copying
+      - Fixed reloading of plComputableObject (serialization bug)
+      - Added missing PL_DLL_API for plIntervalType template constructors
+      - More plError exceptions when using uninitialized objects of classes
+        plType, plIntervalType, plSparseType, plRealType, plComputableObject.
+      - Fixed compilation on Ubunutu 7.04
+      - Fixed compilation of time-limited versions
+      - Improved precision and error checking of logarithms
+      - Documentation improvements
+
+      API ADDITIONS:
+      - Adding Kullback-Leibler divergence computation to plKernel, with a
+        generic implementation using tabulation, and a specialised one for 1d
+        normals.
+      - Completed class plCndCuniform
+
+      API ADDITIONS (DATA DESCRIPTORS):
+      - Adding data descriptor rewinding before and after using it for learning
+      - Adding a default implementation for converting data descriptors into data matrix
+      - Avoid rewinding when it is not needed
+      - Adding the possibility to ignore some columns of the CSV file
+
+      API ADDITIONS (SERIALIZATION & INTROSPECTION):
+      - Added conversion from plData to long unsigned int
+      - Moved the cardinality() method from plRealType to plType
+      - Added 3 methods to plType: get_value_from_index(),
+        get_random_value_from_index() and get_value_index()
+      - Added plVariablesConjunction::operator==
+      - Added a const version of plProgram::get_objects_map
+      - Construct a plData from a plVariableType (usefull for the modeler app)
+      - added plRealType::get_values()
+      - Improved plProgram to allow derived classes to add their own members
+        to the serialized file
+      - Added plComputableObject::operator== and operator!=
+      - Add markers into plExternalFunctionFromC to allow easy extraction
+        of the user-code after serialisation
+      - improved test_introspection (describes the content of a serialized
+        plProgram)
+
+      API CLEANUP:
+      - Made plType::next_value() const
+      - Mark a dangerous constructor of plValues as explicit.
+      - Cleanup of plMath.h. This adds explicit #include directives in many
+        files. Removed use of math.h in favor of cmath. 
+      - Use explicit template instanciation for implementing
+        the plType::next_value variants
+
+V1-5-0: 
+
+      FIXES:
+      - Fixed plVariablesConjunction::get_type() (failed at least for
+        discretized reals, and was recreating a kplType while it was
+        unnecessary)
+      - Fixed plType(kplType*) (would crash when given a null value)
+      - Fixed plType::set_kernel_type() (didn't update member var_type)
+      - Fixed test_introspection (got the wrong bounds for plRealType)
+      - Fixed serialisation of plLearnNdNormal, plLearnSparseHistogram,
+        plMAPLearnObject and plCndLearnObject<> 
+
+      API CHANGES:
+      - Removed ambiguous plType::last_value()
+      - Added plType::get_min() and plType::get_max() 
+
+      MISC:
+      - Internal changes break the serialisation file format 
+      - Include missing splTools.h file in SPL distribution
+
+V1-6-0: Tentative release : DO NOT USE
+
+      FIXES:
+      - Making sure all math functions are called on plProbValue, not just
+         on double.
+      - Fixing a compilation issue when using plMAPLearnObject as template
+        parameter in plCndLeranObject.
+      - plCndLearnObject<T> can now be serialized for all interesting values of T.
+      - Better sanity checks in plBayesLearnBinomial.
+      - Bug fix in plLogNormal::best().
+      API CHANGES:
+      - All accessors for variables are renamed:
+        + get_search_plvariables() -> get_left_variables()
+        + get_known_plvariables() -> get_right_variables()
+        + get_head_plvariables() -> get_variables().
+      - plLearnObject::addNewPoint() is renamed to add_point().
+      - computeShannonEntropy() is renamed to compute_shannon_entropy().
+      - computeExpectation() is renamed to compute_expectation().
+      - Helper function createExternalProbFunctionFromC() was erroneously
+        named createExternalFunctionFromC().
+      - Several methods renamed in plEMLearner:
+        + fill_best_classes() -> fill_missing_values_infos()
+        + get_nth_best_classes() -> get_nth_missing_most_probable_value()
+        + get_nth_best_classes_table() -> get_nth_missing_table()
+        + get_data_logevidence() -> get_data_loglikelihood().
+      - Renames in plBayesianFilter/plEKF:
+        + setAction() -> set_action()
+	+ addMeasurement() -> add_measurement()
+	+ n_addMeasurement() -> n_add_measurement()
+	+ time_addMeasurement() -> time_add_measurement()
+	+ getEstimation() -> get_estimation().
+      - Renames in plKernel:
+        + lowMemoryUse_compile() -> compile_low_memory_use()
+	+ outputTree() -> print_evaluation_tree_infos().
+      - Printing an object in human-readable format should not anymore throw
+        an exception when the object is not initialized.
+      - plBayesLearnBinomial: removing a and b parameters.
+      - plBinomial: removing n parameter.
+      API ADDITIONS: NEW CLASSES
+      - Added plDataDescriptor module, which provides helpers to learn from data
+        contained in MySQL databases, CSV files, or matrices.
+      - Added new plHMM class, with initial support for hidden Markov models and
+        associated algorithms.
+      - Added plBayesLearnExponential class to learn exponential distributions
+        with a Gamma prior.
+      - Added plBayesLearnNormalWithKnownMean class to learn normal distributions
+        with a Gamma prior over the standard deviation.
+      - Added plBayesLearnNormalWithKnownStandardDeviation class to learn normal
+	distributions with a normal prior over the mean.
+      - Added plBayesLearnLogNormalWithKnownShape class to learn log-normal
+	distributions with a normal prior over the log-scale.
+      API ADDITIONS: NEW FUNCTIONS AND METHODS
+      - Added new helper createExternalFunctionFromC() for parametric forms
+        (where the output parameter is implicit).
+      - plCndKernel::instantiate() now has a boolean to ask for normalised values
+        in subsequent compute() calls.
+      - plLearnObject now has accessors for left, right, and all variables.
+      - Added plVariablesConjunction::empty().
+      MISC:
+      - Numerous documentation clarifications, including that plKernel::compute()
+        may return non-normalised values.
+      - Numerous fixes to doxygen formatting.
+      - Changing human-readable output format for several objects.
+      - Internal changes break the serialization file format.
+      - Better sanity checks in plBayesLearnBinomial.
+      - Better sanity checks in plEMLearner.
+
+V1-6-1: 
+
+      FIXES:
+      - Fixed export of plCndLearnObject<> template under VC++, which
+	was broken by 1-6-0.
+
+V1-6-2:
+
+      FIXES:
+      - Fixed introspection methods of plCndNormal for the 1D case
+      - ktGamma: fixing "type-punned pointer may break strict aliasing rules"
+      - Fixed plExternalFunction and plExternalProbFunction
+      - plModelParamsLearner.h, test_JointLearning.vcproj:
+        Fixing a compilation issue
+
+V1-6-3:
+
+      FIXES:
+      - Fix conversion from plKernel to plCndKernel
+      - Fix retrieval of non-builtin kernels from plKernelMap, plKernelTable and
+        plJointDistribution
+      - Fix crash occuring when using more than one dynamically-compiled
+        user-function (plExternalFunctionFromC or plExternalProbFunctionFromC)
+      - Fix plProgram includes
+      - Include plProgram into documentation
+      - cosmetic fix to the welcome-banner
+      - fix initialization problems in plFloatMatrix and plFloatVector
+      - fix call to plExternal*FunctionFromSource::get_code() on
+        uninitialized objects
+      - Fix bug that constructs plExactCndExpressions instead of
+        plExactExpressions even when right variables are not pertinent 
+        in the query.
+      - Fix bug at plKernelTable init with index/right variables
+      - Fix in plDataDescriptor: clear output parameters before filling them in.
+      - Fix crash involving double-destroyed plLearnHistograms (occured in
+        particular when they were serialized/deserialized)
+      - better sanity checks for default-constructed objects
+      - throw a plError in get_distribution() or get_aposteriori_distribution()
+        methods are called on default-constructed objects
+
+      API CHANGES:
+      - Some constructors of plFloatVector and plFloatMatrix are now explicit
+      - Default-constructed plFloatMatrix objects are now empty (they used to
+        reserver 1x1)
+      - Replaced the ambiguous vector->matrix conversion constructor with a
+	new make_diagonal() method.
+
+      ADDITIONS
+      - Add example programs with their makefiles
+
+V1-6-4:
+
+      FIXES:
+      - Fix crash with plFunctionalDirac when the user-supplied function
+        return out-of-range values
+
+V1-7-0:
+
+      FIXES:
+      - plMysqlDataDescriptor: Fixing a bug in the 'rewind' method when using
+        'store_data=false" in constructor.
+      - fixed serialization of plCndCUniform
+
+      API CHANGES:
+      - added min and max parameters for plUniform (breaks s11n format)
+
+      API ADDITIONS:
+      - added plCndUniform
+      - added plCndPoisson
+
+V1-7-1:
+
+      FIXES:
+      - fixed reference counting problem leading to application crashes
+        after deserializing plLearnObjects.
+      - fixed bug when creating a kplTableIndex with empty variable list
+      - improved symbolic simplification code
+
+      KNOWN BUGS:
+      - cannot affect a plComputableObject to a plMutableKernel or
+        plMutableCndKernel. Workaround: you can call init(new_object)
+        on the mutable object.
+
+V1-8-0:
+
+The highlights of this version are:
+- a great number of bug fixes and improvements (including significant
+  fixes in the mutate()/rename() functionality) ;
+- an experimental implementation of the junction tree algorithm for
+  exact inference with discrete variables;
+- an implementation of the Sampling Importance Resampling Particle
+  Filter algorithm;
+- the plMetaHMM class: a model for recognition and filtering that uses
+a set of concurrent HMM models.
+
+The junction tree algorithm allows exact inference with discrete
+variables. It attempts to optimize the computation and data sharing
+between several questions to a same model. As a result, in many cases,
+it may be dramatically faster than the existing exhaustive inference
+method used in ProBT.
+
+To use the junction tree in ProBT, see the documentation for
+plJunctionTree. Please note that inference using plJunctionTree is
+currently experimental. We are including it in order to gather
+feedback about its interface, functionality and speed. It still
+has bugs (including wrong results), and its interface may change
+in future releases.
+
+As of this version, the junction tree implementation has the following
+known problems and bugs.
+ - Calling compute() on questions asked to plJunctionTree will
+   yield incorrect results.
+ - Using a question asked to plJunctionTree to build another
+   plJointDistribution will lead to incorrect results.
+ - Using real (continuous) variables in joint distributions
+   passed to plJunctionTree may lead to unpredictable results.
+ - Passing to plJunctionTree a joint distribution that cannot be
+   represented as a bayesian network may result in unpredictable
+   results.
+ - rename() and replace() on questions asked to plJunctionTree will
+   not work.
+ - best() on questions asked to plJunctionTree is slower than on
+   questions asked to plJointDistribution.
+ - There is currently no implementation of soft evidence, although
+   this would be possible.
+
+Please do report all bugs, suggestions, benchmarks of our junction
+tree implementation on the probt-users mailing list:
+  https://listes-serv.inrialpes.fr/wws/info/probt-users
+
+A detailed list of all user-visible changes follows.
+
+API ADDITIONS in 1.8.0
+  ADDED CLASSES
+      - Added an implementation of the junction tree algorithm.
+      - Added class plSIRParticleFilter, implementing the sampling
+        importance resampling particle filter algorithm.
+      - Added class plMetaHMM: a model for recognition and filtering
+        that uses a set of HMMs.
+      - Added classes plBayesLearnBellShapeWithKnownMean and
+        plBayesLearnBellShapeWithKnownStandardDeviation.
+      - Added class plBayesLearnNdNormalWithKnownVariance.
+      - Added distributions plCndUniform and plCndPoisson.
+      - Added class plLearnFrozenDistribution to provide the
+        possibility to freeze some distributions when using learning
+        algorithms.
+      - Added ODBC data descriptor in class plODBCDataDescriptor.
+
+  ADDED SERIALIZATION SUPPORT
+      - Added serialization support for expressions involving
+        Monte-Carlo inference and MRBT distributions.
+      - Added serialization support for plError and plBayesianFilter.
+
+  ADDED METHODS AND PARAMETERS
+      - Added optional bounds for plUniform, that define the actual
+        support.
+      - Added method plKalmanFilter::get_pdf_value().
+      - Added method plDataDescriptor::get_column_values().
+      - Making method plHMM::set_nstates() public.
+      - Added plHMM methods allowing a pure prediction step.
+      - Added method plComputableObject::is_mutable().
+      - Added operator< for plSymbol, that allows to use plSymbols
+        in std::map and std::set objects.
+      - Added method plComputableObject::tabulate(std::vector).
+      - Added a plCndKernel constructor that builds the kernel from
+        an explicit probability table.
+      - Added method plCndKernel::compute(left, right).
+      - Added method plComputableObjectList::empty().
+      - Added method plVariablesConjunction::get_symbol_position().
+      - Added an overload of plLgamma (log-Gamma function) for plFloat
+        when possible.
+      - Added methods plBayesianFilter::has_action() and get_action().
+      - Adding method plMutable::operator=(), equivalent to mutate().
+      - Added an optional parameter "rewind_before_using" to method
+        plLearnObject::learn_using_data_descriptor().
+      - Added optional color for Postscript plots.
+
+API CHANGES in 1.8.0
+  RENAMED AND REMOVED CLASSES
+      - Renamed class plProgram to plSerializer.
+      - Renamed class plGraphicalModel to plGraph.
+      - Renamed plBayesLearnNormalWithKnown* classes into
+        plBayesLearn1dNormalWithKnown* in order to prepare the
+        addition of the n-dimensional case.
+      - Renamed class plMAPLearnObject to plBayesLearnObject.
+      - Removed class plProduct.
+      - Removed class plThread.
+
+  CHANGES IN SERIALIZATION
+      - The serialization format is incompatible with previous
+        versions.
+      - The serialization format is now binary, instead of XML. This
+        is to fix problems with loss of precision on probability values
+        with the XML format.
+
+  REMOVED METHODS
+      - Removed method plLearnObject::get_params().
+      - Removed method init() from the public methods of plFloatMatrix and
+        plFloatVector. Method resize() serves the same role.
+      - Made protected some members and methods of plDataValues.
+      - Removed plComputableObject::operator^().
+      - Removed method plError::SetLanguage(), and Spanish and French
+        message translations. plError now only speaks English.
+
+  MODIFIED METHODS AND MEMBERS
+      - Renamed second version of createExternalFunctionFromC() (the
+        one for the parametric forms) into
+        createExternalFunctionFromCExpression(), and added a
+        createExternalFunctionFromC() version that accepts several
+        outputs (you then have to affect explicitely output[0]...).
+      - plComputableObject::rename() now returns the modified
+        object. It raises a plError on error (instead of returning
+	false). Note that the rename() is still done in-place though.
+      - Made plLearnLaplace and plLearnLidstone classes inherit from
+        plBayesLearnProbTable.
+      - plHMM: allow limiting antecedent states (at t-1) for a given
+        state at t. This allows using HMM models with a large number of
+        states and a limited number of possible antecedents for any
+        given state.
+      - plHMM: made some methods const.
+      - Made the plCSVLineParser constructor explicit.
+      - plError: changed names of static functions:
+          AlwaysDisplay -> always_display,
+	  AlwaysDisplayWarning -> always_display_warning,
+	  AbortInWarning -> abort_in_warning.
+      - All protected and private data members in pl* classes are now
+        named with an underscore at the end (like "member_", instead of
+        "member" or "_member").
+      - Renamed method plEMLearner::set_same_undef_var to
+        set_same_missing_variables.
+      - plEMLearner: methods fill_missing_values_infos() and
+        compute_loglikelihood() now store results in output parameters
+        instead of storing them in the plEMLearner instance internal
+        data structures.
+      - plValues: changed operator[](const plVariablesConjunction &
+        variable) to operator[](const plSymbol &variable).
+      - plFloatMatrix: removed init_to_zero parameter in constructor
+        and resize() methods.
+      - Made plSymbol(plVariablesConjunction&) conversion explicit,
+        and fix the plError number raised when dim != 1.
+      - Made most 1-parameter constructors explicit.
+      - Changed the return type of
+        plVariablesConjunction_const_iterator::operator*() to plSymbol
+        instead of plVariablesConjunction.
+      - All one-dimensional distributions now use plSymbol instead of
+        plVariablesConjunction for construction.
+      - Renamed method plObject::toString() to to_string().
+      - Reorganized different versions plJointDistribution::ask(),
+        adding and changing some parameters.
+      - Expression inspection methods print_evaluation_tree_infos(),
+        get_exhaustive_compilation_complexity(), and
+        get_exhaustive_update_complexity() are now implmented for class
+        plComputableObject instead of plKernel and plCndKernel.
+      - plEKF: redesigned the API, making it easier to use.
+      - In learning classes, add_point() now accepts a plFloat instead
+        of a double for the point weight.
+      - Renamed method plExternalProbFunction::get_plvariables() to
+        get_variables().
+      - Learning objects: removed the void* parameter from
+        get_distribution().
+      - Clarification for variance/standard deviation in documentation
+        and in introspection functions names (API change for variance
+        introspection functions). For instance, get_sdev_constant()
+	actually returned a variance (not a standard deviation), so it
+	has been renamed to get_variance_constant().
+      - plCndKernel::instantiate() now specifies normalized results
+        by default.
+
+BUG FIXES in 1.8.0
+      - When copying plKernelTables and plKernelMaps internally during
+      inference, ProBT will now make deep copies instead of just
+      creating a new reference to the old object. This is needed
+      because plKernelTables and plKernelMaps can be modified after
+      the fact, while they are already used (in a plJointDistribution
+      for instance). However, this may create a performance regression
+      if your inference involved plKernelTables or plKernelMaps. To
+      get back the performance, you may:
+        - use a compiled version of your plKernelTable/plKernelMap
+          when inserting it in a plJointDistribution ; OR
+        - instead of a plKernelMap/plKernelTable, use directly a
+          plCndKernel, with the new constructor that allows
+          you to initialize it with a constant table of probability
+          values.    
+      - Fixed introspection methods of plCndNormal for the 1D case.
+      - Fixed crash on plMutableKernel::mutate().
+      - Fixed several problems in rename(), including one with
+        renaming non-compiled expressions, that could lead to crashes
+	or wrong results.
+      - plHMM:
+        - Fixed memory leak in plHMM::train_unsupervised_viterbi().
+	- Fixed normalization bug on null distributions.
+	- Fixed serialization.
+      - plComputableObject::replace(): properly take into account
+        non-conditional plCndKernels.
+      - plFloatMatrix::diagonalize(): make sure the warning message is
+        not too large.
+      - In several classes, fix the case when an object is assigned to
+        itself.
+      - Fixed potential problem on Windows/VC8, in which VC8
+        complained during link that it did not find
+	plVariablesConjunction::empty.
+      - Fixed incorrect results with plMutableKernel, when several
+        mutables were initialized with the same kernel (bug reported by
+        Xavier Perrin).
+      - ProBT headers should not generate any more "unused parameter"
+        compiler warnings. It should also be clean under gcc's
+        -Weffc++ flag.
+      - Removed some spurious whitespace when printing ProBT objects.
+      - Made several documentation cleanups and clarifications.
+      - Fixed segfault when reading from binary archives, for
+        conditionals with two parameters that are not both integers.
+      - Added more sanity checks for conditionals requiring user
+        functions.
+      - Allowing to share external functions between kernels.
+      - plValues::operator[](int) now checks the index even in Release
+        mode.
+      - Not attempting to optimize expressions when doing Monte-Carlo
+        inference.
+      - Fixed the case with plCndLearnObject<> receiving a
+        default-constructed kernel as initialization.
+      - Updated the examples to the current ProBT version.
+      - Improved the human-readable printing of ProBT objects.
+      - Added more sanity checks in methods that can be called only on
+        one-dimensional computable objects.
+      - Fixed a bug in the initialization of external functions from
+        C.
+      - Fixed a bug with conditional normals and bellshapes with a
+        standard deviation given by a function.
+      - Fixed a bug in constructing plKernelTables having index
+        variables that are a subset of the right variables.
+      - Fixed plComputableObject::compute(T parameter) on
+        default-constructed computable objects.
+      - Calling get_distribution() or get_aposteriori_distribution()
+        on default-constructed learning objects now raises an error.
+      - Better sanity checks for default-constructed plValues objects.
+      - Fixing a bug in converting a plCndKernel to a plKernel.
+      - Fixed unsafe plFloatMatrix(vector<vector<T>>): check for row
+        length.
+      - Fixed a bug in plNormal: reading back the covariance matrix
+        from a 1D normal called the wrong constructor of plFloatMatrix,
+        resulting in wrong (or even uninitialized) values.
+      - Fixed memory leak when deserializing plFloatMatrix.
+      - plEMLearner: changed convergence criterion.
+      - Changed convergence criterion used when using Monte-Carlo
+        methods and genetic algorithms in inference.
+      - Added missing <string> header in plProbability32.h.
+      - Fixed double-deletion crash involving plLearnHistogram.
+      - Fixed plBayesianFilter serialisation.
+      - Fixed memory bug with plLearnObject deserialization.
+      - Fixed crash: check that a plCndKernel is not constructed with
+        empty right variables.
+      - Fixed a visibility problem with plFloatMatrix.
+      - Removed all "using namespace std;" from public headers.
+      - Prevent creating conditional questions with empty right
+        variables.
+      - Fixed a bug in symbolic simplification, that would sometimes
+        yield to pessimized computation trees.
+      - Fixed bug with Dirac distributions and out of range values.
+      - Fixed bug in the returned covariance matrix for 1d
+        plCndNormal: the (0,0) element contains the standard deviation
+        instead of the variance.
+      - Fixed crash in plComputableObjectList::push_back when the
+        pushed object is empty.
+      - Fixed plBinomial construction, which had problems taking its
+        variables into account. This could cause spurious plErrors,
+        and possibly wrong results.
+
+V1-9-0:
+
+The highlights of this version are:
+- the addition of an experimental framework for learning the structure
+  of Bayesian networks;
+- improvements and bugfixes to the implementation of the junction tree
+  algorithm: most of the deficiencies mentionned in the V1-8-0 release
+  are now fixed.
+
+BUG FIXES in V1-9-0:
+ - Fixed a normalization bug. With non-compiled nested models,
+   compute()/compile() would sometimes yield wrong results.
+ - plBinomial/plBayesLearnBinomial: fixed a construction bug that
+   would sometimes lead to crashes.
+ - plSerializer::print() now prints all stored objects. The old code
+   which grouped the objects by type missed the kernels stored as
+   plComputableObject (and also the bayesian filters, HMMs, and other
+   specialized classes).
+ - Junction tree implementation:
+   + Fixed the "pick_node(): empty junction tree" error that would
+     happen for some bayesian network topologies.
+   + Fixed normalization bugs on compute(), that would sometimes yield
+     incorrect results.
+   + Fixed human-readable output to be more consistent with what the
+     rest of the API does.
+   + Implement draw() on JT expressions using Metropolis
+     sampling. Previously, this would complain that draw() was not
+     implemented.
+   + Fixed the warning when a null distribution is created.
+   + Fixed wrong results for compute()/best() that would happen
+     sometimes when junction tree kernels were copied.
+ - plVariablesConjunction: fix is_discrete()/is_continuous();
+   is_continuous() used to return !is_discrete(), which was wrong.
+ - Fixed retrieval of the kernel signature in
+   plCndKernel::instantiate(), so that the obtained kernel can be
+   promoted correctly to its real form.
+ - Fixed a memory management bug, wherein some variable reference
+   counters would be wrong.
+ - Fixed a memory leak that could result from some kernels not being
+   properly tracked.
+
+API CHANGES in V1-9-0:
+ - plLearn1dNormal: if init_mu and init_sigma are not specified, the
+   normal defaults to Mu=0, Sigma=1 (instead of a degenerate form with
+   Sigma=0).
+
+API ADDITIONS in V1-9-0:
+ - Added an error (43) for an invalid plProbTable created by the user.
+   Fixed spelling for errors 38 and 39.
+ - Added an error (11) for invalid plIntervalType definition.
+ - plBellShape: add methods mean() and standard_deviation() (easier
+   to use than get_parameters()). Also, raise a better error when
+   promoting from plKernel fails.
+ - plEMLearner:
+   + Add a constructor that initialises the distribution using the
+     learnables.
+   + Explicitly instantiate plEMLearner with plValues.
+   + Detect the case where learning values are missing and some
+     conditional learning objects are incomplete: signal a warning
+     and do a push_default().
+ - Added {plJtKernel,plCndJtKernel}::output_dot(): a method that
+   outputs the junction tree expressions in dot (graphviz) format,
+   allowing to see how the expressions are structured.
+
+IMPROVEMENTS in V1-9-0:
+ - plSIRParticleFilter: made it faster, and added some documentation.
+ - On GNU/Linux, the dynamic libraries are now generated using symbol
+   visibility: they are smaller and possibly faster to load.
+ - plHMM, plMetaHMM: now recovers from degenerate situations (where a
+   normalization is null).
+ - Examples: made them nicer on Windows platforms.
+ - Added an example for the experimental structure learning framework.
+ - Added more error checking to the construction of plIntervalType.
+
+
+V2-0-0 (branched on 10/04/2009):
+
+ProBT 2.0.0 puts emphasis on improving the ease of use of the API. Its
+highlights are:
+- many renamings and API additions, trying to make the API more
+coherent and intuitive;
+- some added classes covering common uses, like plBayesianNetwork,
+plCSVDataDescriptor or plLearnDistributionMap;
+- as always, a number of correctness bugfixes.
+
+Some notable improvements are due to the feedback of users, including:
+- Xavier Perrin
+- Clément Moulin-Frier.
+
+This release breaks the serialization format with respect to version
+1.9.
+
+Please note that the structure learning subsystem introduced in
+version 1.9 is still experimental. Although it does work in several
+cases, it is known to have several correctness problems. Its API and
+internals will be reworked in a future ProBT release.
+
+BUG FIXES in V2-0-0:
+
+ - plMutable*: Correctness bug fixes in some situations involving several plMutable* objects.
+ - A corner-case bug fix: when 'plJointDistribution::ask' returns a
+   multi-dimensional simple term of the joint distribution, there was a
+   risk of inverting variables order P(A^B) --> P(B^A) if the joint
+   distribution term is P(B^A) and the inference target is 'ask(A^B)'.
+ - Better support for the continuous-by-interval variables (plIntervalType). 
+   This concerns the computation, the user-readable output, and the gnuplot plot.
+ - plDistribution::kullback_leibler_divergence_to: better support of zeroes in
+   the distributions.  This function no longer throws error 81 but
+   returns infinity iff there exists x such that p(X=x)!=0 and q(X=x)==0
+   (at the limit).  
+ - plHMM: Fixed a potential crash under MSVC.
+ - plBayesLearnLogNormalWithKnownShape: Bug fix in 'add_point': the point was added twice.
+ - Monte Carlo expressions: Bug fix in computing the normalization.
+ - plDistributionMap/plDistributionTable: Bug fix in renaming.
+ - Several bugfixes in the serialization functions:
+   plCndLearnObject<>, plArray, Gaussian distributions, plLearnDistribVector
+   plAnonymousKernel, plBuiltinBayesianProgram
+ - plLearn1dNormal: Bug fix in default initial weight initialization.
+ - Gaussian distributions: fixed null-distribution check, which caused
+   spurious plWarnings(38).
+ - plODBCDataConnector: correctly handle connection errors when calling get_num_rows().
+
+API CHANGES in V2-0-0:
+
+ - Important API changes: All *kernel* classes and functions are renamed into *distribution*.
+   Namely:
+   + plCndKernel          --> plCndDistribution
+   + plCndAnonymousKernel --> plCndAnonymousDistribution
+   + plCndJtKernel        --> plCndJtDistribution
+   + plKernelMap          --> plDistributionMap
+   + plKernelTable        --> plDistributionTable
+   + plKernel             --> plDistribution
+   + plAnonymousKernel    --> plAnonymousDistribution
+   + plJtKernel           --> plJtDistribution
+   + plMutableKernel      --> plMutableDistribution
+   + plMutableCndKernel   --> plMutableCndDistribution
+   + get_kernel_map       --> get_distribution_map
+   + get_pushed_kernel    --> get_pushed_distribution
+   Backward compatibility with the V1 version is kept. However, we
+   recommend to avoid using these obsolete class/function names
+   in new code.
+
+ - Renamed class plMetaHMM to plConcurrentHmmSet.
+
+ - Removed class plVariable. Use plVariablesConjunction instead.
+
+ - Removed class plModelLearner. Use
+   pllearner::learn_model_parameters() and
+   plLearnObject::learn_using_data_descriptor() instead.
+
+  - Clarification/correction of continuous (plRealType, plIntervalType) 
+   variables support in ProBT:
+   + Exact tabulation/compilation (plComputableObject::tabulate/compile) 
+     is now only allowed on discrete and builtin 1D continuous 
+     distributions (for which we have closed-form formulas of the cumulative 
+     (repartition) functions). 
+   + Added the approximate version plComputableObject::time_tabulate and
+     plComputableObject::n_tabulate to be used for non-builtin and
+     multi-dimensional distributions having at least one continuous variable.
+   + Exact inference using the exact version of 'plJointDistribution::ask' is no longer 
+     allowed for expressions needing marginalization over continuous variables. 
+     In this case, the approximate inference (Monte Carlo) should be used 
+     (i.e., the Monte Carlo version of 'plJointDistribution::ask').
+
+ - plSparseType: 
+   + The constructor is now templated on the type of the used values.
+   + Method:
+     const std::vector<plFloat> &get_values()const 
+     is replaced by:
+     template <typename T> void get_values(std::vector<T> &values) const
+ 
+ - plProbTable: 
+   + added generic constructor
+     template <typename Titerator>
+     plProbTable( const plVariablesConjunction& V, 
+           	  Titerator begin,
+		  Titerator end,
+		  bool is_already_normalized = false);
+   + removed constructor
+     plProbTable(const plVariablesConjunction& V,
+                 const list<plDataValues> & values);
+
+ - The class plEMLearner is no longer template. For now, only the
+   functions accepting a plDataDescriptor as parameter are templated.
+
+ - plEMLearner: 
+   + The constructor no longer requires a plDataDescriptor parameter.
+   + fill_missing_values_infos() is renamed to compute_missing_values_infos()
+   + Changes in the signature of the plEMLearner::run,
+   plEMLearner::compute_missing_values_infos and plEMLearner::compute_loglikelihood
+   functions.
+
+ - plDataDescriptor: replaced methods next() and last_row_def() with
+   the single method get_data_record().
+
+ - plJointDistribution: better errors. This uses two new plErrors: 6
+   (Variable sets do not match), and 12 (Invalid question), to replace
+   the catch-all and awkward 8 (Variable type does not match).
+
+ - plHMM: use plLearnLaplace instead of plLearnHistogram as default learners.
+
+ - plConcurrentHMMSet:
+   + get_all_models_log_probabilities() now returns the most probable
+     model index
+
+ - By default, plLearnDistributionMap::get_computable_object() and
+   plCndLearnObject::get_computable_object() now insert a uniform
+   distribution for the right values that have never been inserted.
+
+ - plIneqConstraint is made a subclass of plCndDiscreteDistribution.
+
+ - Added some missing signatures for plComputableObject intermediate classes.
+   These signatures are used for the plComputableObject.is() for example.
+
+
+API ADDITIONS in V2-0-0:
+
+ - New plBayesianNetwork class, implementing an easy starting point
+   for newcomers used to another inference library. This class should
+   be straightforward to use given a basic background on Bayesian
+   networks.
+ - New plCSVDataDescriptor class, implementing a plDataDescriptor tied
+   to a file or stream containing comma-separated values. It presents
+   a more flexible, easier to use, but slower alternative to the
+   existing plCSVFileDataDescriptor class.
+ - New plLearnDistributionMap class implementing conditional learning objects as a map. 
+   Learning a conditional distribution P(X | Y) consists in using a map of 
+   non-conditional learning objects. This map 
+   contains, for each possible value of Y a non-conditional learning 
+   object on X. This non-conditional learning objects are added using 
+   the 'push' and 'push_default' methods.
+ - New plStatFunctions class, centralizing access to common math
+   functions like gamma, beta, factorial, etc.
+ - New plRandom class, centralizing access to common random numbers
+   generation fuctions like seed(), uniform_integer(), uniform_float(), 
+   normal_float(), etc.
+ - The plSerializer class is now able to save and load objects from
+   both XML and binary formats.
+ - plDataDescriptor: added methods get_column_values() (selects values
+   of one field in all records), get_n_records() (number of records)
+   and validate() (checks that all records give values that match the
+   types of given variables).
+ - Added plDiscreteType and plContinuousType abstract classes for
+   more clarity.
+ - Added the approximate version plComputableObject::time_tabulate and
+   plComputableObject::n_tabulate to be used for non-builtin and
+   multi-dimensional distributions having at least one continuous variable.
+ - plIntervalType: add new plIntervalType(plFloat min, plFloat max, unsigned int n_intervals) 
+   method in order to prepare removing the obsolete
+   plRealType::plRealType(plFloat min, plFloat max, unsigned int n_intervals) one.
+ - Added new constructors:
+   + plComputableObject(const plComputableObjectList &func_lis,
+                        const plVariablesConjunction &left_variables,
+                     	const plVariablesConjunction &right_variables);
+   + plCndDistribution(const plComputableObjectList &func_lis,
+               	       const plVariablesConjunction &left_variables,
+                       const plVariablesConjunction &right_variables);
+   + plDistribution(const plComputableObjectList &func_lis,
+                    const plVariablesConjunction &variables);
+ - The old plNonCndLeanObject::get_params() and
+   plCndLearnObject<>::get_params() fuctions removed in the 1.9 release
+   are back with the name 'get_parameters'.
+ - Added new function plLearnObject::get_n_parameters to get the actual
+   number of parameters (could be used for computing the BIC score
+   for example).
+ - Added new plComputableObject::compute_log and
+   plCndDistribution::compute_log functions returning the logarithm of the
+   functions plComputableObject::compute() and plCndDistribution::compute():
+   compute_log(...) is equivalent (but more robust) to log(
+   compute(...) ).
+ - plJunctionTree::ask(): added the possibility to request a
+   non-normalized expression.
+ - plEMLearner: added the possibility to use the junction tree
+   algorithm for inference.
+ - plValues: added helper method add(), to be used on one line, like
+   q.instantiate(plValues().add(a, 42).add(b, 666)).compile()
+ - plHMM: added method is_empty().
+ - plHMM: added methods  compute_dissimilarity_to() and 
+   compute_symmetric_dissimilarity().
+ - plConcurrentHMMSet: added methods compute_dissimilarity_matrix() and
+   compute_symmetric_dissimilarity_matrix().
+ - plComputableObjectList: added STL-style iterator (see begin() and end()).
+ - New plParticleFilter class for generic particle filters implementations. 
+   plSIRParticleFilter is a specialization of this class.
+ - Added new utility functions related to the used ProBT version:
+   get_version(), check_s11n_version_compatibility(), 
+   get_s11n_compatibility_version(), get_expiration_date(), etc. 
+   Thus, the expiration date of the library can now be queried using 
+   plVersion::get_expiration_date() or checked directly with
+   plVersion::has_expired().
+ - Once ProBT expires, it now raises an exception: plExpirationError.
+
+IMPROVEMENTS in V2-0-0:
+
+ - When the library expires, it will now raise an exception instead of
+   calling exit().
+ - Previous versions of ProBT used internally the standard
+   "rand()" and "srand()" functions to implement basic sampling:
+   plRandomInt plRandomFloat, and plSRandom.  Thus, the result
+   of Monte Carlo sampling was not the same on all platforms and the
+   quality of the generated samples would depend of the used compiler.
+   Version V2-0-0 includes a builtin uniform random generator. This
+   generator is an implementation of the well-known Mt19937 generator:
+   http://www.math.sci.hiroshima-u.ac.jp/~m-mat/MT/emt.html
+ - Improved 'plSIRParticleFilter' performances by avoiding particles copy 
+   during the computation.
+ - plSIRParticleFilter: more sanity checks and added support for plValues.
+ - plDistribution::kullback_leibler_divergence_to is specialized for multi-dimensional 
+   Normal distributions (using a closed-form formula).
+ - Ensure that the distributions returned by 'ask', 'instantiate', and promotion 
+   constructors respect the order of the variables. This order is important when
+   using methods that suppose an implicit order (e.g, plComputableObject::rename,
+   plComputableObject::compute when using native types instead of plValues...).
+ - plComputableObject(const plComputableObjectList &) constructor: 
+   Now, the left variables of the constructed computable object are the concatenation
+   (in the same order) of the left variables of all the terms of the list, 
+   and its right variables are the concatenation of the right variables of 
+   all the terms and that are not in left one above.
+ - plJointDistribution(const plComputableObjectList &decomposition) constructor: 
+   Now, the variables of the constructed distribution are the concatenation 
+   (in the same order) of the left variables of all the terms of the list.
+ - plCndLearnObject::get_computable_object and plLearnDistributionMap::get_computable_object 
+   are reimplemented in order to return read-only builtin (more efficient) computable objects 
+   instead of plDistributionMap. However, plCndLearnObject::get_distribution_map and 
+   plLearnDistributionMap::get_distribution_map are still available if one wants to customise 
+   the returned conditional distribution.
+ - Made the library usable with gcc > 4.2.
+ - Made faster several operations inside the junction tree implementation.
+ - Several improvements and spelling fixes in error messages and
+   Doxygen documentation.
+ - Added serialization support the plKalmanFilter class.
+
+V2-0-1 (branched on 11/06/2009)
+===============================
+
+This version is an internal release focused on small bugfixes and
+packaging improvements.
+
+BUG FIXES in V2-0-1:
+ - Fixed a bug in plStatFunctions::normal_pdf(): it would return wrong results.
+ - Added missing compatibility typedef for plKernelDictionary.
+ - Fixed a bug in plLearnObject::learn_using_data_descriptor().
+ - Fixed a bug in parsing undefined/unobserved variables in
+   plEMLearner.
+ - Keep PLDistribution and PLCndDistribution bits in the signature of derived classes.
+
+IMPROVEMENTS in V2-0-1:
+ - Allow using const member functions in plExternalFunction.
+
+
+
+V2-1-0 (branched on 10/10/2009): 
+===============================
+
+The highlights of 2.1.0 are:
+ - experimental bindings for the .NET platform (see Section "ABOUT
+   .NET BINDINGS")
+ - a rewritten "Structure Learning" module (see Section "ABOUT
+   STRUCTURE LEARNING")
+ - a "Policy Networks" functionality allowing to solve decision
+   problems (see Section "ABOUT POLICY NETWORKS")
+ - some added classes and functions 
+ - as always, a number of correctness bugfixes.
+
+ABOUT .NET BINDINGS:
+  This release includes experimental bindings for the .NET
+  platform. These bindings cover most of the C++ API, and should
+  already work in most cases. However, they still have possible
+  problems that will be fixed in future releases:
+  - they have been compiled and tested mostly with the Mono
+    development environment (note however that they probably work
+    as-is with the Microsoft .NET environment);
+  - they may not expose some functionality of the C++ API, which may
+    render some tasks hard or impossible.
+
+ABOUT STRUCTURE LEARNING:
+   The new API is significantly simpler to use; it consists of the
+   class plStructureLearner which provides the main functionality,
+   plus two extensible class hierarchies plNodeScore and plEdgeScore.
+   Three algorithms are currently implemented: DMST (Directed Minimum
+   Spanning Tree), K2, and GS (Greedy Search).  The Expectation
+   Minimization variant of DMST has been dropped for now, but it is
+   still possible to learn from incomplete datasets.  A demonstration
+   of how to use the new API is provided in the examples directory.
+
+ABOUT POLICY NETWORKS:
+   This release of ProBT contains a new experimental functionality
+   allowing to solve decision problems.  A policy network is a kind of
+   influence diagram, containing chance nodes (random variables),
+   action nodes (decision) and utility nodes. The problem consists in
+   finding an optimal policy for the action nodes than maximizes the
+   sum of all utilities.  A demonstration of how to use the new API is
+   provided in the examples directory.
+
+BUG FIXES in V2-1-0:
+ - Fixed a bug in plLearnSparseHistogram::get_parameters (could lead
+   to an invalid memory access)
+ - Fixed a bug in some distributions signatures
+ - Fixed a bug in Monte Carlo sampling in some corner cases when
+   involving N-dimensional distribution
+ - Fixed a bug in plUniform::comute_expectation() when used with
+   sparse type
+ - Fixed a bug in plCndPoisson serialization
+ - Fixed a bug in plDirichlet and plBayesLearnProbTable sanity checks
+ - Fixed a bug in plEKF (could lead to an invalid memory access)
+ - Fixed a bug in plLearnExponential::get_n_parameters(). It returns 2
+   instead of 1
+ - Fixed a compilation problem when calling
+   plSIRParticleFilter::prediction_observation
+ - Fixed a bug when calling 'replace' on conditional Monte Carlo
+   expressions (could lead to an invalid memory access)
+
+API CHANGES in V2-1-0:
+ - Structure Learning: this module has been entirely rewritten. See the
+   Structure Learning section above.
+ - plBinomial: get_p() returns a plProbValue instead of double for now
+ - plData: removed implicit constructors from numbers
+ - plBayesianNetwork: API changes and several improvements
+ - plParticleFilter: changes in order to allow returning
+   "best_particle" even after a resampling
+ - plParticleFilter: Make protected the function "needs_resampling()"
+ - plLearnPoisson: The initial default weight is set to zero for ML
+   estimation
+ - Support for binary serialization archives has been disabled. The XML
+   format is now the only one supported.
+
+API ADDITIONS in V2-1-0:
+ - Added a new class plWeibull implementing the Weibull continuous
+   distribution
+ - Added a new class plPolicyNetwork (see Policy Networks section above)
+ - Added a new class plLabelType allowing to define types taking their
+   values in a set of textual labels (e.g. {"TRUE", "FALSE"}, {"BLUE",
+   "RED", "YELLOW"})
+ - Added a new class plCndBinomial implementing conditional binomial
+   distributions
+ - Added a new function plValues::set_partially()
+ - Added a new function plError::get_additional_info()
+ - Added a new function plConcurrentHmmSet::remove_model() function
+ - plBayesianNetwork: added new API functions
+ - Added Labels support for plCVSDataDescriptor
+ - Added a new function plCSVLineParser::set_max_line_length()
+ - Added a new function plVariablesConjunction::clear()
+ - Added a new function plFloatMatrix::make_identity()
+ - plCSVDataDescriptor gained the ability to ignore unknown variables
+   and their associated data columns
+   (see plCSVDataDescriptor::ignore_unknown_variables()).
+
+IMPROVEMENTS in V2-1-0:
+ - Added a cache for plDataDescriptor::get_n_records
+ - Improved documentation
+ - Improved error messages
+
+
+V2-1-1 (25/08/2010)
+
+This is a bug-fix release for the ProBT 2.1 branch.
+
+BUG FIXES in V2-1-1:
+ - Serialization bug: models saved with the Windows version of ProBT 2.1.0 could
+   not be read back on Linux and MacOSX systems.  Interoperation is now restored.
+ - Fixed a bug in the generated GnuPlot files when plotting the probability
+   distribution of 2D variables.
+ - Fixed a bug in calculation of Mutual Information scores.
+ - Fixed a bug in plRealType::get_values()
+ - Safer implementation using std::getline instead of iostream getline in plCSVLineParser
+ - Fixed a bug (resulting into warning 107) in some cases when using plFunctionalDirac
+ - Fixed a bug in plArray::name(). It returned the name of the first
+element
+ - Fixed the case of copying a plValues over an empty plVariablesConjunction
+ - Fixed printing of cached plCSVDataDescriptors(would crash, or yield
+huge output)
+ - Make the plData::operator=number operator implementation correspond
+to its documentation
+ - Fixed a bug in plConcurrentHmmSet::compute_dissimilarity_matrix()
+ - Fixed plKalmanFilter::get_observation_mahalanobis_distance(). What
+was returned is the squared mahalanobis distance (aka generalized
+squared interpoint distance)
+ - Fixed a bug in plType::next_value()
+ - Fixed a bug in plDistributionTable::tabulate(vector)
+ - Fixed a bug in plBayesianNetwork::add_evidence()
+ - Fixed a bug in copy and assignment of plBayesianNetwork
+
+API ADDITIONS in V2-1-1: 
+ - Four new macros provide information about the ProBT release version at
+  compile-time. These are: PROBT_MAJOR, PROBT_MINOR, PROBT_REVISION,
+  and PROBT_VERSION defined as  
+  PROBT_MAJOR * 10000 + PROBT_MINOR * 100 + PROBT_REVISION
+
+ - Added the possibility to make a 'left to right' initialization in
+   HMM learning
+
+- For MS Windows, the libraries "pl" and "spl" have been renamed into
+  "pl-vc80" and  "spl-vc80" for MSVC 8 and into "pl-vc90" and
+  "spl-vc90" for MSVC 9.
+
+
+V2-1-2 (11/10/2010)
+===================
+
+This is a bug-fix release for the ProBT 2.1 branch.
+
+BUG FIXES in V2-1-2:
+- Fixed a bug with plExternalFunctionFromC on linux 64 bits machines
+  (contains an update to the bundled libtcc)
+
+API CHANGES in V2-1-2:
+- Disabled serialization of plError, which was causing problems
+  with some compiler and Boost versions.
+
+V2-1-3 (13/12/2010)
+===================
+
+This is a bug-fix release for the ProBT 2.1 branch.
+
+BUG FIXES in V2-1-3:
+- There was an error in the score computations when using incomplete
+  data: we used the total number of rows instead of the number of
+  fully observed rows. This is now fixed.
+- While computing a score, throw a plError when the data descriptor
+  encounters an I/O error.
+
+
+V2-2-0 (05/2011)
+================
+
+ProBT 2.2.0 is a major release, including new features in addition to the usual
+bug fixes and documentation improvements:
+- new classes for softmax regression (generalization of the binary
+  sigmoid to the mutimodal cases) and linear regression
+- new classes for NoisyOR
+- experimental Python bindings
+- an experimental graphical C# ProBT shell (Linux only).
+
+The .NET bindings have now stabilised, and are considered fit for
+production use.
+
+This release now uses plFloat == plProbValue == double (instead of
+long double previously). This allows a non-negligible gain in memory,
+at the expense of some precision in some corner cases. Users for whom
+this causes a problem are invited to contact the ProBT users mailing list.
+
+Serialization in both binary and XML formats is now enabled. By
+default, as before, ProBT uses XML.
+
+The full list of changes follows.
+
+API ADDITIONS in V2-2-0:
+ - plSerializer gains two new class-methods: get_strict_mode() and
+   set_strict_mode().  Strict mode means that ProBT will refuse to load a
+   serialization archive if either the ProBT version, the BOOST version or the
+   compiler of the archive creator was different from those of the running
+   ProBT. In this case, plSerializer::load() will throw a specific plError
+   exception.  The default is not to operate in strict mode, which means that
+   ProBT will attempt to load any archive, possibly leading to a
+   boost::archive_exception or even an application crash.
+- Added 2 accessors to plHMM to get back the value of the
+  tabulate_*_distribution parameters that were given at construction
+  time.
+- Added a method to plCSVDataDescriptor for getting a data row in raw
+  string format.
+- Added a method to plStructureLearner for getting the variables
+  passed during construction.
+- It is now possible to set the output stream plError uses for
+  displaying errors and warnings, using plError::set_output_stream().
+- Added experimental Python bindings, in addition to the .NET ones.
+- Added plNormal::mahalanobis() method.
+- plCSVFileDataDescriptor: added the possibility to parse file header
+  for variables, added the possibility to read values for plLabelType,
+  added functions set_variables() and observed_variables().
+- plExternalFunction: make callback_t public and add a function to
+  create a plExternalFunction from an object, that may be easier to use
+  in some cases, including for bindings.
+- The .NET bindings now include an interactive shell with simple
+  graphical display of distributions.
+- Added method plComputableObjectList::get_distribution_over() to find
+  the factor with given left variables.
+- Added some convenience builtin functions commonly used for creating
+  a plExternalFunction (min, max, average, sum, product, identity, OR,
+  AND).
+- Added plValues::operator^.
+- Added plFloatVector::operator/(plFloat), operator*=(plFloat) and
+  operator/=(plFloat).
+- Added new plVariablesConjunction::get_symbol_with_name().
+- Added plCSVDataDescriptor::guess_variables() to automatically guess
+  sensible variables from a data file.
+- Added new classes plLearnSoftmax and plSoftmax allowing to implement
+  softmax regression (generalization of the binary sigmoid to the mutimodal cases).
+- Added support for the NoisyOR classifier, in classes
+  plNoisyOR and plLearnNoisyOR.
+- Added support for linear regression, and classes implementing linear
+  and softmax regression families.
+- plEMLearner: added plEMLearner::set_use_sampling_for_compilation()
+  for choosing the compilation method.
+- Added a new abstract base for all conditional learning objects,
+  named plLearnCndObject.
+- Added methods plFloatVector::at(), plFloatMatrix::at(),
+  plFloatMatrix::multiply().
+- Added plValues::support_area() to determine the surface under a
+  given value (constant in general, but depends on the point for
+  plIntervalType).
+- Added new functions plHMM::is_in_final_state() and
+  plConcurrentHMMSet::is_in_final_state().
+- Added new method plEMLearner::get_last_computed_loglikelihood(), and made
+  plEMLearner::iteration() public.
+- Added plJointDistribution::draw_graph_dot(), that draws a
+  decomposition in Graphviz (dot) format.
+- Added constructors to plProbTable and plCndDistribution for creating
+  probability tables containing random values.
+- Added new class plEdgeScoreLaplaceMI, which computes the Mutual
+  Information. This version uses the Laplace succession rule to estimate
+  the probability tables given the dataset, instead of simple
+  histograms.
+- Added 2 edge-score classes (entropy, and a variant of MI that can be
+  used as a distance).
+- Added plEMLearner::get_n_parameters() and plEMLearner default constructor.
+- Added new plLearnBeta class.
+
+API CHANGES in V2-2-0:
+- Method plCSVDataDescriptor::set_variable_labels() was removed. To
+  use variables whose domain is a set of strings, create a plSymbol with
+  type plLabelType instead.
+- Renamed plError::abort_in_warning() to
+  plError::treat_warnings_as_errors(). The old method remains, but is
+  marked obsolete.
+- Moved all s11n-related functions from plVersion to plSerializer.
+- plErf, plGamma, plPhi, plStatFunctions now take and returns plFloats.
+- plDistribution::compute_expectation() now only accepts a
+  vector<plFloat>. This simplifies the API and minimizes the risk of
+  suboptimal numerical results.
+- plEMLearner: expose plFloats instead of doubles in the API.
+- Take into account the new plDataDescriptor::observed_variables(),
+  ie deprecate the existing
+  plLearnObject::learn_using_data_descriptor(data_desc,variables,rewind_before_use)
+  and replace it with
+  plLearnObject::learn_using_data_descriptor(data_desc).
+- Removed the parameter 'data_descriptor_variables' in
+  plLearner::learn_model_parameters(): the variables are obtained by
+  calling plDataDescriptor<>::observed_variables(); No compatibilty
+  solution is provided for the old version.
+- Removed the 'data_descriptor_vars' parameter in plEMlearner
+  constuctors. The variables are obtained from the data decriptor passed
+  to run() by calling observed_variables() on the data descriptor.
+- Removed spurious return-const in plValues get_action() const.
+- Make plVariablesConjunction::remove() return a reference to the
+  conjunction instead of void.
+- Removed plEMLearner::set_approximate_integration_mode() and
+  plEMLearner::set_approximate_compilation_mode() functions. These modes
+  are set/unset when calling plEMLearner::set_mc_integration_npoints()
+  and plEMLearner::set_approximate_compilation_time() or
+  plEMLearner::set_approximate_compilation_nsamples()
+- Made plObject::Output protected. Use operator<< if you want to
+  print a plObject to a stream.
+- Completely removed plHMM::init(), whose implementation had been
+  empty already for some time.
+- plVariablesConjunction::cardinality() now returns a long double
+  instead of a double.
+
+
+BUG FIXES in V2-2-0:
+- Made sure std::vector<long double> is serialized the same way on all
+  platforms.
+- Fixed a s11n problem with plHMM when serializing infinite values.
+- Fixed plArray::name(), which would previously not work correctly.
+- Fixed bug where plRealType::get_values() would return a vector of
+  identical values.
+- Fixed plCSVDataDescriptor printing (would crash or produce huge
+  output).
+- Fixed copying plValues over an empty plVariablesConjunction (would
+  crash).
+- ProBT.NET: fixed support for plExternalFunction,
+  plExternalProbFunction (would crash or behave incorrectly).
+- Fix plData::operator= to behave as documented for an uninitialized
+  plData object.
+- Fixed several bugs in plType introspection methods.
+- plKalmanFilter: fixed computation of Mahalanobis distance. What was
+  returned is the squared mahalanobis distance aka 'generalized squared
+  interpoint distance'.
+- Fixed plConcurrentHmmSet::compute_dissimilarity_matrix() (would
+  return wrong results).
+- Fixed a bug in plDirac that would sometimes trigger a spurious
+  warning 107 during inference.
+- Fixed a bug in plDistributionTable::tabulate() (would return wrong
+  results).
+- Fixed plLabelType support in plCSVDataDescriptor.
+- Fixed plCndDistribution::partial_instantiate() (previous
+  implementation was slow, and incorrect in some cases).
+- Fixed printing and serialization of plLabelType.
+- Fixed crashes and incorrect results in plBayesianNetwork: copy,
+  assignment, and add_evidence().
+- Fixed bug with plCndNormal(a,b,fun,fun): the variance output plValues
+  was not correctly dimensionned.
+- Fixed a bug at initialization of inference using genetic
+  algorithms. There was a memory leak in some cases when calling
+  n_compile() and time_compile().
+- Fixed plot() output for use with Gnuplot >= 4.0.
+- Fixed Gnuplot plotting for plLogNormal and plWeibull.
+- Fixed plWeibull::draw() (would return incorrect results).
+- Structure learning: there was an error in the score computations
+  when using incomplete data (we used the complete number of rows
+  instead of the number of fully observed rows)
+- Fixed scaling of returned best() values for plBeta and plLogNormal
+  (would return wrong results).
+- Fixed deserialization and output of default-constructed plArray,
+  plBayesianFilter, plExternalFunction, plExternalProbFunction,
+  plFloatVector, plParticleFilter, plLearnSparseHistogram.
+- Fix potential crashes when passing a default-constructed
+  distribution to plMutable::init and plMutable::mutate.
+- Fixed buggy seralization of plBayesianFilter.
+- Fixed buggy deserialization of default-constructed
+  plLearnDistribVector.
+- Corrected inaccurate draw() for plBellShape (drawing would
+  underrepresent bounds).
+- Fixed sampling using Metropolis in some cases by improving the case when the
+  candidate is out of range, and adding a warming phase when needed.
+- Improved Metropolis sampling for distributions with a very small support.
+- Fixed deserialization of plBeta, plWeibull, plCndBinomial,
+  plNoisyOR, plSoftmax, plLinearRegression, plCndLearnObject.
+- Fixed a bug with one constructor of plJointDistribution. The problem
+  occured when calling plJointDistribution(object) where object has
+  plDistribution as its static type but is really a joint distribution.
+- Fixed plComputableObject::get_factors() for empty objects.
+- Fix plExternalProbFunctionFromC, which was broken on 64 bit Linux.
+- Fixed a bug in MRBT tabulation: normalization was incorrect.
+- Fixed a memory management bug in plVariableIndexer.
+- Fixed crash in plDistributionMap::get_pushed_distribution(), in case
+  the pushed distribution in not found.
+
+IMPROVEMENTS in V2-2-0:
+- ProBT.NET: added better support for plComputableObjectList,
+  plVariablesConjunction, plLearnObject, plFloatVector, plFloatArray; added support for plHMM,
+  plConcurrentHmmSet, plStructureLearner, plSparseType, plNdNormal,
+  plParticleFilter, plIntervalType, plAnonymousDistribution,
+  plCndAnonymousDistribution; added basic s11n support. Collections
+  (plVariablesConjunction, plComputableObjectList...) now implement
+  IEnumerable<>, and foreach can be used on them.
+- Made plLearnObject::learn_using_data_descriptor() more robust when
+  used with plDataDescriptor<plValues>.
+- plError now never calls abort(), but throws a plError exception,
+  if treat_warnings_as_errors() is enabled and a warning is raised.
+- plWarning 112 is now raised when obsolete functions are called.
+- plParticleFilter: make some error messages nicer, and transform some
+  printing to plError and plWarning.
+- Junction tree inference: avoid returning infinite probabilities
+  (return 0 instead).
+- Now, all the plLearnObject pointers passed to plEMLearner,
+  plLearnDistribVector, and plLearnDistributionMap are cloned and stored
+  internally. This means that the passed ones will not change and that
+  the user can delete his objects while ProBT still uses its copies.
+- Added several sanity checks in order to detect to mistakes earlier.
+- Improved several error messages.
+- Structure learning: throw a plError when the data descriptor
+  encounters an error while computing a score.
+- Metropolis sampler: avoid having a too tigh proposal variance for
+  discrete variables.
+- Added or improved printing of plLearnLaplace, plLearnLidstone,
+  plCndLearnObject and plLearnDistributionMap.
+- Made plVariablesConjunction::operator^= run in n*log(n) time instead
+  of quadratic time (thanks to Raphael Mourad for the suggestion).
+- Speed improvement for plVariablesConjunction::operator[], now
+  constant-time instead of linear (thanks to Raphael Mourad for the
+  suggestion).
+- Added a warning when trying to sample a null distribution using Metropolis.
+- .NET: added support for several missing classes, and now correctly
+  propagating plError as C# exceptions.
+- Added an error when using structure learning scores with data with latent variables.
+
+
+V2-0-2 (released on 15/09/2011)
+===============================
+
+This is a special release targeted at clients needing an extension of the expiration
+date, but that can not upgrade to ProBT V2-2.
+
+BUG FIXES in V2-0-2:
+- Fixed a bug with plExternalFunctionFromC on linux 64 bits machines
+  (contains an update to the bundled libtcc)
+
+
+V2-3-0 (11/2012)
+================
+
+ProBT 2.3.0 is a major release, including some API changes in addition to the usual
+bug fixes and documentation improvements.
+
+The full list of changes follows.
+
+API CHANGES in V2-3-0:
+
+- All 1D continuous distributions accept for now to be defined on both
+  continuous and discrete variables (including plIntegerType ones).
+- Removed plBellShape (and plCndBellShape) distribution and all its
+  related learning classes (plLearnBellShape,
+  plBayesLearnBellShapeWithKnownMean, and
+  plBayesLearnBellShapeWithKnownStandardDeviation). It's equivalent
+  for now to defining a plNormal (and plCndNormal) distribution aver a
+  plIntegerType variable.
+- Added an optional 'n' parameter
+  plLearnObject::learn_using_data_descriptor() allowing to use only
+  the next 'n' data records (if any).
+- Renamed plLearnObject::learn_using_data_descriptor() into
+  plLearnObject::learn()
+- Renamed class plLearnDistributionMap into plLearnDistributionTable
+- Removed class plDistrisbutionDictionary. It was redundant with class
+  plDitributionTable
+- Removed class plCndProbTable
+- Removed class plSparseType
+- Removed plCndDiscreteDistribution, plCndDiscreteDistribution,
+  plDiscreteDistribution, and plContinuousDistribution abstract
+  classes (no longer needed)
+- Removed class plCUniform class. plUniform can be define, for now,
+  over both discrete and continuous variables
+- Renamed function plFloatMatrix::diagonalize() into
+  plFloatMatrix::compute_eigen_decomposition()
+- Redesigned class plLogNormal and plCndLogNormal and their private
+  implementaion. ATTENTION this results in an API change
+
+API ADDITIONS in V2-3-0:
+
+- Added class plDiscreteIntervalType implementing discretized
+  continuous types defined as intervals.
+- Added class plCndBeta for conditional Beta distributions
+- Added class plCndExponential for conditional Exponential
+  distributions
+- Added class plCndGamma for conditional Gamma distributions
+- Added class plCndWeibull for conditional Weibull distributions
+- Added initial support for import/export from/into Genie, Netica, and
+  Hugin files (plJointDistribution::load_from_netica(),
+  plJointDistribution::save_as_netica(),
+  plJointDistribution::save_as_genie(),
+  plJointDistribution::load_from_genie(),
+  plJointDistribution::save_as_hugin()
+  plJointDistribution::load_from_hugin(),
+  plBayesianNetwork::load_from_netica(),
+  plBayesianNetwork::save_as_netica(),
+  plBayesianNetwork::save_as_genie(),
+  plBayesianNetwork::load_from_genie(),
+  plBayesianNetwork::save_as_hugin() plBayesianNetwork::load_from_hugin())
+- Added function plFloatMatrix::multiply_with_transpose()
+- Added function plFloatMatrix::multiply_with_transpose_symmetric()
+- Added function plFloatMatrix::multiply_transpose_with()
+- Added function plFloatMatrix::inverse_using_eigen_decomposition(), 
+- Added function plFloatMatrix::multiply(const plFloatVector &,
+  plFloatVector &)
+- Added function plDistribution::n_best() allowing to perform the
+  optimization using a maximal number of evaluations when using a
+  Genetic Algorithm
+- Added function plDataDescriptor::print_head()
+- Added function plDataDescriptor::print_simple_stats()
+- Added function plDataDescriptor::get_simple_stats()
+- Added function plCSVLineParser::get_current_line_buffer()
+- Added support for float32 fields in plNumPyDataDescriptor
+- Added accessors to eigen values and vectors in plNormal
+  (plNormal::eigen_values() and plNormal::eigen_matrix()). This allows
+  making PCA analysis
+- Added function
+  plLearnLinearRegression::get_regression_std_deviation()
+
+IMPROVEMENTS in V2-3-0:
+
+- Optimized plKalmanFilter implementation
+- Improved implementation of plDistribution::plot() especially when
+  using output files (postscript, pdf, png, ...)
+- Added the possibility to use eigen decomposition based matrix inversion in Kalman 
+  (plKalmanFilter::use_eigen_decomposition_matrix_inversion())
+
+
+
+V2-4-0 (11/2014)
+================
+
+ProBT 2.4.0 is a major release, including some API changes in addition
+to the usual bug fixes and documentation improvements.
+
+The full list of changes follows.
+
+BUG FIXES in V2-4-0:
+
+- Fixed a bug that can occur in some corner cases when using expressions
+  including (plCndDeterministic, aka plFunctionalDirac) as a submodels
+- Fixed a bug in plFunctionalDirac(cnst plExternalFunction&) constructor 
+- Fixed division by zero in case of empty plLearnNdNormal
+- Fixed a normalization problem in plKalmanFilter::get_pdf_value()
+- Added plCndLearnBeta serialisation support 
+- Make plValues::is_valid() return true for empty (default constructed) plValues
+- Added missing plot title for continuous distributions in plDistribution::plot()
+
+API CHANGES in V2-4-0:
+
+- Rename plDirac into plDeterministic
+- Rename plFunctionalDirac into plCndDeterministic
+- Rename plIntervalType into plContinuousIntervalType
+- plDataDescriptor is no longer template
+- Replace the plJointDistribution::ask() for the MC case with
+  plJointDistribution::ask_mc_nsamples() and
+  plJointDistribution::ask_mc_convergence()
+- Renamed plFloatMatrix::inverse() into plFloatMatrix::inverse_using_greville()
+- Removed obsolete plFloatMatrix::diagonalize() equivalent to
+  compute_eigen_decomposition()
+- Renamed function plBayesianNetwork::plBayesianNetwork::set_verbose_sl()
+  into set_verbose_structure_learning()
+- Added a return value (log-likelihood) for plBayesianNetwor::learn_parameters_em()
+- Avoid exposing template functions when possible. Use templates only
+  in implementation 
+- Make plDistributionTable::get_pushed_values() returned value to
+  std::vector<plValues> instead of std::list<plValues> 
+- Use of size_t instead of unsigned int when possible
+- Added a contraint on max parent node cardinalities when using
+  plStructureLearner::K2() algorithm 
+- Added 'const' qualifier for plBayesianNetwork::compute_data_record_log_likelihood()
+  and compute_data_set_log_likelihood()
+- Removed references to 'command' in plEKF constructor and in the documentation
+  because this is not used in the non-linear case (Possible 'command'
+  is to be used directly in the prediction() function)
+
+API ADDITIONS in V2-4-0:
+
+- Added non-template constructors for plProbTable (needed by ProBT binding)
+- Added function plValues::get_value_as_label() allowing to get the data value as a string
+  when the corresponding type is plLabel
+- Added support for inspecting evaluation trees returned by symbolic SRA
+  simplifications (plJointDistribution::ask(), …). This implemented
+  using new functions plComputableObject::get_children() and get_marinalized_variables()
+- Added new functions plComputableObject::get_head_string() and
+  plComputableObject::get_body_string() returning strings equivalent to
+  plComputableObject::write_head() and plComputableObject::write_body()
+- Added preliminary support for soft evidence inference
+  plJointDistribution::set_soft_evidence_variables(),
+  plJointDistribution::clear_soft_evidence_variables(),
+  plDistribution::set_soft_evidence(),  plDistribution::set_soft_evidences()
+  plDistribution::remove_soft_evidence(), plDistribution::clear_soft_evidences()
+- Make plLearner::learn_model_parameters() runs EM with the default convergence parameter 
+- Added new function plBayesianNetwor::set_verbose_em_learning()
+- Add new function plCSVFileDataDescriptor::generate_gnuplot() for
+  generating gnuplot time-series plots 
+- Added new functions such as
+  plBayesianNetwork::compute_data_set_log_likelihood(const
+  std::vector<plValues> &) and
+  plBayesianNetwork::learn_parameters_add_point()
+- plLearnDistribVector: allow side-effect on the passed plLearnObjects if requested
+- Added a more generic plLearnMixtureModel class and implement
+  plLearnGMM as a child class
+- Added class plLearnGMM
+- Added conditional and non conditional Von Mises distributions 
+- Added functions plLearnObject::learn(const std::vector<T> &, …)
+- Added functions plDataDescriptor::get_variable_values(const plSymbol& variable,…)
+- Added discretization support: new classes (plVariableDiscretizer and
+  plEqualFrequenciesVariableDiscretizer) and news functions
+  (plDataDescriptor::use_for_discretization(), …)
+- plBayesianNetwork: added caches to speedup queries, added function
+  plBayesianNetwork::set_query_cache_max_size()
+- plBayesianNetwork: added support for one-time-slice Dynamic nets
+  (add_time_transition_edge(), set_time_transition_distribution(),
+  set_time_transition_learnable_distribution(), next_time_slice(), get_time_slice_edges())
+- Added function plVariablesConjunction::get_discrete_variables() 
+- Added plVariablesConjunction::<= operator
+- Added new function plValues::remove() 
+- Allow p=0 for when constructing plBinomial 
+- Added new functions plBayesianNetwork::compute_data_set_log_likelihood() and
+  plBayesianNetwork::compute_data_record_log_likelihood() 
+- Added new function
+  plBayesianNetwork::add_node(const std::string& name, const plType& type)
+- Added new function plIncompleteGammaCFunc 
+- Added new plIncompleteGamma
+- Added new function plBayesianNetwork::learned_parameters_number()
+- Added new function plVariablesConjunction::sort_by_name()
+- plBayesianNetwork: Added the possibility to perform non EM parameter
+  learning (using available values only), added functions
+  plBayesianNetwork::learn_parameters_em(),
+  plBayesianNetwork::learn_parameters_no_em()
+- plBayesianNetwork : return plVariablesConjunction instead of std::vector<plSymbol>
+  in functions returning node listes
+- Added function plVariablesConjunction::as_symbol_vector() 
+- Added new classes pl1DArray and pl2DArray to be used especially with binding
+- Added a cache and a verbose mode to plStructureLearner::GS() structure learning
+  algorithm
+- Added a flag to request or not compiled belief distribution
+  plBayesianNetwork::set_compiled_belief_distribution()
+- Added a function plKalmanFilter::set_greville_inversion_threshold() allowing to
+  customize the inversion threshold
+- Added plBayesianNetwork::apply_prediction(), validate_prediction(), learn_naive_bayes(),
+  learn_structure_tree_augmented_naive_bayes(), learn_structure(),
+  get_markov_blanket(),
+  and prediction()
+- Added a new plUKF class provinding a preliminary implemention of Unscented Kalman Filter
+
+IMPROVEMENTS in V2-4-0:
+
+- Added preliminary Java bindins
+- Make ProBT shared objects (e.g., types, symbols, functions, …) thread safe by using
+  atomic operations
+- Make plDisributionTable accept big cardinality and continuous variables as index
+- Make plEMLearner adjust the parameters for using approximate inference in the case
+  of continuous variables
+- Allow missing variables when calling plLearnObject::add_point(plValues) 
+- Added sanity checks (assert continuous variables) when constructing
+  multi-dimensional Normals
+- Set the default value of plKalmanFilter::greville_inversion_threshold() to
+  std::numeric_limits<plFloat>::min() instead of 1.0e-38
+- Better error message in plNormal when sizes do not match
+- plBayesianNetwork: added caches to speedup queries, added function
+  plBayesianNetwork::set_query_cache_max_size()

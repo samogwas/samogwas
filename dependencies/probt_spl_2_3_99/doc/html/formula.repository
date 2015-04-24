@@ -1,0 +1,184 @@
+\form#0:$ S_t $
+\form#1:$ S_{t-1} $
+\form#2:$ O_t $
+\form#3:$ A_t $
+\form#4:$ P(S_0) $
+\form#5:$ P(S_t ~|~ S_{t-1} A_t) $
+\form#6:$ P( O_t ~|~ S_t A_t) $
+\form#7:\[ P(S_{t-1} S_t O_t ~|~ A_t) = P(S_{t-1}) P(S_t ~|~ S_{t-1} A_t) P( O_t ~|~ S_t A_t) \]
+\form#8:$ A = \emptyset$
+\form#9:\[ P(S_{t-1} S_t O_t) = P(S_{t-1}) P(S_t ~|~ S_{t-1}) P( O_t ~|~ S_t) \]
+\form#10:$ P(S_t ~|~ S_{t-1} A_t) = Dirac(S_t, S_{t-1}) $
+\form#11:\[ P(S_t O_t ~|~ A_t) = P(S_t) P( O_t ~|~ S_t A_t) \]
+\form#12:\[ P(S_t O_t) = P(S_t) P( O_t ~|~ S_t) \]
+\form#13:\[ P(S_t ~|~A_t=a) = \sum_{S_{t-1}} P(S_{t-1}) P( S_t ~|~ S_{t-1} A_t=a) \]
+\form#14:$ S $
+\form#15:$ P(S_{t-1} S_t O_t ~|~ A_t) = P(S_{t-1}) P(S_t ~|~ S_{t-1} A_t) P(O_t ~|~ S_t A_t) $
+\form#16:$ P(S_0)$
+\form#17:$ P( O_t ~|~ S_t A_t)$
+\form#18:$ P(S_t ~|~A_t=a) $
+\form#19:$ P(S_t | O_t = o A_t = a) $
+\form#20:$ P(S_t | O_t = o) $
+\form#21:$ P(S_t) $
+\form#22:\[ P(X_{t} | X_{t-1} ) \]
+\form#23:\[ p(x) = \frac{\tau}{\sqrt{2 \pi}} e^{-\frac{\tau^2}{2} (x - \mu)^2} \]
+\form#24:\[ p(x) = (x - \mu)^{\alpha - 1} \frac{e^{-\frac{x - \mu}{\theta}}}{\theta^{\alpha} \Gamma(\alpha)} \]
+\form#25:\[ P(x) = \frac{1}{\sigma_{0}\sqrt{2 \pi}} e^{-\frac{-(x - \mu)^2}{2 \sigma_{0}^2} } \]
+\form#26:\[ P(k) = \frac{n!}{k! (n-k)!} p^k (1-p)^{n-k} \]
+\form#27:\[ p(x) = \frac{(x-a)^{p-1} (b-x)^{q-1}}{B(p, q) (b - a)^{p+q-1}} \]
+\form#28:\[ P(x) = \frac{1}{\beta} e^{-\frac{x}{\beta}} \]
+\form#29:\[ P(x) = (x - \mu)^{\alpha - 1} \frac{e^{-\frac{x - \mu}{\theta}}}{\theta^{\alpha} \Gamma(\alpha)} \]
+\form#30:\[ p(x) = \frac {\exp (- (\ln( (x-\theta)/m) )^2/(2 s^2))} { (x - \theta) s \sqrt{2 \pi}} \hspace{2cm} x \geq \theta; m, s > 0 \]
+\form#31:\[ p(x) = \frac{1}{\sigma \sqrt{2 \pi}} e^{-\frac{-(x - \mu)^2}{2 \sigma^2} } \]
+\form#32:\[ p_i = \frac {init\_alpha_i + n_i} {\sum_i init\_alpha_i + n_i}.\]
+\form#33:$ n_i $
+\form#34:$ [a; b] $
+\form#35:$ a < b$
+\form#36:\[ P(x; p, N) = \frac{ N!~p^x~(1-p)^{N-x} }{x!~(N-x)! } \]
+\form#37:\[ P(left\_variables) = \left\{ \begin{array}{ll} p & if~~ left\_variables = func(right\_variable) \\ 0 & otherwise \end{array} \right. \]
+\form#38:$ p = 1$
+\form#39:$ p = \infty $
+\form#40:$ \omega $
+\form#41:$ P(X) $
+\form#42:$ X $
+\form#43:$ X = X_1 X_2 $
+\form#44:$ X_1 $
+\form#45:$ X_2 $
+\form#46:$ 1 \cdots n_1 $
+\form#47:$ 1 \cdots n_2 $
+\form#48:$ P(X)$
+\form#49:$ P([X_1=1, X_2=1]) $
+\form#50:$ P([X_1=1, X_2=2]) $
+\form#51:$ n_2-1$
+\form#52:$ P([X_1=1, X_2=n_2]) $
+\form#53:$ n_2 $
+\form#54:$ P([X_1=2, X_2=1]) $
+\form#55:$ n_2+1 $
+\form#56:$ P([X_1=2, X_2=2]) $
+\form#57:$ 2 n_2 - 1 $
+\form#58:$ P([X_1=2, X_2=n_2]) $
+\form#59:$ n_1 n_2-1 $
+\form#60:$ P([X_1=n_1, X_2=n_2]) $
+\form#61:$ P(X_1 X_2 | Y_1 Y_2)$
+\form#62:\[ p(x; \alpha) = \frac{1}{\beta(\alpha)} \prod_{i=1}^{N} x_i^{\alpha_i-1}\]
+\form#63:\[ x_k = f( x_{k-1}, w_{k-1} ) \]
+\form#64:\[ p(w) = {\cal N}(0, Q) \]
+\form#65:\[ z_k = h( x_{k}, v_{k} ) \]
+\form#66:\[ p(v) = {\cal N}(0, R) \]
+\form#67:\[ \hat x^{-}_k = f(\hat x_{k-1}, 0) \]
+\form#68:\[ P^{-}_k = A_k P_{k-1} A_k^T + W_k Q W_k^T\]
+\form#69:\[ K_k = P^{-}_k H_k^T (H_k P^{-}_k H_k^T + V_k Ro V_k^T)^{-1} \]
+\form#70:\[ \hat x_k = \hat x^{-}_k + K_k (zo - h( \hat x^{-}_k, 0 ) ) \]
+\form#71:\[ P_k = (I - K_k H_k) P^{-}_k \]
+\form#72:\[ predicted\_state = f( x\_current\_estimation, 0) \]
+\form#73:\[ expected\_observation = h( x\_current\_estimation, 0) \]
+\form#74:$ A_k $
+\form#75:$ x_{k-1} $
+\form#76:\[ A_k = \frac {\partial f(.)}{\partial x_{k-1} }(x\_current\_estimation) \]
+\form#77:$ W_k $
+\form#78:$ w_{k-1} $
+\form#79:\[ W_k = \frac {\partial f(.)}{\partial w_{k-1} } (x\_current\_estimation) \]
+\form#80:$ H_k $
+\form#81:$ x_{k} $
+\form#82:\[ H_k = \frac {\partial h(.)}{\partial x_{k} } (x\_current\_estimation) \]
+\form#83:$ V_k $
+\form#84:$ v_{k} $
+\form#85:\[ V_k = \frac {\partial h(.)}{\partial v_{k} } (x\_current\_estimation) \]
+\form#86:\[ p(x) = \frac{1}{\beta} \exp\left( -\frac{x-\mu}{\beta}\right) \]
+\form#87:\[ igamma(a, x) = \frac {1} {\Gamma(a)} \int_0^x e^{-t} t^{a-1} dt. \]
+\form#88:\[ igammac(a, x) = 1 - igamma(a, x) = \frac {1} {\Gamma(a)} \int_x^{\infty} e^{-t} t^{a-1} dt. \]
+\form#89:$ \mu $
+\form#90:\begin{eqnarray*} ln(x+y) &=& \ln(x) + \ln(x+y) - \ln(x) \\ &=& \ln(x) + \ln\left(\frac{x+y}{x}\right) \\ &=& \ln(x) + \ln\left(1 + \frac{y}{x}\right) \\ &=& \ln(x) + \ln\left(1 + e^{ \ln(\frac{y}{x})}\right) \\ &=& \ln(x) + \ln\left(1 + e^{ \ln(y) - \ln(x)}\right) \\ \end{eqnarray*}
+\form#91:$x$
+\form#92:$y$
+\form#93:$S$
+\form#94:$O$
+\form#95:$ P(S_t | S_{t-1}) $
+\form#96:$ P( O_t | S_t) $
+\form#97:$ P(O_x O_y | S) = P(O_x | S) P(O_y | S) $
+\form#98:$ P(O_x O_y | S) = P(O_x | S) P(O_y | S O_x) $
+\form#99:$ P(O_x O_y | S) = P(O_x | S) P(O_y | O_x) $
+\form#100:\[ x_k = A x_{k-1} + B u_k + w_{k-1} \]
+\form#101:\[ z_k = H x_{k} + v_{k} \]
+\form#102:\[ \hat x^{-}_k = A \hat x_{k-1} + B u_k \]
+\form#103:\[ P^{-}_k = A P_{k-1} A^T + Q \]
+\form#104:\[ K_k = P^{-}_k H^T (H P^{-}_k H^T + R)^{-1} \]
+\form#105:\[ \hat x_k = \hat x^{-}_k + K_k (z_k - H_k \hat x^{-}_k ) \]
+\form#106:\[ P_k = (I - K_k H) P^{-}_k \]
+\form#107:\[ p_i = \frac {1 + n_i} {\sum_i 1 + n_i}.\]
+\form#108:$ \alpha $
+\form#109:\[ p_i = \frac {\alpha + n_i} { \sum_i \alpha + n_i}.\]
+\form#110:$Y$
+\form#111:$ n $
+\form#112:$X_1, \cdots,X_n $
+\form#113:\[ p(Y~|~X_1=x_1,\cdots,X_n=x_n) = Normal(y, mean(x_1, ...,x_n), \sigma),\]
+\form#114:\[ mean(x_1, \cdots,x_n) = \sum_{i=1}^n \beta_i \times x_i + \beta_{n+1},\]
+\form#115:$ \sigma $
+\form#116:$\beta$
+\form#117:$ A $
+\form#118:$ N_A $
+\form#119:$C$
+\form#120:$A_1, \cdots,A_n $
+\form#121:$B_1, \cdots,B_n $
+\form#122:$ P(B_i~|~ A_i)$
+\form#123:\[ P(C=0~|~A_1=a_1,\cdots,A_n=a_n) = \prod_{i=1}^{n} P(B_i=0~|~A_i=a_i). \]
+\form#124:$ P(B_i = 0~|~A_i = a_i^j)$
+\form#125:$ i = 1,\cdots,n; j = 1,\cdots,card(A_i) $
+\form#126:$ A_i, i=1,\cdots,n$
+\form#127:$m$
+\form#128:\[ \log \frac {P(C=k~|~A_1=a_1,\cdots,A_n=a_n)} {P(C>k~|~A_1=a_1,\cdots,A_n=a_n)} = \sum_{i=1}^n \beta_i^k \times a_i + \beta_{n+1}^k, k=0,\cdots, m-2,\]
+\form#129:\[P(C=m-1~|~A_1=a_1,\cdots,A_n=a_n) = 1 - \sum_{k=0}^{m-2} P(C=k~|~A_1=a_1,\cdots,A_n=a_n). \]
+\form#130:\[ P(C=0~|~A_1=a_1,\cdots,A_n=a_n) = P_0(A) = Sigmoid( z\left(A, \beta^0 ) \right),\]
+\form#131:\[ P(C=k~|~A_1=a_1,\cdots,A_n=a_n) = P_k(A) = \left[ 1 - \sum_{i=0}^{k-1} P_i(A) \right] \times Sigmoid( z\left(A, \beta^k ) \right), k=0,\cdots, m-2,\]
+\form#132:\[ P(C=m-1~|~A_1=a_1,\cdots,A_n=a_n) = P_{m-1}(A) = 1 - \sum_{i=0}^{m-2} P_i(A), \]
+\form#133:\[ z(A, \beta^k) = \sum_{i=1}^n \beta_i^k \times a_i + \beta_{n+1}^k, \]
+\form#134:\[ Sigmoid(t) = \frac {1} {1+\exp(-t)}. \]
+\form#135:\[ mean(x_1, \cdots,x_n) = \sum_{i=1}^n \beta_i \times x_i + \beta_{n+1}.\]
+\form#136:$ \beta $
+\form#137:$ Y = ln(X) $
+\form#138:\[ p(x) = \frac {\exp (- (\ln( (x-\theta)/m) )^2/(2 \sigma^2))} { (x - \theta) \sigma \sqrt{2 \pi}} \hspace{2cm} x \geq \theta; m, \sigma > 0 \]
+\form#139:$ \theta $
+\form#140:$ \theta = 0 $
+\form#141:$ Y = LN( (X - \theta)/m ) $
+\form#142:$ A_i, i=0..n-1$
+\form#143:\[ \delta = x^0 .. x^n \]
+\form#144:\[ p(x; \mu, \Sigma) = \frac {1} {\sqrt{|\Sigma|} (2\pi)^{N/2}} \exp\left( -0.5 (x-\mu) \Sigma^{-1} (x-\mu)^T \right) \]
+\form#145:\[ p(x; \mu, \sigma) = \frac {1} {\sigma \sqrt{2\pi} } \exp\left( - \frac{(x-\mu)^2}{2\sigma^2} \right) \]
+\form#146:\[ p(x_k~|~z_0, \cdots, z_k), \]
+\form#147:\[ \left\{ \left(w_k^{(L)}, x_k^{(L)} \right) : L = 1,\cdots, P \right\}. \]
+\form#148:$ w_k^{(L)} $
+\form#149:$ \sum_{L=1}^{P} w_k^{(L)} = 1 $
+\form#150:\[ \pi(x_k~|~x_{0:k-1}, z_{0:k}). \]
+\form#151:\[\pi(x_k~|~x_{0:k-1}, z_{0:k}) = p(x_k~|~x_{k-1}, z_k). \]
+\form#152:\[\pi(x_k~|~x_{0:k-1}, z_{0:k}) = p(x_k~|~x_{k-1}). \]
+\form#153:$ L = 1,\cdots, P $
+\form#154:\[ x_k^{(L)} \sim \pi(x_k~|~x_{0:k-1}^{(L)}, z_{0:k}). \]
+\form#155:\[ \hat w_k^{(L)} = w_{k-1}^{(L)} \frac {p(x_k^{(L)}~|~x_{k-1}^{(L)})~p(z_k~|~x_k^{(L)})} {\pi(x_k^{(L)}~|~x_{0:k-1}^{(L)}, z_{0:k})}. \]
+\form#156:\[ w_k^{(L)} = \frac {\hat w_k^{(L)}} {\sum_{J=1}^P \hat w_k^{(J)}}. \]
+\form#157:\[ \hat N_{eff} = \frac 1 {\sum_{L=1}^P \left( w_k^{(L)} \right)^2}. \]
+\form#158:$ \hat N_{eff} < N_{thr} $
+\form#159:$ P $
+\form#160:$ w_k^{(L)} = 1/P $
+\form#161:$ p(z_k~|~x_k) $
+\form#162:$ p(x_k~|~x_{k-1}) $
+\form#163:$ N_{thr} $
+\form#164:$ \pi(x_k~|~x_{0:k-1}, z_{0:k}) $
+\form#165:$ z_k $
+\form#166:$ x_k $
+\form#167:$x_{k-1} $
+\form#168:$ x_{0:k-2} $
+\form#169:$ z_{0:k} $
+\form#170:$ p(x_k~|~z_0, \cdots, z_k) $
+\form#171:$ \pi(x_k~|~x_{0:k-1}, z_{0:k}) = p(x_k~|~x_{k-1}) $
+\form#172:\[ x_k = f( x_{k-1} ) + w_{k-1}\]
+\form#173:\[ z_k = h( x_{k}) + v_{k} \]
+\form#174:\[ predicted\_state = f( state, 0) \]
+\form#175:\[ expected\_observation = h( state, 0) \]
+\form#176:\[ p(x; \mu, k) = \frac {\exp \left( k \times cos(x - \mu) \right)} {2 \pi I_0(k)} \]
+\form#177:\[ p(x; \mu, k) = \frac {\exp(k \times cos(x - \mu))} {2 \pi I_0(k)} \]
+\form#178:$ \gamma $
+\form#179:$ x > \mu $
+\form#180:\[ p(x) = \frac{\gamma}{\alpha} \left( \frac{x-\mu}{\alpha} \right)^{\gamma-1}\exp\left( -\left(\frac{x-\mu}{\alpha} \right)^\gamma \right) \]
+\form#181:$ \mu = 0 $
+\form#182:$ \alpha = 1 $
+\form#183:$ \lambda $

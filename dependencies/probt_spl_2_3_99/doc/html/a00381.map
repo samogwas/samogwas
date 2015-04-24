@@ -1,0 +1,7 @@
+<map id="plBayesLearnLogNormalWithKnownShape" name="plBayesLearnLogNormalWithKnownShape">
+<area shape="rect" id="node2" href="$a00014.html" title="This is the base class of all non&#45;conditional incremental (adaptive) learning objects using a Bayesia..." alt="" coords="31,304,169,331"/>
+<area shape="rect" id="node3" href="$a00121.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects. " alt="" coords="25,229,175,256"/>
+<area shape="rect" id="node4" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="49,155,151,181"/>
+<area shape="rect" id="node5" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="63,80,136,107"/>
+<area shape="rect" id="node6" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="65,5,135,32"/>
+</map>

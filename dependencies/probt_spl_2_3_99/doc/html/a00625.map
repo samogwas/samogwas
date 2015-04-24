@@ -1,0 +1,12 @@
+<map id="plLearnLaplace" name="plLearnLaplace">
+<area shape="rect" id="node2" href="$a00096.html" title="This class allows to make a Bayesian estimation of multinomial (ProbTable) distributions using Lidsto..." alt="" coords="203,595,316,621"/>
+<area shape="rect" id="node3" href="$a00016.html" title="This class allows to make a Bayesian estimation of multinomial (ProbTable) distributions using Multin..." alt="" coords="180,517,339,544"/>
+<area shape="rect" id="node4" href="$a00014.html" title="This is the base class of all non&#45;conditional incremental (adaptive) learning objects using a Bayesia..." alt="" coords="99,440,237,467"/>
+<area shape="rect" id="node5" href="$a00121.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects. " alt="" coords="81,363,231,389"/>
+<area shape="rect" id="node6" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="105,285,207,312"/>
+<area shape="rect" id="node7" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="5,133,79,160"/>
+<area shape="rect" id="node8" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="43,5,113,32"/>
+<area shape="rect" id="node10" href="$a00132.html" title="A State Space Object. " alt="" coords="81,83,231,109"/>
+<area shape="rect" id="node9" href="$a00150.html" title="The plVariablesConjunction class implements the conjunction of a set of variables. " alt="" coords="79,184,232,211"/>
+<area shape="rect" id="node11" href="$a00149.html" title="Helper class for indexing the values of a discrete/discretized variable conjunction. " alt="" coords="251,235,373,261"/>
+</map>

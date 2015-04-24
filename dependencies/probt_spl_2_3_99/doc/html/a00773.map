@@ -1,0 +1,8 @@
+<map id="plVariablesConjunction" name="plVariablesConjunction">
+<area shape="rect" id="node4" href="$a00004.html" title="Implements single&#45;type multidimensional variable arrays. " alt="" coords="66,229,128,256"/>
+<area shape="rect" id="node7" href="$a00140.html" title="A plSymbol is a set containing one and only one unidimensional variable. " alt="" coords="153,229,228,256"/>
+<area shape="rect" id="node2" href="$a00132.html" title="A State Space Object. " alt="" coords="69,80,219,107"/>
+<area shape="rect" id="node3" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="109,5,179,32"/>
+<area shape="rect" id="node5" href="$a00001.html" title="Implements single&#45;type one&#45;dimensional variable arrays. " alt="" coords="5,304,84,331"/>
+<area shape="rect" id="node6" href="$a00002.html" title="Implements single&#45;type two&#45;dimensional variable arrays. " alt="" coords="109,304,188,331"/>
+</map>

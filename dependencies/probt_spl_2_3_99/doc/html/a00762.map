@@ -1,0 +1,9 @@
+<map id="plUserFunction" name="plUserFunction">
+<area shape="rect" id="node3" href="$a00065.html" title="A function defined by the user, generaly used to define a plCndDeterministic. " alt="" coords="52,155,181,181"/>
+<area shape="rect" id="node6" href="$a00069.html" title="A function defined by the user to be used as a probability or a density function. ..." alt="" coords="232,155,389,181"/>
+<area shape="rect" id="node2" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="166,5,236,32"/>
+<area shape="rect" id="node4" href="$a00067.html" title="A special kind of plExternalFunction defined by dynamically compiling source code provided by the use..." alt="" coords="5,237,205,264"/>
+<area shape="rect" id="node5" href="$a00066.html" title="A special kind of plExternalFunction defined by dynamically compiling C source code provided by the u..." alt="" coords="20,320,191,347"/>
+<area shape="rect" id="node7" href="$a00071.html" title="A special kind of plExternalProbFunction defined by dynamically compiling source code provided by the..." alt="" coords="231,230,417,271"/>
+<area shape="rect" id="node8" href="$a00070.html" title="A special kind of plExternalProbFunction defined by dynamically compiling C source code provided by t..." alt="" coords="225,320,423,347"/>
+</map>

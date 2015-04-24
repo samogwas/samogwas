@@ -1,0 +1,7 @@
+<map id="plLearnGamma" name="plLearnGamma">
+<area shape="rect" id="node2" href="$a00111.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects using the Maxim..." alt="" coords="20,304,140,331"/>
+<area shape="rect" id="node3" href="$a00121.html" title="This is the base class of all Non&#45;conditional incremental (adaptive) learning objects. " alt="" coords="5,229,155,256"/>
+<area shape="rect" id="node4" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="29,155,131,181"/>
+<area shape="rect" id="node5" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="43,80,116,107"/>
+<area shape="rect" id="node6" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="45,5,115,32"/>
+</map>

@@ -1,0 +1,6 @@
+<map id="plLearnSoftmaxFamily" name="plLearnSoftmaxFamily">
+<area shape="rect" id="node2" href="$a00086.html" title="This is an abstract class for all conditional learning objects. " alt="" coords="18,229,144,256"/>
+<area shape="rect" id="node3" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="30,155,132,181"/>
+<area shape="rect" id="node4" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="44,80,117,107"/>
+<area shape="rect" id="node5" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="46,5,116,32"/>
+</map>

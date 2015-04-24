@@ -1,0 +1,12 @@
+<map id="plLearnCndObject" name="plLearnCndObject">
+<area shape="rect" id="node5" href="$a00087.html" title="This class implements conditional learning objects as a map. " alt="" coords="597,5,760,32"/>
+<area shape="rect" id="node7" href="$a00097.html" title="This implements the learning part of the linear regression model (aka Linear Gaussian). " alt="" coords="596,56,761,83"/>
+<area shape="rect" id="node8" href="$a00098.html" title="Implements a family of linear regressions (over a set of quantitative variables), indexed by a set of..." alt="" coords="577,107,781,133"/>
+<area shape="rect" id="node9" href="$a00102.html" title="This class implements the learning part of the NoisyOR discrimination model. " alt="" coords="619,157,738,184"/>
+<area shape="rect" id="node10" href="$a00105.html" title="This implements the learning part of the Softmax (aka multinomial logistic or multinomial logit) regr..." alt="" coords="622,208,735,235"/>
+<area shape="rect" id="node11" href="$a00106.html" title="Implements a family of softmax regressions (over a set of quantitative variables), indexed by a set of categorical variables. " alt="" coords="603,259,755,285"/>
+<area shape="rect" id="node2" href="$a00103.html" title="This is the base class of all incremental (adaptive) learning objects. " alt="" coords="249,132,351,159"/>
+<area shape="rect" id="node3" href="$a00089.html" title="This is the base class of all learning objects. " alt="" coords="125,132,200,159"/>
+<area shape="rect" id="node4" href="$a00123.html" title="Used as the base class of all ProBT API objects. " alt="" coords="6,132,77,159"/>
+<area shape="rect" id="node6" href="$a00028.html" title="This template class implements conditional learning objects. " alt="" coords="830,5,989,32"/>
+</map>
