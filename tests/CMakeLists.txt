@@ -1,3 +1,4 @@
+add_compile_options(-std=c++11 -O5 -fPIC -fopenmp -mtune=corei7-avx) # 2b safe
 
 ENABLE_TESTING()
 
