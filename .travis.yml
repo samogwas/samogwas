@@ -24,7 +24,7 @@ install:
   - tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
   - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=filesystem,system,regex,program_options)
   - (cd $BOOST_ROOT; ./b2 link=static threading=multi --prefix=$BOOST_ROOT -d0 install)
-  - sudo dpkg -S /usr/include/boost/version.hpp
+
 
 # test test test
 script: 
