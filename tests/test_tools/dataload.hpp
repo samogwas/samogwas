@@ -43,7 +43,6 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
     printf("file data %s not existing\n", infile.c_str());
     exit(-1);
   }
-  std::cout << "loading data" << std::endl << std::endl;
 
   dt->reserve(10000);
 
@@ -60,7 +59,6 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
-  std::cout << "done loading matrix of (" << dt->size() << "," << ncols << ")" << std::endl << std::endl;
 
   return dt;
 }
@@ -76,8 +74,6 @@ inline PtrMatrixPtr loadDataTable( const std::string& infile,
     printf("file data %s not existing\n", infile.c_str());
     exit(-1);
   }
-  std::cout << "loading data" << std::endl << std::endl;
-
   dt->reserve(200000);
 
   utility::CSVIterator<int> matrixLine(matrixFile);
@@ -94,7 +90,6 @@ inline PtrMatrixPtr loadDataTable( const std::string& infile,
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
-  std::cout << "done loading matrix of (" << dt->size() << "," << ncols << ")" << std::endl << std::endl;
 
   return dt;
 }

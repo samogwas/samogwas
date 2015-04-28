@@ -16,7 +16,6 @@
 
 #include <fstream>
 
-
 namespace samogwas_test
 {
 

@@ -40,10 +40,7 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
     printf("file data %s not existing\n", infile.c_str());
     exit(-1);
   }
-  std::cout << "loading data" << std::endl << std::endl;
-
   dt->reserve(10000);
-
   utility::CSVIterator<double> matrixLine(matrixFile);
   
   for( ; matrixLine != utility::CSVIterator<double>(); ++matrixLine ) {         
@@ -56,8 +53,6 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0].size();
-  std::cout << "done loading matrix of (" << dt->size() << "," << ncols << ")" << std::endl << std::endl;
-
   return dt;
 }
 
@@ -72,8 +67,6 @@ inline MatrixPtr loadDataTable( const std::string& infile,
     printf("file data %s not existing\n", infile.c_str());
     exit(-1);
   }
-  std::cout << "loading data" << std::endl << std::endl;
-
   dt->reserve(200000);
 
   utility::CSVIterator<int> matrixLine(matrixFile);
@@ -88,7 +81,6 @@ inline MatrixPtr loadDataTable( const std::string& infile,
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0].size();
-  std::cout << "done loading matrix of (" << dt->size() << "," << ncols << ")" << std::endl << std::endl;
 
   return dt;
 }
@@ -102,7 +94,6 @@ inline void loadLabelPosition( std::vector< std::string > & labels,
     printf("file lab-post %s not existing\n", infile.c_str());
     exit(-1);
   }
-  printf("beginning loading label...\n");
   std::vector<std::string>().swap(labels); //lab2Pos.clear();
   std::vector<int>().swap(positions); //.clear();
   utility::CSVIterator<std::string> labPosLine(labPosFile);// ++labPosLine;
@@ -116,7 +107,6 @@ inline void loadLabelPosition( std::vector< std::string > & labels,
     positions.push_back(position);
   }
 
-  std::cout << "done loading. loaded " << labels.size() << " variables.\n";
 }
 
 inline void loadLabelPosition2( std::vector< std::string > & labels,
@@ -128,7 +118,6 @@ inline void loadLabelPosition2( std::vector< std::string > & labels,
     printf("file lab-post %s not existing\n", infile.c_str());
     exit(-1);
   }
-  printf("beginning loading label now...\n");
   std::vector<std::string>().swap(labels); //lab2Pos.clear();
   std::vector<int>().swap(positions); //.clear();
   utility::CSVIterator<std::string> labPosLine(labPosFile);// ++labPosLine;
@@ -144,7 +133,6 @@ inline void loadLabelPosition2( std::vector< std::string > & labels,
     positions.push_back(position);
   }
 
-  std::cout << "done loading. loaded " << labels.size() << " variables.\n";
 }
 
 } // namespace clusteringends here. clustering

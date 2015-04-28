@@ -11,6 +11,7 @@
 #include <boost/random.hpp>
 #include <boost/random/normal_distribution.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 #include "graph/graph.hpp"
 #include "graph/graph_mut_info.hpp"
@@ -22,6 +23,8 @@
 
 using namespace samogwas;
 using namespace samogwas_test;
+namespace fs = boost::filesystem;
+
 typedef plSymbol RandVar;
 
 BOOST_AUTO_TEST_SUITE( Graph_Suite )
@@ -305,7 +308,8 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Lat_Lat ) {
 
 //////////////////////////////////////////////////////////////
 BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Indp ) {
-  auto mat = *loadDataTable("graph/obs_obs_ind.csv");
+
+  auto mat = *loadDataTable("../tests/data/graph/obs_obs_ind.csv");
   BOOST_CHECK_EQUAL(mat.size(), 2);
   BOOST_CHECK_EQUAL(mat[0]->size(), 50000);
 
@@ -333,7 +337,7 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Indp ) {
 
 
 BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Inp ) {
-  auto mat = *loadDataTable("graph/obs_obs_dep.csv");
+  auto mat = *loadDataTable("../tests/data/graph/obs_obs_dep.csv");
   BOOST_CHECK_EQUAL(mat.size(), 2);
   BOOST_CHECK_EQUAL(mat[0]->size(), 50000);
 
@@ -363,12 +367,12 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Inp ) {
 // //############################ create a fake latent
 BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Latent_Inp ) {
   int N = 50000;
-  auto dat_X = *loadDataTable("graph/obs_latent_no_relation_X.csv");
-  auto dat_Y = *loadDataTable("graph/obs_latent_no_relation_X.csv");
+  auto dat_X = *loadDataTable("../tests/data/graph/obs_latent_no_relation_X.csv");
+  auto dat_Y = *loadDataTable("../tests/data/graph/obs_latent_no_relation_X.csv");
 
   BOOST_CHECK_EQUAL(dat_X.size(), 1);
   BOOST_CHECK_EQUAL(dat_X[0]->size(), N);
-  auto dat_Z = *loadRealDataTable("graph/obs_latent_no_relation_Y.csv");
+  auto dat_Z = *loadRealDataTable("../tests/data/graph/obs_latent_no_relation_Y.csv");
   BOOST_CHECK_EQUAL(dat_Z.size(), 1);
   BOOST_CHECK_EQUAL(dat_Z[0]->size(), N*2);
 
