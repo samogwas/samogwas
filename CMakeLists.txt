@@ -13,7 +13,8 @@ add_compile_options(-std=c++0x -O5 -fPIC -fopenmp -mtune=corei7-avx) # 2b safe
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)  
-set(Boost_USE_STATIC_RUNTIME ON) 
+set(Boost_USE_STATIC_RUNTIME OFF) 
+set(LIBS ${LIBS} ${Boost_LIBRARIES})
 find_package(Boost 1.55 COMPONENTS system regex filesystem program_options log REQUIRED )
 
 #probt
@@ -22,7 +23,8 @@ set(ProBT_INCLUDE_DIR "${LIB_DIR}/probt_spl_2_3_99/include/")
 set(ProBT_LIBRARY_DIR "${LIB_DIR}/probt_spl_2_3_99/lib/" )
 
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}" ${Boost_INCLUDE_DIRS} "${ProBT_INCLUDE_DIR}")
-link_directories( ${ProBT_LIBRARY_DIR})
+MESSAGE(${Boost_INCLUDE_DIRS})
+link_directories( ${ProBT_LIBRARY_DIR} ${LIBS} )
 
 # test related
 include(CTest)
