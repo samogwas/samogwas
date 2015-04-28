@@ -13,7 +13,7 @@ add_compile_options(-std=c++0x -O5 -fPIC -fopenmp -mtune=corei7-avx) # 2b safe
 
 ### DEPENDENCIES
 # boost
-find_package(Boost 1.54 REQUIRED COMPONENTS filesystem regex log )
+find_package(Boost 1.55 COMPONENTS system regex filesystem program_options log REQUIRED )
 
 #probt
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/dependencies/" )

@@ -16,16 +16,14 @@ before_install:
 
 
 install:
-  # Install newer boost compatible with gcc 4.8.
-  - wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+  # Install boost
+  - wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.56.0/boost_1_56_0.tar.bz2/download
   - export BOOST_ROOT="$TRAVIS_BUILD_DIR/../boost-trunk"
   - export CMAKE_MODULE_PATH="$BOOST_ROOT"
   - mkdir -p $BOOST_ROOT
   - tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
-  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=date_time,filesystem,system,iostreams,regex,python,test,log,thread)
-  - (cd $BOOST_ROOT; ./b2 -j4 threading=multi --prefix=$BOOST_ROOT -d0 install)
-
-  - sudo apt-get install libboost-dev libboost-thread-dev libboost-regex-dev libboost-system-dev libboost-test-dev libboost-thread-dev
+  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=filesystem,system,regex,program_options)
+  - (cd $BOOST_ROOT; ./b2 link=static threading=multi --prefix=$BOOST_ROOT -d0 install)
   - sudo dpkg -S /usr/include/boost/version.hpp
 
 # test test test
