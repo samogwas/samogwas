@@ -25,7 +25,12 @@ set(ProBT_LIBRARY_DIR "${LIB_DIR}/probt_spl_2_3_99/lib/" )
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${Boost_INCLUDE_DIRS}" "${ProBT_INCLUDE_DIR}"  
   "${PROJECT_SOURCE_DIR}/core/include" )
 
+link_directories("${LIB_DIR}/probt_spl_2_3_99/lib/")
+
 add_subdirectory(core)
+
+add_subdirectory(apps)
+
 # test related
 include(CTest)
 add_subdirectory(tests)
