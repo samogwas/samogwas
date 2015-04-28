@@ -1,4 +1,4 @@
-add_compile_options(-std=c++11 -O5 -fPIC -fopenmp -mtune=corei7-avx) # 2b safe
+add_compile_options(-std=c++11 -fopenmp -mtune=corei7-avx) # 2b safe
 
 ENABLE_TESTING()
 
@@ -20,11 +20,13 @@ include_directories(
 file(GLOB_RECURSE TESTS ./* )
 file(GLOB_RECURSE SOURCE "${PROJECT_SOURCE_DIR}/core/src/*.cpp" )
 
+link_directories("${LIB_DIR}/probt_spl_2_3_99/lib/")
+
 add_boost_test( samogwas_test_suite
     SOURCES ${TESTS} ${SOURCE}
     LIBRARIES spl boost_system boost_filesystem	boost_log boost_thread rt
     TESTS
     Test_Clustering_Test/test_case1
-    sTest_Statistics_Test/test_case1
+    Test_Statistics_Test/test_case1
 )
 
