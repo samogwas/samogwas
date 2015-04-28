@@ -9,8 +9,9 @@ before_install:
   - sudo add-apt-repository --yes ppa:kalakris/cmake
   - sudo apt-get update -qq
   - if [ "$CXX" = "g++" ]; then sudo apt-get install -qq g++-4.8; fi
-  - if [ "$CXX" = "g++" ]; then export CC="gcc-4.8" CXX="g++-4.8"; fi
-  - export CXX="g++-4.8"
+  - if [ "$CXX" == "g++" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 50; fi
+  - if [ "$CXX" = "g++" ]; then export CC="gcc-4.8" CXX="g++-4.8"; 
+
   - sudo apt-get install -yqq git cmake autoconf libtool python-dev
 
 
