@@ -29,12 +29,12 @@ install:
 # test test test
 script: 
   - $CXX --version
-  - mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~
+  - mkdir -p build && cd build && cmake .. -DBOOST_ROOT=$BOOST_ROOT -DCMAKE_INSTALL_PREFIX:PATH=~
   - make -j7 
   - ./tests/boosttest-tests-samogwas_test_suite 
 
 notifications:
-  email:
+  email: 
     recipients: 
       - license.to.kill.dr.no@gmail.com
       - jules.teulade@gmail.com
