@@ -15,7 +15,7 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)  
 #$set(Boost_USE_STATIC_RUNTIME OFF) 
 
-find_package(Boost 1.55 COMPONENTS system regex filesystem program_options log REQUIRED )
+find_package(Boost 1.55 COMPONENTS  log log_setup  system regex filesystem program_options thread REQUIRED )
 
 #probt
 set(LIB_DIR "${PROJECT_SOURCE_DIR}/dependencies/" )
