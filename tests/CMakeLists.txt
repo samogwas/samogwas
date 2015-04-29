@@ -1,4 +1,4 @@
-add_compile_options(-std=c++11 -fopenmp -mtune=corei7-avx) # 2b safe
+add_compile_options(-std=c++11 -fopenmp -mtune=corei7-avx -pthread) # 2b safe
 
 ENABLE_TESTING()
 
@@ -22,7 +22,7 @@ file(GLOB_RECURSE SOURCE "${PROJECT_SOURCE_DIR}/core/src/*.cpp" )
 
 add_boost_test( samogwas_test_suite
     SOURCES ${TESTS} ${SOURCE}
-    LIBRARIES spl  boost_system boost_filesystem boost_log boost_thread rt
+    LIBRARIES spl  boost_system boost_filesystem boost_log boost_thread rt pthread
     TESTS
     Test_Clustering_Test/test_case1
     Test_Statistics_Test/test_case1
