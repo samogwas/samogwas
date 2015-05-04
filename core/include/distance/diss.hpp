@@ -13,6 +13,7 @@
 
 #include "simi.hpp"
 
+#include "distance_common.hpp"
 namespace samogwas
 {
 
@@ -23,6 +24,10 @@ struct GraphDissimilarity {
   virtual void invalidate_entropy_cache() = 0;
   virtual GraphDissimilarity& set_criteria(CriteriaPtr c) { criteria = c; return *this; }
   virtual size_t nbr_variables() const = 0;
+
+  // virtual void precompute_all();
+
+  virtual ~GraphDissimilarity() {}
   
  protected:  
   GraphPtr graph;
@@ -44,6 +49,16 @@ struct GraphMutInfoDissimilarity: public GraphDissimilarity {
   }
   virtual GraphDissimilarity& set_criteria(CriteriaPtr c) { simi.set_criteria(c); return *this; }
   virtual size_t nbr_variables() const { return simi.nbr_variables(); }
+
+
+  // virtual void precompute_all() {
+  //   for ( size_t a = 0; a < l2g->size(); ++a) {
+  //     for ( size_t b = a+1; b < l2g->size(); ++b ) {
+        
+  //     }
+  //   }
+  // }
+  
 
  private:
   GraphMutInfoSimilarity simi;

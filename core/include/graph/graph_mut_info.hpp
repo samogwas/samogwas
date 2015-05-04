@@ -9,7 +9,9 @@
 #define NOVO_GRAPH_MUT_INFO_HPP
 
 #include "graph.hpp"
-#include "pl.h"
+#include "statistics/entropy.hpp"
+#include <pl.h>
+#include <cmath>
 
 namespace samogwas
 {
@@ -21,6 +23,21 @@ typedef std::shared_ptr<VecT> VecPtr;
 typedef std::shared_ptr<ProbVecT> ProVecPtr;
 
 struct ComputeNodeJointEntropy {
+
+  static inline double sum_log_count(double &total, double val)
+  {
+    if (val > 0) {
+      return total + val*log(val);
+    } else {
+      return total;
+    }
+  }
+
+  static inline double compute_entropy_from_joint_tab( std::vector<double>& jointTab, size_t SIZE ) {
+    return log(SIZE) - 1.0/SIZE*std::accumulate( jointTab.begin(), jointTab.end(),
+                                        0.0, sum_log_count);
+  }
+
   
   /////////////////////////////////////////////////////////////
   double compute(const Node& nA, const Node& nB) const {
@@ -39,20 +56,24 @@ struct ComputeNodeJointEntropy {
 
   double compute_leaf_leaf(const Node& nA, const Node& nB,
                            const VecT& dVecA, const VecT& dVecB) const {
-    auto jt = create_joint_tab_leaf_leaf(nA,nB,dVecA,dVecB);
-    return compute_from_joint_tab(jt);
+    auto jointTab = create_joint_table_leaf_leaf(nA,nB,dVecA,dVecB);
+    auto SIZE =  dVecA.size();
+    return compute_entropy_from_joint_tab(jointTab, SIZE);
   }
 
   double compute_leaf_latent(const Node& nA, const Node& nB,
                              const VecT& dVecA, const ProbVecT& dVecB) const {
-    auto jt = create_joint_tab_leaf_latent(nA,nB,dVecA,dVecB);
-    return compute_from_joint_tab(jt);
+    auto jt = create_joint_table_leaf_latent(nA,nB,dVecA,dVecB);
+    auto SIZE =  dVecA.size();
+    return compute_entropy_from_joint_tab(jt, SIZE);
   }
 
   double compute_latent_latent(const Node& nA, const Node& nB,
                                const ProbVecT& dVecA, const ProbVecT& dVecB) const {
-    auto jt = create_joint_tab_latent_latent(nA,nB,dVecA,dVecB);
-    return compute_from_joint_tab(jt);
+    auto jt = create_joint_table_latent_latent(nA,nB,dVecA,dVecB);
+    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
+    auto SIZE = dVecA.size()/nA.cardinality();
+    return compute_entropy_from_joint_tab(jt, SIZE);
   }
 
   //////////////  
@@ -70,8 +91,101 @@ struct ComputeNodeJointEntropy {
     return rs;
   }
 
+  static std::vector<double> create_joint_table_leaf_leaf(const Node& nA, const Node& nB,
+                                                 const VecT& dVecA, const VecT& dVecB ) {
+    assert((nA.level == nB.level) && (nA.level == 0));
+
+    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
+    int MAX_CARD = std::max(CARD_A, CARD_B);
+    std::vector<double> jointTab(MAX_CARD*MAX_CARD, 0);
+    auto SIZE =  dVecA.size();
+    for (int i = 0; i < SIZE; ++i) {
+      auto vA = dVecA.at(i), vB = dVecB.at(i);
+      auto commonIdx = MAX_CARD*vA+vB;
+      jointTab[commonIdx] += 1.0;
+    }
+    return jointTab;
+  }
+
+  static std::vector<double> create_joint_table_leaf_latent( const Node& nA, const Node& nB,
+                                                    const VecT& dVecA, const ProbVecT& dVecB) {
+    assert(nA.level < nB.level);
+    auto SIZE =  dVecA.size();
+    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
+    int MAX_CARD = std::max(CARD_A, CARD_B);
+    std::vector<double> jointTab(MAX_CARD*MAX_CARD, 0);
+    
+    // JointProbTab jointTab(CARD_A, std::vector<double>(CARD_B,0.0));
+    // auto sz = dVecA.size();
+    if (nB.is_parent_of(nA)) {
+      for (int a = 0; a < CARD_A; ++a) {
+        for (int b = 0; b < CARD_B; ++b) {
+          auto commonIdx = MAX_CARD*a+b;
+          jointTab[commonIdx] = nB.compute_cond_prob(nA,a,b)*nB.compute_prob(b)*SIZE;
+        }
+      }
+    } else {
+      for (int i=0;i< SIZE ;++i) {
+        int a = dVecA[i];         
+        for (int b = 0; b < CARD_B; ++b) {
+          auto commonIdx = MAX_CARD*a+b;
+          jointTab[commonIdx] += dVecB[i*CARD_B+b];
+        }
+      }     
+      // for (int a = 0; a < CARD_A; ++a) {
+      //   for (int b = 0; b < CARD_B; ++b) {
+          
+      //     auto commonIdx = MAX_CARD*a+b;
+      //     jointTab[commonIdx] /= SIZE;
+      //     // jointTab[commonIdx] += dVecB[i*CARD_B+b];
+      //   }
+      // }
+    } // for
+
+    return jointTab;
+  }  
+
+  static std::vector<double> create_joint_table_latent_latent( const Node& nA, const Node& nB,
+                                                    const ProbVecT& dVecA, const ProbVecT& dVecB) {
+    //assert(nA.level < nB.level);
+    if (nA.level < nB.level) return create_joint_table_latent_latent(nB,nA,dVecB,dVecA);
+    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
+    int MAX_CARD = std::max(CARD_A, CARD_B);
+    std::vector<double> jointTab(MAX_CARD*MAX_CARD, 0);
+    auto SIZE = dVecA.size()/nA.cardinality();
+    if (nB.is_parent_of(nA)) {
+      for (int a = 0; a < CARD_A; ++a) {
+        for (int b = 0; b < CARD_B; ++b) {
+          auto commonIdx = MAX_CARD*a+b;
+          jointTab[commonIdx] = nB.compute_cond_prob(nA,a,b)*nB.compute_prob(b)*SIZE;
+        }
+      }
+
+    } else {
+      for (int i=0;i<SIZE;++i) {
+        for (int a = 0; a < CARD_A; ++a) {
+          for (int b = 0; b < CARD_B; ++b) {
+            auto commonIdx = MAX_CARD*a+b;
+            jointTab[commonIdx] += dVecB[i*CARD_B+b]*dVecA[i*CARD_A+a];
+          }
+        }
+      } // for observation
+
+      // for (int a = 0; a < CARD_A; ++a) {
+      //   for (int b = 0; b < CARD_B; ++b) { 
+      //     jointTab[a][b] /= sz;
+      //   }
+      // }
+    } // no relationship
+
+
+    return jointTab;
+  }
+  
+  
   static JointProbTab create_joint_tab_leaf_leaf(const Node& nA, const Node& nB,
                                                  const VecT& dVecA, const VecT& dVecB ) {
+ 
     int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
     JointProbTab jointTab(CARD_A, std::vector<double>(CARD_B,0.0));
     auto sz = dVecA.size();    
@@ -147,13 +261,14 @@ struct ComputeNodeJointEntropy {
     return jointTab;
   }  
   
-  };
+};
 
 //////////////////////////////////////////////////////////////////
 struct ComputeNodeEntropy {
   inline double compute( const Node& node ) const {
-    assert(node.marginalDist);
-    return node.marginalDist->compute_shannon_entropy();
+    // return 1;
+    // assert(node.marginalDist);
+   return node.marginalDist->compute_shannon_entropy();
   }
 };
 

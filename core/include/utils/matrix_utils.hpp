@@ -12,7 +12,7 @@
 
 #include <vector>
 
-namespace utility 
+namespace samogwas 
 {
 
 /** Returns the number of rows of a matrix-like data structure. We suppose the input matrix 
@@ -45,7 +45,7 @@ std::vector< std::vector<T> > Transpose( const std::vector< std::vector<T> >& ma
   return result;
 }
 
-} // namespace utility ends here.
+} // namespace samogwas ends here.
 
 /****************************************************************************************/
 #endif // UTILS_MATRIX_HPP

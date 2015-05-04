@@ -22,7 +22,7 @@ file(GLOB_RECURSE SOURCE "${PROJECT_SOURCE_DIR}/core/src/*.cpp" )
 
 add_boost_test( samogwas_test_suite
     SOURCES ${TESTS} ${SOURCE}
-    LIBRARIES spl  boost_system boost_filesystem boost_log boost_thread rt pthread
+    LIBRARIES spl  boost_system boost_filesystem boost_program_options  boost_regex boost_log boost_thread rt pthread
     TESTS
     Test_Clustering_Test/test_case1
     Test_Statistics_Test/test_case1

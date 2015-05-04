@@ -16,12 +16,13 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     clustAlgo->set_measure( graph, l2g );
     // printf("FLTM step-%d\n", step);
     BOOST_LOG_TRIVIAL(trace) << "\nFLTM - step[" << step << "]\n";
+    BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
+                             << " on " << l2g->size();
     auto partition = clustAlgo->run();
     auto clustering = partition.to_clustering();
     // printf("running clustering %s on %d variables to obtain: %d clusters\n",
     //        clustAlgo->name(), l2g->size(), clustering.size());
-    BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name() 
-                             << " on " << l2g->size() << " to obtain: " << clustering.size() << std::endl;
+    BOOST_LOG_TRIVIAL(trace) << " to obtain: " << clustering.size() << std::endl;
     
     Local2Global().swap(*l2g);
 

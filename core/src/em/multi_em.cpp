@@ -19,7 +19,7 @@ void MultiEM::run( GraphPtr graph,
   // printf("hey, nbr of children: %d\n", vars.size());
   auto indexes = latentNode.get_children_global_indexes();
   auto dataTable = create_data_table( graph, indexes );
-  auto defTable = create_def_table(utility::nrows(*dataTable),utility::ncols(*dataTable));
+  auto defTable = create_def_table(samogwas::nrows(*dataTable),samogwas::ncols(*dataTable));
  
   auto learnObjs = create_learn_objects(latentNode.variable, vars);  
   plMatrixDataDescriptor<int> dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
@@ -85,7 +85,7 @@ DefTabPtr MultiEM::create_def_table( size_t rows, size_t cols ) {
 
 
 MatrixPtr MultiEM::transpose(MatrixPtr mat ) {
-  size_t rows = utility::nrows(*mat), cols = utility::ncols(*mat);
+  size_t rows = samogwas::nrows(*mat), cols = samogwas::ncols(*mat);
   auto matrix = std::make_shared<Matrix>( cols, std::vector<int>(rows) );
 
   for (unsigned row = 0; row < rows; row++) {    

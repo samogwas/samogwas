@@ -13,7 +13,7 @@
 #include <sstream> // stringstream
 #include <string> // basic_string
 
-namespace utility {    
+namespace samogwas {    
 
 /******************************************* DECLARATION *****************************************/
 /**
@@ -83,7 +83,7 @@ struct toString<CharType, std::string >
 
 /************************************************** IMPLEMENTATION **************************************************/
 
-namespace utility {
+namespace samogwas {
    
 template<typename EnumType>
 EnumType EnumOfIndex(const int& i)

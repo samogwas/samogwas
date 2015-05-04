@@ -27,10 +27,10 @@ struct Options {
   std::string inputLabelFile;
   
   /* Output */
-  int verbose;
+  // int verbose;
   std::string outputDir;
 
-  int clustAlgo;
+  std::string clustConf;
   
   // /* DBSCAN */
   // int dbscan_minPts;
@@ -53,80 +53,80 @@ struct Options {
 };
 
 
-// inline Options getProgramOptions(int argc, char** argv) {
-//   Options result;
-//   std::string appName = boost::filesystem::basename(argv[0]);
-//   po::options_description optDesc("Options");
+inline Options get_program_options(int argc, char** argv) {
+  Options result;
+  std::string appName = boost::filesystem::basename(argv[0]);
+  po::options_description optDesc("Options");
 
-//   try  {
-//     /** Define and parse the program options 
-//      */
-//     optDesc.add_options()
-//         ("help,h", "Print help messages")        
-//         ("in_dat,d", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
-//         ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
-//         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
-//         ("verbose,v", po::value<int>(&result.verbose)->default_value(0), "Verbose")
+  try  {
+    /** Define and parse the program options 
+     */
+    optDesc.add_options()
+        ("help,h", "Print help messages")        
+        ("in_dat,d", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
+        ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
+        ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
+        // ("verbose,v", po::value<int>(&result.verbose)->default_value(0), "Verbose")
         
-//         ("out,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
+        ("out,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
+        ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
 
-//         ("clust,c", po::value<int>(&result.clustAlgo)->required(), "Clust Algo. (0): DBSCAN (1): CAST, (2): LOUV")
+        // ("clust,c", po::value<int>(&result.clustAlgo)->required(), "Clust Algo. (0): DBSCAN (1): CAST, (2): LOUV")
 
-//         ("max_dist,x", po::value<int>(&result.fltm_maxDist)->required(), "Max Dist")
-//         ("simi_thres,t", po::value<double>(&result.fltm_simiThres)->required(), "Simi Thres")
+        ("max_dist,x", po::value<int>(&result.fltm_maxDist)->required(), "Max Dist")
+        // ("simi_thres,t", po::value<double>(&result.fltm_simiThres)->required(), "Simi Thres")
+        // ///////////////////////////////////////////////////////////////////////////
+        // ("db_minp,M", po::value<int>(&result.dbscan_minPts)->default_value(0), "DBSCAN MinPts")
+        // ("db_eps,E", po::value<double>(&result.dbscan_eps)->default_value(0), "DBSCAN Eps")
 
-//         ///////////////////////////////////////////////////////////////////////////
-//         ("db_minp,M", po::value<int>(&result.dbscan_minPts)->default_value(0), "DBSCAN MinPts")
-//         ("db_eps,E", po::value<double>(&result.dbscan_eps)->default_value(0), "DBSCAN Eps")
+        ///////////////////////////////////////////////////////////////////////////
+        // ("cast_cast,C", po::value<double>(&result.cast_cast)->default_value(0), "CAST cast")
+        // ("f_imode,m", po::value<int>(&result.fltm_imputeMode)->required(), "FLTM impute mode") 
 
-//         ///////////////////////////////////////////////////////////////////////////
-//         ("cast_cast,C", po::value<double>(&result.cast_cast)->default_value(0), "CAST cast")
-//         ("f_imode,m", po::value<int>(&result.fltm_imputeMode)->required(), "FLTM impute mode") 
+        ///////////////////////////////////////////////////////////////////////////
+        ("f_alpha,a", po::value<double>(&result.fltm_alpha)->required(), "FLTM alpha")
+        ("f_beta,b", po::value<double>(&result.fltm_beta)->required(), "FLTM beta")
+        ("f_maxCard,X", po::value<int>(&result.fltm_maxCard)->required(), "FLTM maxCard")
 
-//         ///////////////////////////////////////////////////////////////////////////
-//         ("f_alpha,a", po::value<double>(&result.fltm_alpha)->required(), "FLTM alpha")
-//         ("f_beta,b", po::value<double>(&result.fltm_beta)->required(), "FLTM beta")
-//         ("f_maxCard,X", po::value<int>(&result.fltm_maxCard)->required(), "FLTM maxCard")
+        ("f_nbr_restarts,r", po::value<int>(&result.fltm_nbrRestarts)->required(), "FLTM nbr restarts")
+        ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->required(), "FLTM nbr steps") 
 
-//         ("f_nbr_restarts,r", po::value<int>(&result.fltm_nbrRestarts)->required(), "FLTM nbr restarts")
-//         ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->required(), "FLTM nbr steps") 
-
-//         ("f_thres_info,i", po::value<double>(&result.fltm_params.latentVarQualityThres)->required(), "FLTM thres info")
-//         ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")
+        ("f_thres_info,i", po::value<double>(&result.fltm_params.latentVarQualityThres)->required(), "FLTM thres info")
+        ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")
         
-//         ;
-//     po::variables_map vm; 
-//     try { 
-//       po::store(po::command_line_parser(argc, argv).options(optDesc).run(), vm); // throws on error
-//       if (vm.count("help") ) {
-//         samogwas::OptionPrinter::printStandardAppDesc(appName,std::cout, optDesc, NULL);
-//         exit(1);
-//       }
-//       po::notify(vm);   	    
+        ;
+    po::variables_map vm; 
+    try { 
+      po::store(po::command_line_parser(argc, argv).options(optDesc).run(), vm); // throws on error
+      if (vm.count("help") ) {
+        samogwas::OptionPrinter::printStandardAppDesc(appName,std::cout, optDesc, NULL);
+        exit(1);
+      }
+      po::notify(vm);   	    
 
-//     } 
-//     catch(boost::program_options::required_option& e) /** missing arguments **/
-//     {
-//       samogwas::OptionPrinter::formatRequiredOptionError(e);
-//       std::cout << e.what() << std::endl << std::endl;
-//       samogwas::OptionPrinter::printStandardAppDesc( appName,std::cout,
-//                                                 optDesc, NULL);
+    } 
+    catch(boost::program_options::required_option& e) /** missing arguments **/
+    {
+      samogwas::OptionPrinter::formatRequiredOptionError(e);
+      std::cout << e.what() << std::endl << std::endl;
+      samogwas::OptionPrinter::printStandardAppDesc( appName,std::cout,
+                                                optDesc, NULL);
 
-//       exit(-1);
-//     }
+      exit(-1);
+    }
 
-//   }
-//   catch(std::exception e)    
-//   {
-//     std::cout << "Unhandled Exception reached the top of main: "
-//               << e.what() << ", application will now exit" << std::endl;
+  }
+  catch(std::exception e)    
+  {
+    std::cout << "Unhandled Exception reached the top of main: "
+              << e.what() << ", application will now exit" << std::endl;
 
-//     samogwas::OptionPrinter::printStandardAppDesc(appName, std::cout, optDesc, NULL);
-//     exit(-1);
-//   }
+    samogwas::OptionPrinter::printStandardAppDesc(appName, std::cout, optDesc, NULL);
+    exit(-1);
+  }
 
-//   return result;
-// }
+  return result;
+}
 
 
 } // namespace fltmends here. fltm

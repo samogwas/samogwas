@@ -5,8 +5,8 @@
  * @date: 15/10/2014
 
  ***************************************************************************************/
-#ifndef UTILITY_LOGS_UTILS_HPP
-#define UTILITY_LOGS_UTILS_HPP
+#ifndef SAMOGWAS_LOGS_UTILS_HPP
+#define SAMOGWAS_LOGS_UTILS_HPP
 
 #include <chrono>
 
@@ -19,7 +19,7 @@
 #include <cxxabi.h>
 #endif
 
-namespace utility
+namespace samogwas
 {
 
 #ifdef __GNUG__
@@ -75,7 +75,7 @@ struct measure
 };
 
 
-} // namespace utilityends here. utility
+} // namespace samogwasends here. 
 
 /****************************************************************************************/
 #endif // UTILITY_LOGS_UTILS_HPP

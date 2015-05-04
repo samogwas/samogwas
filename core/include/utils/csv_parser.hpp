@@ -18,7 +18,8 @@
 #include <vector>
 #include <string>
 #include <algorithm>
-namespace utility // the common namesapce for utils files @todo: utility -> utils
+namespace samogwas
+// the common namesapce for utils files @todo: samogwas -> utils
 {
 
 /** If in the input file some fields have different types, T = std::string must be used.
@@ -93,12 +94,12 @@ class CSVIterator
   typedef CSVRow<T>* pointer;
   typedef CSVRow<T>& reference;
 
-    /*  utility::CSVIterator<T> matrixLine(matrixFile);
+    /*  samogwas::CSVIterator<T> matrixLine(matrixFile);
 
-      for( ; matrixLine != utility::CSVIterator<T>(); ++matrixLine ) {
-      utility::CSVIterator<T> matrixLine(matrixFile);
+      for( ; matrixLine != samogwas::CSVIterator<T>(); ++matrixLine ) {
+      samogwas::CSVIterator<T> matrixLine(matrixFile);
 
-      for( ; matrixLine != utility::CSVIterator<T>(); ++matrixLine ) {*/
+      for( ; matrixLine != samogwas::CSVIterator<T>(); ++matrixLine ) {*/
   CSVIterator(std::istream& str): m_str(str.good() ? &str : NULL) { ++(*this); }
   CSVIterator(): m_str(NULL) {}
 
@@ -123,10 +124,10 @@ class CSVIterator
   CSVRow<T> m_row; // current row
 };
 
-} // namespace utility ends here.
+} // namespace samogwas ends here.
 
 /****************************** IMLEMENTATION BELOW THIS POINT **************************/
-namespace utility
+namespace samogwas
 {
 
 /** This template specialization is meant to override the default template implementation above (for readNextRow)

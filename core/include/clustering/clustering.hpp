@@ -145,6 +145,7 @@ class ClustAlgo
   virtual void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr) = 0;
 };
 
+typedef std::shared_ptr<ClustAlgo> ClustAlgoPtr;
 
 } // namespace samogwas ends here. 
 

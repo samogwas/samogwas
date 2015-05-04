@@ -18,7 +18,7 @@
 #include "utils/csv_parser.hpp"
 #include "utils/matrix_utils.hpp"
 
-namespace samogwas_test
+namespace samogwas
 {
 
 typedef std::vector<double> RealVec;
@@ -26,16 +26,53 @@ typedef std::vector<double> RealVec;
 typedef std::shared_ptr<RealVec> RealVecPtr;
 // typedef std::shared_ptr<DataVec> DataVecPtr;
 
-typedef std::vector<VecPtr> PtrMatrix;
 typedef std::vector<RealVecPtr> RealMatrix;
-
+typedef std::vector<int> Vec;
+typedef std::shared_ptr<Vec> VecPtr;
+typedef std::vector<VecPtr> PtrMatrix;
 typedef std::shared_ptr<PtrMatrix> PtrMatrixPtr;
 typedef std::shared_ptr<RealMatrix> RealMatrixPtr;
 
+typedef std::vector<std::string> LabelVec;
+typedef std::shared_ptr<LabelVec> LabVecPtr;
 
-inline RealMatrixPtr loadRealDataTable( const std::string& infile,
-                                        const char& sep = ',',
-                                        const char& quote = '"' ) {
+typedef std::vector<int> PosVec;
+typedef std::shared_ptr<std::vector<int>> PosVecPtr;
+typedef std::vector<int> IndexVec;
+typedef std::shared_ptr<std::vector<int>> IndexVecPtr;
+
+
+
+inline void load_labels_positions( LabelVec& labels,
+                                   IndexVec& ids,
+                                   PosVec& positions,
+                                   const std::string& infile )  {
+  std::ifstream labPosFile(infile.c_str());
+  if (!labPosFile) {
+    printf("file lab-post %s not existing\n", infile.c_str());
+    exit(-1);
+  }
+  printf("beginning loading label...\n");
+  std::vector<std::string>().swap(labels); //lab2Pos.clear();
+  std::vector<int>().swap(positions); //.clear();
+  CSVIterator<std::string> labPosLine(labPosFile);// ++labPosLine;
+  int id = 0;
+  for( ; labPosLine != CSVIterator<std::string>(); ++labPosLine ) {
+    std::string label =  (*labPosLine)[2];
+    int position = boost::lexical_cast<int>( (*labPosLine)[3]);
+    unsigned id = boost::lexical_cast<unsigned>( (*labPosLine)[1]);
+    ids.push_back(id);
+    labels.push_back(label);
+    positions.push_back(position);
+  }
+
+  std::cout << "done loading. loaded " << labels.size() << " variables.\n";
+}
+
+
+inline RealMatrixPtr load_real_data_table( const std::string& infile,
+                                           const char& sep = ',',
+                                           const char& quote = '"' ) {
 
   RealMatrixPtr dt(new RealMatrix());
   std::ifstream matrixFile(infile.c_str());
@@ -49,7 +86,6 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
   samogwas::CSVIterator<double> matrixLine(matrixFile);
   
   for( ; matrixLine != samogwas::CSVIterator<double>(); ++matrixLine ) {         
-    //std::vector<double> row(matrixLine->size(), 0);
     auto row = std::make_shared<RealVec>(matrixLine->size(), 0);
     for (unsigned i = 0; i < matrixLine->size(); ++i) {
       (*row)[i] = matrixLine->at(i);
@@ -64,9 +100,9 @@ inline RealMatrixPtr loadRealDataTable( const std::string& infile,
 }
 
 
-inline PtrMatrixPtr loadDataTable( const std::string& infile,
-                                const char& sep = ',',
-                                const char& quote = '"' ) {
+inline PtrMatrixPtr load_data_table( const std::string& infile,
+                                     const char& sep = ',',
+                                     const char& quote = '"' ) {
 
   PtrMatrixPtr dt(new PtrMatrix());
   std::ifstream matrixFile(infile.c_str());
@@ -79,20 +115,20 @@ inline PtrMatrixPtr loadDataTable( const std::string& infile,
   samogwas::CSVIterator<int> matrixLine(matrixFile);
   
   for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
-    //std::vector<int> row(matrixLine->size(), 0);
     auto row = std::make_shared<Vec>(matrixLine->size(), 0);
-
     for (unsigned i = 0; i < matrixLine->size(); ++i) {
-(*row)[i] = matrixLine->at(i);
+      (*row)[i] = matrixLine->at(i);
     }
     dt->push_back(row);    
   }
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
-
+  printf("done loading data mat of size (%d,%d)\n", dt->size(), ncols);
   return dt;
 }
+
+//////////////////////////////////////////////////////////////////
 
 
 } // namespace novo ends here. 

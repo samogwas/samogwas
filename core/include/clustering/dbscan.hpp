@@ -106,7 +106,7 @@ Partition DBSCAN::run() {
       Neighbors neighbors  = find_neighbors(pid); 
       if ( neighbors.size() >= minPts ) { // If the neighborhood is dense,
         m_LabelSet[pid] = cluster_id; // we form a new cluster.
-        // printf("clust(%d): %d\n", pid, cluster_id);
+        printf("clust(%d): %d\n", pid, cluster_id);
         for ( int i = 0; i < neighbors.size(); ++i) { // We grow this cluster by trying to reach other points
                                                      // from each of its members.
           int nPid = neighbors[i]; // 
@@ -135,6 +135,7 @@ Partition DBSCAN::run() {
 /** A neighborhood of a given point is defined as all the points that are within a certain given radius (epsilon).
  */
 typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
+  std::cout << "finding neighbors of: " << pid;
   Neighbors ne;  
   size_t nvars = this->diss->nbr_variables(); // @todo: remove direct access to compMatrix
   for ( Index i = 0; i < nvars; ++i ) {
@@ -142,6 +143,8 @@ typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
       ne.push_back(i);
     }
   }
+
+  std::cout << " of size: " << ne.size() << std::endl;
   return ne;
 }
 

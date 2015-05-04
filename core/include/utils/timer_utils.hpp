@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string>
 #include <chrono>
-namespace utility 
+namespace samogwas 
 {
 
 class Timer

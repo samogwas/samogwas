@@ -42,6 +42,8 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
 }
 
 void GraphMutInfoSimilarity::invalidate_entropy_cache() {
+
+  std::cout << "invalidating...\n";
   std::vector<double>().swap(cached_entropies);
   std::vector<double>().swap(cached_joint_entropies);
   cached_entropies.resize(l2g->size(), -1.0);
