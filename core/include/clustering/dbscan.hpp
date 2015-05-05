@@ -61,6 +61,7 @@ struct DBSCAN: public ClustAlgo {
     sprintf( name, "DBSCAN_%d_%.3f", minPts, epsilon);
     return name;
   }
+  virtual CriteriaPtr get_criteria() { return diss->get_criteria(); }
 
  protected:
   /// Internal method that returns the set of neighbors for a given point.
@@ -119,7 +120,6 @@ Partition DBSCAN::run() {
             }
           }
           if ( m_LabelSet[nPid] ==  UNASSIGNED_LABEL ) { // to avoid overriding a possible previous cluster assignment
-
             m_LabelSet[nPid] = cluster_id; 
           }
         }

@@ -67,14 +67,16 @@ struct CAST: public ClustAlgo {
     return run( unAssignedCluster );
   }
 
-  /** Provides the name of the algorithm along with its parameters
-   *
+  /** Provides the name of the algorithm along with its parameters *
    */
   virtual char* name() const {
     char* name = new char[80];
     sprintf( name, "CAST_%.3f", thresCAST);
     return name;
   }
+
+  virtual CriteriaPtr get_criteria() { return simi->get_criteria(); }
+
   virtual inline void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr);
 
  protected:
@@ -101,7 +103,6 @@ struct CAST: public ClustAlgo {
   
   /** Moves item indexed by itemIdx from sourceCluster to targetCluster  */
   inline void moveItemBetweenClusters( CAST_Cluster& source, CAST_Cluster& target, const int itemIdx );
-
  protected:
   // main parameter of CAST
   double thresCAST;

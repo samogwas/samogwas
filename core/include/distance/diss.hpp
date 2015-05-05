@@ -28,6 +28,8 @@ struct GraphDissimilarity {
   // virtual void precompute_all();
 
   virtual ~GraphDissimilarity() {}
+
+  CriteriaPtr get_criteria() { return criteria; }
   
  protected:  
   GraphPtr graph;
