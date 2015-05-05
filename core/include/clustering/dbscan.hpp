@@ -106,7 +106,6 @@ Partition DBSCAN::run() {
       Neighbors neighbors  = find_neighbors(pid); 
       if ( neighbors.size() >= minPts ) { // If the neighborhood is dense,
         m_LabelSet[pid] = cluster_id; // we form a new cluster.
-        printf("clust(%d): %d\n", pid, cluster_id);
         for ( int i = 0; i < neighbors.size(); ++i) { // We grow this cluster by trying to reach other points
                                                      // from each of its members.
           int nPid = neighbors[i]; // 
@@ -143,7 +142,6 @@ typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
     }
   }
 
-  std::cout << " of size: " << ne.size() << std::endl;
   return ne;
 }
 
