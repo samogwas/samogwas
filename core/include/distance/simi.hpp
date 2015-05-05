@@ -50,25 +50,26 @@ struct GraphMutInfoSimilarity: public GraphSimilarity {
   
   virtual void precompute_all() {
     auto SIZE = l2g->size();
+    std::cout << "SIZE: " << SIZE << std::endl;
     cached_joint_entropies.resize(SIZE*(SIZE-1)/2, -1.0);
-    cached_joint_entropies.resize(SIZE, -1.0);
+    cached_entropies.resize(SIZE, -1.0);
+    printf("size: %d\n", (int)SIZE);
     for ( size_t a = 0; a < SIZE; ++a) {
-      auto globalA = this->l2g->at(a);
-      Node& nA = (*graph)[globalA];
+      Node& nA = (*graph)[a];
       cached_entropies[a] = entropy.compute(nA);
       for ( size_t b = a+1; b < SIZE; ++b ) {
-        auto globalB = this->l2g->at(b);
-        Node& nB = (*graph)[globalB];       
+        
+        if (criteria && !criteria->valid(a,b)) continue;        
+        Node& nB = (*graph)[b];       
 
         double minEntropyAB = std::min(this->cached_entropies.at(a), this->cached_entropies.at(b));
         double norm_mutinfo = 0.0;
 
         if (minEntropyAB != 0) {
-          double jE_AB = 1.0; //jEntropy.compute(nA,nB);
-          double mi_AB = this->cached_entropies.at(a) + this->cached_entropies.at(b) - jE_AB;
+          double jE_AB = jEntropy.compute(nA,nB);
+          double mi_AB = this->cached_entropies.at(a) + this->cached_entropies.at(b) - jE_AB -1;
           norm_mutinfo = mi_AB / minEntropyAB;
         }
-
         auto commonIdx = indexOfPair(a,b,SIZE);
         cached_joint_entropies[commonIdx] = norm_mutinfo;
       }

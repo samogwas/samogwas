@@ -56,9 +56,11 @@ struct ComputeNodeJointEntropy {
 
   double compute_leaf_leaf(const Node& nA, const Node& nB,
                            const VecT& dVecA, const VecT& dVecB) const {
-    auto jointTab = create_joint_table_leaf_leaf(nA,nB,dVecA,dVecB);
-    auto SIZE =  dVecA.size();
-    return compute_entropy_from_joint_tab(jointTab, SIZE);
+    JointEntropy<EMP> jEntropy;
+    return jEntropy(dVecA, dVecB);
+    // auto jointTab = create_joint_table_leaf_leaf(nA,nB,dVecA,dVecB);
+    // auto SIZE =  dVecA.size();
+    // return compute_entropy_from_joint_tab(jointTab, SIZE);
   }
 
   double compute_leaf_latent(const Node& nA, const Node& nB,
@@ -79,6 +81,7 @@ struct ComputeNodeJointEntropy {
   //////////////  
   static double compute_from_joint_tab(const JointProbTab& probTab) {
     assert(probTab.size() > 0);
+    
     const int CARD_X = probTab.size(), CARD_Y = probTab[0].size();
 
     double rs = 0.0;

@@ -14,7 +14,7 @@ namespace samogwas
 
 inline size_t indexOfPair( const size_t A, const size_t B, const size_t N) {
   assert( (B<N) && (A<B) );
-  return (2*N-A-1)*A/2 + B - A;
+  return (2*N-A-1)*A/2 + B - A - 1;
 }
 
 } // namespace samogwa ends here. 

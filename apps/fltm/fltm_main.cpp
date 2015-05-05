@@ -30,9 +30,12 @@
 #include "fltm_main.hpp"
 
 using namespace samogwas;
-using ns = std::chrono::nanoseconds;
+using ms = std::chrono::milliseconds;
 using get_time = std::chrono::steady_clock ;
- 
+typedef std::shared_ptr<PositionCriteria> PositionCriteriaPtr;
+
+void pre_compute( PtrMatrixPtr mat, Graph& graph, CriteriaPtr criteria );
+
 int main( int argc, char** argv ) {
   auto options = get_program_options( argc, argv );
   auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
@@ -54,14 +57,59 @@ int main( int argc, char** argv ) {
   //   fltm.execute(clustAlgo, cardF, graph);
   // }
   auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
+  auto criteria = std::make_shared<PositionCriteria>( positions, options.fltm_maxDist ); 
+  simi->set_criteria(criteria);
+  pre_compute(mat, *graph, criteria );
 
   auto start = get_time::now(); //use auto keyword to minimize typing strokes :)
-  std::cout << "abt to precompute all ...\n";
-  simi->precompute_all();
+  // std::cout << "abt to precompute all ...\n";
+  // simi->precompute_all();
+  // auto end = get_time::now();
+  // auto diff = end - start;
+  // std::cout<<"A total of time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << "s "<< std::endl;
+
+
+}
+
+
+void pre_compute( PtrMatrixPtr mat, Graph& graph, CriteriaPtr criteria )  {
+  // ComputeNodeEntropy entropy;
+  ComputeNodeJointEntropy jEntropy;
+
+  Entropy<EMP> entropy;
+  // JointEntropy<EMP> jointEntropy;
+  auto SIZE = 38730;
+      
+  std::vector<double> cached_entropies(SIZE, 0.0);
+  ///std::vector<double> cached_joint_entropies(SIZE*(SIZE+1)/2, 0.0);
+  std::map<int, double> cached_joint_entropies;
+  auto start = get_time::now(); //use auto keyword to minimize typing strokes :)
+  int count = 0;
+  std::cout << "abt to precompute all ..." << cached_entropies.size() << std::endl;
+  for ( size_t a = 0; a < SIZE; ++a) {
+    cached_entropies[a] = entropy(*mat->at(a));
+  }
+  
+  for ( size_t a = 0; a < SIZE; ++a) {
+    for ( size_t b = a+1; b < SIZE; ++b ) {        
+      if (criteria && !criteria->valid(a,b)) continue;        
+      count++;
+      double minEntropyAB = std::min(cached_entropies.at(a), cached_entropies.at(b));
+      double norm_mutinfo = 0.0;
+      if (minEntropyAB != 0) {
+        double jE_AB = jEntropy.compute(graph[a], graph[b]);//jointEntropy( *mat->at(a), *mat->at(b) );
+        double mi_AB = cached_entropies.at(a) + cached_entropies.at(b) - jE_AB -1;
+        norm_mutinfo = mi_AB / minEntropyAB;
+      }
+      auto commonIdx = indexOfPair(a,b,SIZE);
+      // cached_joint_entropies[commonIdx] = norm_mutinfo;
+    }
+  }
+  
   auto end = get_time::now();
   auto diff = end - start;
-  std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ns>(diff).count()/10000000000 << "s "<< std::endl;
+  std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << "s (" << count << ")" << std::endl;
 
-  
 }
+
 

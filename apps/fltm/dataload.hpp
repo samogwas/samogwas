@@ -124,7 +124,7 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
 
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
-  printf("done loading data mat of size (%d,%zu)\n", dt->size(), ncols);
+  // printf("done loading data mat of size (%d,%zu)\n", dt->size(), ncols);
   return dt;
 }
 
