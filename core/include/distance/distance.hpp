@@ -16,15 +16,21 @@ namespace samogwas
 
 typedef std::shared_ptr<std::vector<int>> PosVecPtr;
 struct ConstraintCriteria {
-  virtual bool valid( const int vA, const int vB) = 0;
+  virtual bool valid( const int vA, const int vB) const = 0;
 };
   
 typedef std::shared_ptr<ConstraintCriteria> CriteriaPtr;
 
+struct AcceptAllCriteria: public ConstraintCriteria {
+  virtual bool valid( const int vA, const int vB) const {
+    return true;
+  }
+};
+
 struct PositionCriteria: public ConstraintCriteria {
   PositionCriteria(PosVecPtr posV, int max_d): posVec(posV), max_dist(max_d) {}
 
-  virtual bool valid( const int vA, const int vB) {
+  virtual bool valid( const int vA, const int vB) const {
     return abs(posVec->at(vA) - posVec->at(vB)) < max_dist;
   }
  private:

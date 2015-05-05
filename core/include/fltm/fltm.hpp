@@ -45,7 +45,7 @@ struct FLTM {
   void execute( ClustAlgoPtr clt, CardFuncPtr cardF, GraphPtr graph );
   
  private:
-  bool contains_only_singletons( const Clustering &clustering );
+  int number_non_singletons( const Clustering &clustering );
   bool accept_latent_variable( Graph&, Node& node, double qualityThres );
   Node create_latent_node( GraphPtr graph, plSymbol& var, Label2Index& l2i, Cluster& cluster );
   Node& add_latent_node( Graph& graph, Node& n );

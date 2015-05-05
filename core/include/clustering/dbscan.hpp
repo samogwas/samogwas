@@ -152,8 +152,7 @@ Partition DBSCAN::toPartition( const LabelSet& LabelSet ) {
   std::vector<int> singletons;
   for ( size_t i = 0; i < LabelSet.size(); ++i ) {
     if ( LabelSet.at(i) != UNASSIGNED_LABEL ) {
-      partition.setLabel( i, LabelSet.at(i) ); // CS identifier could be more informative.
-                                           // The label is the cluster identifier.
+      partition.setLabel( i, LabelSet.at(i) ); 
       labs.insert( LabelSet.at(i) );
     } else {
       singletons.push_back(i);

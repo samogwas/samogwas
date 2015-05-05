@@ -46,34 +46,27 @@ int main( int argc, char** argv ) {
   auto mat = load_data_table(options.inputDataFile);
   auto l2g = init_index_mapping( mat->size() );
   auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
-  // auto clustAlgos = read_clustering_algos( graph, l2g, positions, options );
+  auto clustAlgos = read_clustering_algos( graph, l2g, positions, options );
 
   FLTM fltm(options.fltm_params);
   auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
-
-          
-  auto criteria = std::make_shared<PositionCriteria>( positions, 50000);         
-  auto diss = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
-  diss->set_criteria(criteria);
-  auto dbscan= std::make_shared<DBSCAN>(diss, 2, 0.3);
   
+  //use auto keyword to minimize typing strokes :)
   auto start = get_time::now();
-  auto rs = dbscan->run();
+  for ( auto clustAlgo: clustAlgos ) {    
+    std::cout << "running " << clustAlgo->name() << std::endl;
+    
+    fltm.execute(clustAlgo, cardF, graph);
+    auto rs = clustAlgo->run();
+    auto end = get_time::now();
+    auto diff = end - start;
+    std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << " seconds" <<std::endl;
 
-  
-   //use auto keyword to minimize typing strokes :) 
-  // for ( auto clustAlgo: clustAlgos ) {
-  //   //fltm.execute(clustAlgo, cardF, graph);
-  //   // clustAlgo->set_measure(graph,l2g);
-  //   std::cout << "running " << clustAlgo->name() << std::endl;
-  //   clustAlgo->run();
-  //   std::cout << std::endl;
-  // }  
-  auto end = get_time::now();
-  auto diff = end - start;
-  std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << "s obtaining" << rs.to_clustering().size() << std::endl;
+  }  
+  // auto end = get_time::now();
+  // auto diff = end - start;
 
-  std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << "s " << std::endl;
+  // std::cout<<"Elapsed time is :  "<< std::chrono::duration_cast<ms>(diff).count()/1000 << "s " << std::endl;
 }
 
 
