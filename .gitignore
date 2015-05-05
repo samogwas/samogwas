@@ -30,6 +30,12 @@
 *~
 build
 
+# QtCreator
+*.config
+*.creator
+*.files
+*.includes
+
 # but not these guys
 !libspl.so
 !libtcc.so
