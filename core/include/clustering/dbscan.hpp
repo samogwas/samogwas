@@ -135,7 +135,6 @@ Partition DBSCAN::run() {
 /** A neighborhood of a given point is defined as all the points that are within a certain given radius (epsilon).
  */
 typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
-  std::cout << "finding neighbors of: " << pid;
   Neighbors ne;  
   size_t nvars = this->diss->nbr_variables(); // @todo: remove direct access to compMatrix
   for ( Index i = 0; i < nvars; ++i ) {
