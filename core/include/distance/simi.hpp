@@ -31,6 +31,7 @@ struct GraphSimilarity {
   virtual size_t nbr_variables() const = 0;
 
   virtual void precompute_all() = 0;
+  CriteriaPtr get_criteria() { return criteria; }
 
  protected:  
   GraphPtr graph;

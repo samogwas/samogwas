@@ -8,24 +8,31 @@
 namespace samogwas {
 
 
+CriteriaPtr create_current_criteria(CriteriaPtr cr, int step);
+
 void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph ) {
   auto lab2Idx = create_index_map(*graph);
   Local2GlobalPtr l2g = create_local_to_global_map(*graph);
-    
-  for ( int step = 0; step < params.nbrSteps; ++step) {        
-    clustAlgo->set_measure( graph, l2g );
+
+  auto criteria = clustAlgo->get_criteria();
+  for ( int step = 0; step < params.nbrSteps; ++step) {
+    if (step > 0) create_current_criteria(criteria, step);
+    clustAlgo->set_measure( graph, l2g, criteria );
     // printf("FLTM step-%d\n", step);
     BOOST_LOG_TRIVIAL(trace) << "\nFLTM - step[" << step << "]\n";
     BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
                              << " on " << l2g->size();
+
     auto partition = clustAlgo->run();
+    BOOST_LOG_TRIVIAL(trace) << " done. ";
+
     auto clustering = partition.to_clustering();
     // printf("running clustering %s on %d variables to obtain: %d clusters\n",
     //        clustAlgo->name(), l2g->size(), clustering.size());
     BOOST_LOG_TRIVIAL(trace) << " to obtain: " << clustering.size() << std::endl;
     
     Local2Global().swap(*l2g);
-
+    return;
     if ( contains_only_singletons( clustering) ) { return;  }
 
     int nbrGoodClusters = 0; int numClust = 0;
@@ -128,6 +135,10 @@ void FLTM::update_index_map( Local2Global& l2g, const Cluster& cluster) {
 void FLTM::update_index_map( Local2Global& l2g, const Node& latentNode) {
   l2g.reserve(l2g.size()+1);
   l2g.push_back(latentNode.index);
+}
+
+CriteriaPtr create_current_criteria(CriteriaPtr cr, int step) {
+
 }
 
 }

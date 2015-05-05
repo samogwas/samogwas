@@ -143,6 +143,7 @@ class ClustAlgo
   virtual char* name() const = 0;
   virtual void invalidate() = 0; //@todo: invalidateCache
   virtual void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr) = 0;
+  virtual CriteriaPtr get_criteria() = 0;
 };
 
 typedef std::shared_ptr<ClustAlgo> ClustAlgoPtr;
