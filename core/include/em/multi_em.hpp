@@ -26,6 +26,7 @@ typedef size_t Size;
 typedef plEMLearner EMLearner;
 typedef std::vector<plLearnObject*> LearnObjectPtrs;
 typedef std::vector<EMLearner> CandidateModels;
+
 /** This structure represents a set of attributes that should be returned by
  *  any EM algorithm dedicated to FLTM construction.
  *  Attributes:
@@ -43,6 +44,8 @@ struct MultiEM {
   
   typedef std::vector< std::vector<int> > Matrix;
   typedef std::shared_ptr<Matrix> MatrixPtr;
+  typedef plMatrixDataDescriptor<int> DataDesc;
+
   MultiEM(int nbrR): nbrRestarts(nbrR) {}
   
   enum ImputationType { ARGMAX = 0, DRAW };
@@ -62,11 +65,16 @@ struct MultiEM {
   MatrixPtr transpose(MatrixPtr mat );
   plComputableObjectList create_computable_objects( const Variable& latentVar, const Variables& variables );
   EMLearner get_best_model( CandidateModels& learners,
-                            plMatrixDataDescriptor<int>& dataDesc );
-  void update_parameters( GraphPtr graph, Node& latentNode, const std::vector<plValues>&,
-                          const std::vector<std::vector<plProbValue>>& ,
-                          const JointDist& jointDist );
+                            DataDesc& dataDesc );
+  
   double scoreBIC( EMLearner& learner, plMatrixDataDescriptor<int>& dataDesc );
+
+  void update_parameters ( GraphPtr graph, Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
+  // void update_parameters( GraphPtr graph, Node& latentNode, const std::vector<plValues>&,
+  //                         const std::vector<std::vector<plProbValue>>& ,
+  //                         const JointDist& jointDist );
+  
+  
  private:
   int nbrRestarts;
 };

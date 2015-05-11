@@ -22,9 +22,7 @@ namespace samogwas
 {
 
 typedef std::vector<double> RealVec;
-// typedef std::vector<int> DataVec;
 typedef std::shared_ptr<RealVec> RealVecPtr;
-// typedef std::shared_ptr<DataVec> DataVecPtr;
 
 typedef std::vector<RealVecPtr> RealMatrix;
 typedef std::vector<int> Vec;
@@ -65,7 +63,6 @@ inline void load_labels_positions( LabelVec& labels,
     labels.push_back(label);
     positions.push_back(position);
   }
-
   std::cout << "done loading. loaded " << labels.size() << " variables.\n";
 }
 
@@ -73,7 +70,6 @@ inline void load_labels_positions( LabelVec& labels,
 inline RealMatrixPtr load_real_data_table( const std::string& infile,
                                            const char& sep = ',',
                                            const char& quote = '"' ) {
-
   RealMatrixPtr dt(new RealMatrix());
   std::ifstream matrixFile(infile.c_str());
   if (!matrixFile) {
@@ -111,7 +107,6 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
     exit(-1);
   }
   dt->reserve(200000);
-
   samogwas::CSVIterator<int> matrixLine(matrixFile);
   
   for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
@@ -121,7 +116,6 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
     }
     dt->push_back(row);    
   }
-
   dt->resize(dt->size());
   size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
   return dt;

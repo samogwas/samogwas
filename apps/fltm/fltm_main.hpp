@@ -14,6 +14,7 @@
 #include "graph/graph.hpp"
 
 #include "algo_properties.hpp"
+
 #include "dataload.hpp"
 
 #include <vector>

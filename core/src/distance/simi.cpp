@@ -27,7 +27,6 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
     this->cached_entropies[localB] = entropy.compute(nB);
   }
 
-
   double minEntropyAB = std::min(this->cached_entropies.at(localB), this->cached_entropies.at(localA));
   double norm_mutinfo = 0.0;
 
@@ -37,19 +36,14 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
     norm_mutinfo = mi_AB / minEntropyAB;
   }
 
-
   return norm_mutinfo;
 }
 
 void GraphMutInfoSimilarity::invalidate_entropy_cache() {
-
-  std::cout << "invalidating...\n";
   std::vector<double>().swap(cached_entropies);
   std::vector<double>().swap(cached_joint_entropies);
   auto SIZE = l2g->size();
   cached_entropies.resize( SIZE, -1.0);
-  // cached_entropies.resize(l2g->size(), -1.0);
-  std::cout << "done invalidating: " << SIZE << " \n";
 }
 
 

@@ -15,6 +15,8 @@
 
 #include "graph/graph.hpp"
 #include "graph/graph_mut_info.hpp"
+#include "graph/graph_io.hpp"
+
 #include "test_graph.hpp"
 
 #include "test_tools/dataload.hpp"
@@ -378,7 +380,6 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Latent_Inp ) {
 
   auto vec_X = dat_X[0];
   auto vec_Y = dat_Y[0];
-
   auto vec_Z = dat_Z[0];
 
   Label2Index lab2idx;
@@ -394,7 +395,6 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Latent_Inp ) {
   Node nZ =  createLatentNode( graph, CARD, "Z", 13, 1);  
   //nZ.cndObsDist = vec_Z;
   nZ. set_cnd_obs_vec(vec_Z);
-
 
   for (int i = 0; i < N;++i) {    
     BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 0, i ), vec_X->at(i) == 0);
@@ -453,10 +453,63 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent_2 ) {
   double mi_XZ = mut_info.compute(nodeX,nodeZ);  
   double mi_YZ = mut_info.compute(nodeY,nodeZ);
   AverageMutInfo averageMutInfo;
-  double expected_avi = (mi_XZ+mi_YZ)/2.0;
-  
+  double expected_avi = (mi_XZ+mi_YZ)/2.0;  
 }
 
+////////////////////////////////////////////////////////////////////////////
+
+BOOST_AUTO_TEST_CASE(Test_Save_Load_1) {
+  const int CARD_X=3, CARD_Z=2;
+  std::vector<int> dat_X {0, 0, 0, 1, 1, 1, 1, 1, 2, 2};
+  std::vector<int> dat_Z {0, 0, 1, 1, 0, 0, 1, 1, 1, 0};
+
+  std::vector<double> cndProb { .2, .2, .1, .1, .3, .1 };
+  std::vector<double> zGivenObs { 0.8,0.2, 0.8,0.2, 0.8,0.2,
+        0.8,0.2, 0.8,0.2, 0.8,0.2, 0.8,0.2, 0.8,0.2, 0.8,0.2 , 0.8,0.2 };
+
+  std::vector<double> probX { .3, .5, .2 };
+  std::vector<double> probZ { .5, 0.5 };
+  auto graph = std::make_shared<Graph>();
+
+  Label2Index lab2idx;
+  RandVar X("X", plIntegerType(0,CARD_X-1));
+  RandVar Z("Z", plIntegerType(0,CARD_Z-1));
+
+  lab2idx["X"] = 0; lab2idx["Z"] = 1; 
+
+  DistPtr distX = std::make_shared<plProbTable>(X, probX);
+  DistPtr distZ = std::make_shared<plProbTable>(Z, probZ);
+  plCndDistribution cndDist(X, Z, cndProb);
+  plComputableObjectList jointTable;
+  auto compList = (*distZ)*(cndDist);
+  JointDist jd(Z^X, compList);
+  
+  Node nodeX = createObsNode( graph, X, 0, distX, lab2idx);
+  Node nodeZ = createLatentNode( graph, Z, jd, lab2idx);
+  nodeZ.set_local_indexes( lab2idx );
+
+  BayesGraphSave graphSave;
+  auto graphRef = *graph;
+  graphSave( graphRef,
+             "../tests/data/graph/io/saved_graph_1_vertex.csv",
+             "../tests/data/graph/io/saved_graph_1_dist.csv" );
+
+  BayesGraphLoad graphLoad;
+  auto loadedGraph = std::make_shared<Graph>();
+  graphLoad( loadedGraph,
+             "../tests/data/graph/io/saved_graph_1_label.csv",
+             "../tests/data/graph/io/saved_graph_1_vertex.csv",
+             "../tests/data/graph/io/saved_graph_1_dist.csv",
+             "../tests/data/graph/io/saved_graph_1_cnd_data.csv",             
+             "../tests/data/graph/io/saved_graph_1_data.csv" );
+
+  auto loadedGraphRef = *loadedGraph;
+  auto nX = loadedGraphRef[0], nZ = loadedGraphRef[1];
+    
+  graphSave( loadedGraphRef,
+             "../tests/data/graph/io/saved_graph_1a_vertex.csv",
+             "../tests/data/graph/io/saved_graph_1a_dist.csv" );  
+}
 
 
 BOOST_AUTO_TEST_SUITE_END()

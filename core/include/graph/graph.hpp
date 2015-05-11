@@ -71,6 +71,7 @@ struct Node {
   /**
    */
   Node& set_joint_distribution( const JointDist& jointDistri );
+  Node& set_joint_distribution( const plComputableObjectList& jointDistri );
 
   typedef plComputableObjectList::const_iterator plCompIte;
   Node& set_marginal_distribution( plCompIte it) {
@@ -106,16 +107,20 @@ struct Node {
   }
 
   Node& set_local_indexes( VarIter beg, VarIter endx, const Label2Index &label2Index);
+  Node& set_local_indexes( const Label2Index &label2Index );
+
+  Node& set_level(const int level) { this->level = level; }
+  
   Node& set_position();
   Node& set_position(const int position) { this->position = position; return *this; }
 
-  Node& set_level();
+  Node& update_level();
 
   Node& set_variable(plSymbol& var) { this->variable = var; return *this; }
   Node& set_graph(GraphPtr graph) { this->graph = graph; return *this; }
   Node& set_index(const int index) { this->index = index; return *this; }
-  Node& set_data_vec(DataVecPtr dtv); 
-  Node& set_cnd_obs_vec(CondObsDistPtr cndObsDist);
+  Node& set_data_vec(DataVecPtr dtvt, const bool computeEmpDist = true); 
+  Node& set_cnd_obs_vec(CondObsDistPtr cndObsDist, const bool computeEmpDist = true);
   double compute_prob(const int a) const;
 
   double compute_cond_prob_obs(const int val, const int obs) const;
@@ -167,12 +172,9 @@ struct Node {
   RandomVariable variable; // represents the underlying random variable.
 
   DistPtr marginalDist;
-
   DataVecPtr dataVec;
   CondObsDistPtr cndObsDist;
-
   std::vector<CndDistPtr> cndChildrenDists;
-
   std::map<int,int> global2localIdx;
 
 };
@@ -304,12 +306,10 @@ inline Node& createLatentNode( std::shared_ptr<Graph> graph,
   newNode.set_index(vertexId).set_graph(graph).set_variable(var)
       .set_local_indexes(++vars.begin(), vars.end(), label2Index)
       .set_joint_distribution(jointDist)
-      .set_position().set_level();
+      .set_position().update_level();
   label2Index[var.name()] = vertexId;
   return newNode;
 }
-
-
 
 inline Node& createLatentNode( std::shared_ptr<Graph> graph,
                                plSymbol& var,
@@ -325,9 +325,25 @@ inline Node& createLatentNode( std::shared_ptr<Graph> graph,
    newNode.marginalDist = create_emp_distribution( var, *cndObsDist);
   newNode.set_index(vertexId).set_graph(graph).set_variable(var)
       .set_local_indexes(children_vars.begin(), children_vars.end(), label2Index)
-      .set_position().set_level();
+      .set_position().update_level();
   return newNode;
 }
+
+///////////////////////////////////////////////////////////////////
+inline Node& create_latent_node (std::shared_ptr<Graph> graph,
+                                 const unsigned &cardinality,
+                                 const std::string &label = "",
+                                 const unsigned &position = -1,
+                                 const unsigned &level = -1 ) {
+  vertex_t vertexId = boost::add_vertex(*graph);
+  plSymbol var( label, plIntegerType(0, cardinality - 1) );
+  Node &node = (*graph)[vertexId];
+  node.set_index(vertexId).set_graph(graph).set_variable(var)//.set_data_vec(dataVec)
+      .set_position(position).set_level(level);
+  return node;
+}
+
+    
 
 } // namespace novo ends here.
 

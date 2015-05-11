@@ -81,7 +81,7 @@ BOOST_AUTO_TEST_CASE( Test_DBSCAN ) {
   auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);
   auto gdiss = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
 
-  DBSCAN dbscan( gdiss, 2, 0.45 );
+  DBSCAN dbscan( gdiss, 2, 0.55 );
   Partition result = dbscan();
   for ( int i = 0; i < nrows; ++i ) {
     int expected_cluster = i / N;

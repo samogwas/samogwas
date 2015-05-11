@@ -10,19 +10,19 @@
 namespace samogwas {
 
 using MatrixPtr = MultiEM::MatrixPtr;
+typedef plMatrixDataDescriptor<int> DataDesc;
 
 void MultiEM::run( GraphPtr graph,
                    Node& latentNode,
                    const double threshold ) {
   
   auto vars = latentNode.get_children_variables();
-  // printf("hey, nbr of children: %d\n", vars.size());
   auto indexes = latentNode.get_children_global_indexes();
   auto dataTable = create_data_table( graph, indexes );
   auto defTable = create_def_table(samogwas::nrows(*dataTable),samogwas::ncols(*dataTable));
  
   auto learnObjs = create_learn_objects(latentNode.variable, vars);  
-  plMatrixDataDescriptor<int> dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
+  DataDesc dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
   CandidateModels candidateModels;  // vector to store different learners
 
   for (size_t it = 0; it < 1; ++it) {
@@ -36,15 +36,55 @@ void MultiEM::run( GraphPtr graph,
   }
 
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
-   std::vector<plValues> missing_most_probable_value;
-   std::vector<std::vector<plProbValue>> missing_probability_table;
-   bestModel.compute_missing_values_infos(dataDesc, missing_most_probable_value, missing_probability_table );
-  auto jointDist = bestModel.get_joint_distribution();
-  update_parameters(graph, latentNode, missing_most_probable_value, missing_probability_table, jointDist );
+
+  update_parameters( graph, latentNode, dataDesc, bestModel );
+  // std::vector<plValues> missing_most_probable_value;
+  // std::vector<std::vector<plProbValue>> missing_probability_table;
+  // bestModel.compute_missing_values_infos(dataDesc, missing_most_probable_value, missing_probability_table );
+  // auto jointDist = bestModel.get_joint_distribution();
+  
+  // update_parameters(graph, latentNode, missing_most_probable_value, missing_probability_table, jointDist );
+  // update_parameters( graph, latent)
 }
 
+void MultiEM::update_parameters ( GraphPtr graph,
+                                  Node& latentNode,
+                                  DataDesc& dataDesc,
+                                  plEMLearner& model ) {
+  
+  std::vector<plValues> missing_vals;
+  std::vector<std::vector<plProbValue>> prob_tabs;
+  model.compute_missing_values_infos(dataDesc, missing_vals, prob_tabs );
+  auto jointDist = model.get_joint_distribution();  
+  // update_parameters(graph, latentNode, missing_most_probable_value, prob_tab, jointDist );
+  // update_parameters( graph, latent)
 
-LearnObjectPtrs MultiEM::create_learn_objects(const Variable & latentVar, const Variables& variables) {
+  auto latentVar = latentNode.variable;
+  auto dataVec = std::make_shared<std::vector<int>>( missing_vals.size(), 0 );
+
+  auto it = dataVec->begin();  
+  for ( auto v: missing_vals ) {
+    *it = v.get_value_as_int(latentVar);
+    it++;
+  }
+
+  latentNode.set_data_vec(dataVec); // marginal + data_vec
+  auto SIZE = latentVar.cardinality()*missing_vals.size();
+  auto cndDist = std::make_shared<std::vector<double>>( SIZE, 0.0 );
+  auto cIt = cndDist->begin();  
+  for (auto vec: prob_tabs ) {
+    for ( auto v: vec ) {
+      *cIt = v;
+    }    
+  }
+  
+  latentNode.set_cnd_obs_vec( cndDist )
+      .set_joint_distribution( jointDist )
+      .set_position().update_level();  
+}
+
+LearnObjectPtrs MultiEM::create_learn_objects( const Variable & latentVar,
+                                               const Variables& variables ) {
   LearnObjectPtrs learnObjects;
   plLearnObject* learnLatent = new plLearnHistogram(latentVar);
   learnObjects.push_back(learnLatent);
@@ -100,10 +140,8 @@ MatrixPtr MultiEM::transpose(MatrixPtr mat ) {
 plComputableObjectList MultiEM::create_computable_objects( const Variable& latentVar,
                                                            const Variables& variables ) {
   plComputableObjectList jointTable; // joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z)
-
   const plProbTable latentProbInit(latentVar, true); // Z denotes the latent variable.
-  jointTable *= latentProbInit;
-  
+  jointTable *= latentProbInit;  
   for (auto var: variables) {
     plDistributionTable distTab_Xi_Z(var, latentVar); // Conditional distribution P(Xi | Z)
     for (size_t h = 0; h < latentVar.cardinality(); ++h) {
@@ -137,30 +175,34 @@ double MultiEM::scoreBIC( EMLearner& learner, plMatrixDataDescriptor<int>& dataD
   return result;
 }
 
-// 
+// void MultiEM::update_parameters( GraphPtr graph, Node& latentNode,
+//                                  const std::vector<plValues>& most_prob_vals,
+//                                  const std::vector<std::vector<plProbValue>>& probTab,
+//                                  const JointDist& jointDist ) {
+  
+//   auto latentVar = latentNode.variable;
 
-void MultiEM::update_parameters(GraphPtr graph, Node& latentNode, const std::vector<plValues>& most_prob_vals,
-                                const std::vector<std::vector<plProbValue>>& probTab,
-                                const JointDist& jointDist ) {
-  auto latentVar = latentNode.variable;
+//   auto dataVec = std::make_shared<std::vector<int>>(most_prob_vals.size(), 0);
+//   auto it = dataVec->begin();
+  
+//   for (auto v: most_prob_vals) {
+//     *it = v.get_value_as_int(latentVar);
+//   }
+  
+//   latentNode.set_data_vec(dataVec); // marginal + data_vec
 
-  auto dataVec = std::make_shared<std::vector<int>>(most_prob_vals.size(), 0);
-  auto it = dataVec->begin();  
-  for (auto v: most_prob_vals) {
-    *it = v.get_value_as_int(latentVar);
-  }
-  latentNode.set_data_vec(dataVec); // marginal + data_vec
-
-  auto cndDist = std::make_shared<std::vector<double>>(latentVar.cardinality()*most_prob_vals.size(), 0.0);
-  auto cIt = cndDist->begin();  
-  for (auto vec: probTab ) {
-    for ( auto v: vec ) {
-      *cIt = v;
-    }    
-  }  
-  latentNode.set_cnd_obs_vec(cndDist).set_joint_distribution( jointDist )
-      .set_position().set_level();
-
-}
+//   auto cndDist = std::make_shared<std::vector<double>>(latentVar.cardinality()*most_prob_vals.size(), 0.0);
+//   auto cIt = cndDist->begin();
+  
+//   for (auto vec: probTab ) {
+//     for ( auto v: vec ) {
+//       *cIt = v;
+//     }    
+//   }
+  
+//   latentNode.set_cnd_obs_vec(cndDist)
+//       .set_joint_distribution( jointDist )
+//       .set_position().set_level();
+// }
 
 } // namespace
