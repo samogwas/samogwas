@@ -43,6 +43,10 @@ struct CAST: public ClustAlgo {
   CAST ( SimiPtr s, const double& thres): simi(s), thresCAST(thres) {}
 
   
+  virtual double measure(const size_t a, const size_t b) {
+    return simi->compute(a,b);
+  }
+  
   virtual void invalidate() {
     if (simi) {
       simi->invalidate_entropy_cache();
@@ -101,6 +105,8 @@ struct CAST: public ClustAlgo {
   
   /** Moves item indexed by itemIdx from sourceCluster to targetCluster  */
   inline void moveItemBetweenClusters( CAST_Cluster& source, CAST_Cluster& target, const int itemIdx );
+
+  
  protected:
   // main parameter of CAST
   double thresCAST;

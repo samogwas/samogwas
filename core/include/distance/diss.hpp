@@ -53,15 +53,6 @@ struct GraphMutInfoDissimilarity: public GraphDissimilarity {
   virtual size_t nbr_variables() const { return simi.nbr_variables(); }
 
 
-  // virtual void precompute_all() {
-  //   for ( size_t a = 0; a < l2g->size(); ++a) {
-  //     for ( size_t b = a+1; b < l2g->size(); ++b ) {
-        
-  //     }
-  //   }
-  // }
-  
-
  private:
   GraphMutInfoSimilarity simi;
 };

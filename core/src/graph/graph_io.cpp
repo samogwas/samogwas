@@ -22,12 +22,12 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
                                  const std::string dataFileName                             
                                 ) const {  
 
-  std::cout << "begin loading label..." << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "begin loading label..." << std::endl;
   LabPosMap labPosMap = readLabPos(labPosFileName);
-  std::cout << "end loading label..." << std::endl;
+  BOOST_LOG_TRIVIAL(trace) << "end loading label..." << std::endl;
   std::ifstream vertexFile(vertexFileName.c_str()), distributionFile(distributionFileName.c_str()), dataFile(dataFileName.c_str());
   CSVIterator<std::string> vertexLine(vertexFile); ++vertexLine; // skips header.
-  std::cout << "begin loading vertices\n";
+  BOOST_LOG_TRIVIAL(trace) << "begin loading vertices\n";
   
   for( ; vertexLine != CSVIterator<std::string>(); ++vertexLine ) {
     size_t id = boost::lexical_cast<size_t>( (*vertexLine)[TULIP_ID] );
@@ -40,12 +40,12 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
   }
 
   Graph& graphRef = *graph;
-  std::cout << "end loading vertices: " << boost::num_vertices(graphRef) <<  "\n\n";
-  std::cout << "begin loading dist\n";
+  BOOST_LOG_TRIVIAL(trace)  << "end loading vertices: " << boost::num_vertices(graphRef) <<  "\n\n";
+  BOOST_LOG_TRIVIAL(trace)  << "begin loading dist\n";
 
   CSVIterator<std::string> distributionLine(distributionFile);
   while ( distributionLine != CSVIterator<std::string>() ) {
-    std::cout << "begin loading var - 0" << std::endl;
+    BOOST_LOG_TRIVIAL(trace) << "begin loading var - 0" << std::endl;
     plVariablesConjunction variables; // holds child variables
     plComputableObjectList jointDistri;
     size_t latentId =  boost::lexical_cast<size_t>( (*distributionLine)[BN_LATENT_ID] );
@@ -131,7 +131,7 @@ void BayesGraphSave::operator()( const Graph& graph,
   vertex_iterator vi, vi_end;
   Label2Index label2Index;
   vertexFile << ID << GRAPH_SEPARATOR << LATENT << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << "\n";  // writes header
-  std::cout << "saving vertices...\n";
+ BOOST_LOG_TRIVIAL(trace) << "saving vertices...\n";
   for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
     int vertex = *vi;
     vertexFile << graph[vertex].index
@@ -144,7 +144,7 @@ void BayesGraphSave::operator()( const Graph& graph,
     label2Index[ graph[*vi].label ] = graph[*vi].index;
   }
   vertexFile.close();
-  std::cout << "saving joint distribution...\n";
+  BOOST_LOG_TRIVIAL(trace) << "saving joint distribution...\n";
    
   for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
     const Node& node = graph[*vi];
@@ -184,21 +184,8 @@ void BayesGraphSave::operator()( const Graph& graph,
           int childVal;
           for ( childVal = 0; childVal < varX.cardinality() - 1; ++childVal ) { // for each value x of the child variable            
             distFile << std::fixed << std::setprecision(15)
-                     << distTableXZ->compute( plValues().add(latentVar, val).add(varX, childVal) ) << GRAPH_SEPARATOR; // p(X_i = childVal | Z = val)
-
-            //std::cout << compute_cond_prob_obs()[
-              // double compute_cond_prob( const int cIdx, const int childVal, const int parentVal ) const;
-
-            // distTableXZ->compute( plValues().add(varX, childVal), plValues().add(latentVar, val) );
-                   // 0.5n
-            // node.compute_cond_prob( (int)i,  plValues().add(varX, childVal), plValues().add(latentVar, val) );
-            // node.compute_cond_prob(i,  childVal, val );
-            // printf("[%s = %d|%s = %d] = %f (vs %f)\n", varX.name().c_str(), childVal, node.getLabel().c_str(), val,
-            //        distTableXZ->compute( plValues().add(varX, childVal), plValues().add(latentVar, val) ),
-            //        // 0.5
-            //         node.compute_cond_prob(i,  childVal, val )
-            //        // node.compute_cond_prob( (int)i,  plValues().add(varX, childVal), plValues().add(latentVar, val)  )
-            //        );
+                     << distTableXZ->compute( plValues().add(latentVar, val).add(varX, childVal) )
+                     << GRAPH_SEPARATOR; // p(X_i = childVal | Z = val)
           }
           distFile << std::fixed << std::setprecision(15)
                    << distTableXZ->compute( plValues().add(latentVar, val).add(varX, childVal) ) << std::endl;

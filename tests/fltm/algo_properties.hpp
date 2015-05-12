@@ -44,6 +44,13 @@ typedef std::shared_ptr<Matrix> MatrixPtr;
 
 typedef int Position;
 
+// typedef MutInfoSimilarity<Matrix> MutInfoSimi;
+// typedef MutInfoDissimilarity<Matrix> MutInfoDiss;
+// typedef std::vector<Position> Positions;
+
+// typedef DBSCAN<MutInfoDiss> DBSCAN_Algo;
+// typedef CAST<MutInfoSimi> CAST_Algo;
+
 inline std::vector<ClustAlgoPtr> read_clustering_algos( GraphPtr graph,
                                                         Local2GlobalPtr l2g,
                                                         PosVecPtr positions,
@@ -61,7 +68,7 @@ std::vector<ClustAlgoPtr> read_clustering_algos( GraphPtr graph,
                                                  PosVecPtr positions,
                                                  Options& opt ) {
 
-  auto configPath = opt.clustConf; auto MAX_POS = opt.fltm_params.maxDist;
+  auto configPath = opt.clustConf; auto MAX_POS = opt.fltm_maxDist;
   std::ifstream confFile(configPath);
   using boost::property_tree::ptree;  ptree pt;
   read_xml(confFile, pt);

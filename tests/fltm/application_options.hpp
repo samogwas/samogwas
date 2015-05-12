@@ -22,6 +22,7 @@ namespace samogwas
 {
 
 struct Options {
+  /* Input */
   std::string inputDataFile;
   std::string inputLabelFile;
   std::string outputDir;
@@ -29,7 +30,12 @@ struct Options {
   double fltm_alpha;
   double fltm_beta;
   int fltm_maxCard;
-  samogwas::FLTM_Params fltm_params;  
+  int fltm_maxDist;
+  // double fltm_simiThres;  
+  // int fltm_nbrRestarts; 
+  // int fltm_imputeMode; 
+  samogwas::FLTM_Params fltm_params;
+  
 };
 
 
@@ -46,10 +52,22 @@ inline Options get_program_options(int argc, char** argv) {
         ("in_dat,d", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
         ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
+        // ("verbose,v", po::value<int>(&result.verbose)->default_value(0), "Verbose")
         
         ("out,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
         ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
-        ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->required(), "Max Dist")
+
+        // ("clust,c", po::value<int>(&result.clustAlgo)->required(), "Clust Algo. (0): DBSCAN (1): CAST, (2): LOUV")
+
+        ("max_dist,x", po::value<int>(&result.fltm_maxDist)->required(), "Max Dist")
+        // ("simi_thres,t", po::value<double>(&result.fltm_simiThres)->required(), "Simi Thres")
+        // ///////////////////////////////////////////////////////////////////////////
+        // ("db_minp,M", po::value<int>(&result.dbscan_minPts)->default_value(0), "DBSCAN MinPts")
+        // ("db_eps,E", po::value<double>(&result.dbscan_eps)->default_value(0), "DBSCAN Eps")
+
+        ///////////////////////////////////////////////////////////////////////////
+        // ("cast_cast,C", po::value<double>(&result.cast_cast)->default_value(0), "CAST cast")
+        // ("f_imode,m", po::value<int>(&result.fltm_imputeMode)->required(), "FLTM impute mode") 
 
         ///////////////////////////////////////////////////////////////////////////
         ("f_alpha,a", po::value<double>(&result.fltm_alpha)->required(), "FLTM alpha")

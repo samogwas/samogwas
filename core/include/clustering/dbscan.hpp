@@ -61,7 +61,13 @@ struct DBSCAN: public ClustAlgo {
     sprintf( name, "DBSCAN_%d_%.3f", minPts, epsilon);
     return name;
   }
+  
   virtual CriteriaPtr get_criteria() { return diss->get_criteria(); }
+
+  virtual double measure(const size_t a, const size_t b) {
+    return diss->compute(a,b);
+  }
+
 
  protected:
   /// Internal method that returns the set of neighbors for a given point.

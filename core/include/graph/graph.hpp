@@ -75,10 +75,16 @@ struct Node {
 
   typedef plComputableObjectList::const_iterator plCompIte;
   Node& set_marginal_distribution( plCompIte it) {
+
     auto dist = std::make_shared<plDistribution>(*it);
     return set_marginal_distribution(dist);
   }
-  Node& set_marginal_distribution( DistPtr dist) { this->marginalDist = dist; return *this; }  
+  Node& set_marginal_distribution( DistPtr dist) {
+    if (this->variable.name() == "300") {
+      std::cout << "hahaha" << std::endl;
+    }
+    this->marginalDist = dist; return *this;
+  }  
   Node& set_children_distributions( CondObsDistPtr dist);
   Node& set_children_distributions(plCompIte beg, plCompIte end);
 
@@ -224,10 +230,17 @@ inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<do
     }
   }
 
+  double sum = 0.0;
+
   for (int i = 0; i < variable.cardinality(); ++i) {
+    sum += prob[i];
     prob[i] /= N;
+
   }
-  return std::make_shared<plDistribution>(variable, prob);
+
+
+  auto dist = std::make_shared<plDistribution>(variable, prob);
+  return dist;
   
 }
 

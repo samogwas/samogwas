@@ -3,41 +3,52 @@
 #include "fltm/latent_var_criteria.hpp"
 #include <boost/log/trivial.hpp>
 
+#include <fstream>
+
+
 namespace samogwas {
 
-CriteriaPtr create_current_criteria( Graph& graph, int step);
 
 void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph ) {
   auto lab2Idx = create_index_map(*graph);
   Local2GlobalPtr l2g = create_local_to_global_map(*graph);
 
   auto criteria = clustAlgo->get_criteria();
+  
   for ( int step = 0; step < params.nbrSteps; ++step) {
     if (step > 0) {
-      criteria = create_current_criteria( *graph, step);
+      criteria = create_current_criteria( *graph, *l2g, params.maxDist, step);
       clustAlgo->set_measure( graph, l2g, criteria );
     }
     
-    BOOST_LOG_TRIVIAL(trace) << "\nFLTM - step[" << step << "]\n";
+    BOOST_LOG_TRIVIAL(trace) << "FLTM - step[" << step << "] over " << params.nbrSteps;
     BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
                              << " on " << l2g->size();
     auto partition = clustAlgo->run();
     auto clustering = partition.to_clustering();
-    BOOST_LOG_TRIVIAL(trace) << "to obtain: " << clustering.size() << std::endl;
-    
-    Local2Global().swap(*l2g);
+
+    auto SIZE = l2g->size();
+    BOOST_LOG_TRIVIAL(trace) << "to obtain: " << clustering.size() << std::endl;   
+   
     int nonSingletons =  number_non_singletons(clustering);
-    if ( nonSingletons == 0 ) { return;  }
+    if ( nonSingletons == 0 ) {
+      BOOST_LOG_TRIVIAL(trace) << "stop due to only singleton.";
+      return;
+    }
+    Local2Global().swap(*l2g);
 
     int nbrGoodClusters = 0; int numClust = 0;
-    for ( auto &cluster: clustering ) {      
+    for ( auto &cluster: clustering ) {
+
       if ( cluster.size() > 1 ) {
         numClust++;
-        RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)), plIntegerType(0, cardFunc->compute(cluster) - 1 ));
+        // BOOST_LOG_TRIVIAL(trace) << "processing cluster " << numClust << std::endl;
+        RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+                    plIntegerType(0, cardFunc->compute(cluster) - 1 ));
         Node latentNode = create_latent_node( graph, var, lab2Idx, cluster);
         MultiEM em(params.nbrRestarts);
         em.run( graph, latentNode, params.emThres);
-        if ( accept_latent_variable( *graph, latentNode, params. latentVarQualityThres ) ) {
+        if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
           nbrGoodClusters++;
           add_latent_node( *graph, latentNode );
           update_index_map( *l2g, latentNode );
@@ -49,11 +60,14 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
       }
     }
     if ( nbrGoodClusters == 0 ) {
+      BOOST_LOG_TRIVIAL(trace) << "stop due to zero good clusters.";
       return;
     }
     if (l2g->size() <= 1) {
+      BOOST_LOG_TRIVIAL(trace) << "stop due to zero or only one cluster.";
       return;
     }
+    BOOST_LOG_TRIVIAL(trace) << std::endl  << std::endl;
   }
 }
 
@@ -129,8 +143,16 @@ void FLTM::update_index_map( Local2Global& l2g, const Node& latentNode) {
   l2g.push_back(latentNode.index);
 }
 
-CriteriaPtr create_current_criteria( Graph& graph, int step) {
-  if (step >= 1) return std::make_shared<AcceptAllCriteria>();
+CriteriaPtr FLTM::create_current_criteria( Graph& graph, Local2Global& l2g, unsigned MAX_POS, int step) {  
+  if (step >= 1) {
+    auto positions = std::make_shared<std::vector<int>>(l2g.size(), 0);
+    for ( size_t i = 0; i < l2g.size(); ++i) {
+      auto idx = l2g.at(i);
+      positions->at(i) = graph[idx].position;
+    }                             
+
+    return std::make_shared<PositionCriteria>( positions, 10*MAX_POS );         
+  }
 }
 
 }

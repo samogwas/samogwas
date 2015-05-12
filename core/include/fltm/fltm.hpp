@@ -20,6 +20,7 @@
 #include "clustering/clustering.hpp"
 #include "clustering/dbscan.hpp"
 #include "clustering/cast.hpp"
+#include "fltm/latent_var_criteria.hpp"
 
 namespace samogwas
 {
@@ -30,6 +31,7 @@ struct FLTM_Params {
   int nbrRestarts;
   double emThres; // controls EM algorithm convergence.
   double latentVarQualityThres;
+  unsigned maxDist;
 };
 
 struct FLTM {
@@ -53,6 +55,8 @@ struct FLTM {
   Local2GlobalPtr create_local_to_global_map(const Graph& graph);
   void update_index_map( Local2Global& l2g, const Cluster& cluster);
   void update_index_map( Local2Global& l2g, const Node& latentNode);
+  CriteriaPtr create_current_criteria(  Graph& graph, Local2Global& l2g, unsigned MAX_POS, int step);
+
 
  private:
   FLTM_Params params;

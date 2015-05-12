@@ -59,7 +59,6 @@ Node& Node::set_joint_distribution( const plComputableObjectList& compList) {
   this->set_marginal_distribution(beg);
   // set_children_dist
   this->set_children_distributions(++beg, compList.end());
-
   return *this;
 }
 

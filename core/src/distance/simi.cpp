@@ -20,21 +20,33 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
   Node& nA = (*graph)[globalA], nB = (*graph)[globalB];
 
   if (this->cached_entropies.at(localA) < 0) {
-    this->cached_entropies[localA] = entropy.compute(nA);
+    this->cached_entropies[localA] = nA.marginalDist->compute_shannon_entropy(); //entropy.compute(nA);
   }
 
   if (this->cached_entropies.at(localB) < 0) {
-    this->cached_entropies[localB] = entropy.compute(nB);
+    this->cached_entropies[localB] = nB.marginalDist->compute_shannon_entropy();//entropy.compute(nB);
   }
 
-  double minEntropyAB = std::min(this->cached_entropies.at(localB), this->cached_entropies.at(localA));
+  double eA = this->cached_entropies[localA], eB = this->cached_entropies[localB] ;
+
+  double minEntropyAB = std::min(eA, eB);
   double norm_mutinfo = 0.0;
 
   if (minEntropyAB != 0) {
     double jE_AB = jEntropy.compute(nA,nB);
-    double mi_AB = this->cached_entropies.at(localB) + this->cached_entropies.at(localA) - jE_AB;
+    double mi_AB = eA + eB - jE_AB;
     norm_mutinfo = mi_AB / minEntropyAB;
+
+    if ( (norm_mutinfo > 1.000001) || (norm_mutinfo<0) ) {
+      printf("COMPUTING: %f - %f - %f --> %f\n", eA, eB, jE_AB, norm_mutinfo);
+      
+    }
+    //assert( (norm_mutinfo <= 1.0) && (norm_mutinfo>=0) ) ;
+
+    
   }
+
+
 
   return norm_mutinfo;
 }
@@ -42,8 +54,6 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
 void GraphMutInfoSimilarity::invalidate_entropy_cache() {
   std::vector<double>().swap(cached_entropies);
   std::vector<double>().swap(cached_joint_entropies);
-  auto SIZE = l2g->size();
-  cached_entropies.resize( SIZE, -1.0);
 }
 
 
