@@ -33,7 +33,7 @@ using ms = std::chrono::milliseconds;
 using get_time = std::chrono::steady_clock ;
 typedef std::shared_ptr<PositionCriteria> PositionCriteriaPtr;
 
-void pre_compute( PtrMatrixPtr mat, Graph& graph, CriteriaPtr criteria );
+std::string generate_outfile( PtrMatrixPtr mat, Graph& graph, CriteriaPtr criteria );
 
 int main( int argc, char** argv ) {
   // auto options = get_test_program_options(""); // get_program_options( argc, argv );
@@ -55,16 +55,22 @@ int main( int argc, char** argv ) {
   auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
   
   //use auto keyword to minimize typing strokes :)
+  std::ofstream stats("./stats.txt");
+
   auto start = get_time::now();
   for ( auto clustAlgo: clustAlgos ) {    
     std::cout << "running FLTM for " << clustAlgo->name() << std::endl;    
     fltm.execute(clustAlgo, cardF, graph);
     auto end = get_time::now();
     auto diff = end - start;
-    std::cout<<"Elapsed time is:  " << std::chrono::duration_cast<ms>(diff).count()/1000 << " seconds" <<std::endl;
+    std::cout<<"Elapsed time is:  " << std::chrono::duration_cast<ms>(diff).count()/1000 << " seconds" << std::endl;
 
+    stats << "running FLTM for " << clustAlgo->name() << std::endl;
+    stats << "Elapsed time is:  " << std::chrono::duration_cast<ms>(diff).count()/1000 << " seconds" << std::endl;
   }  
 
+
+  stats.close();
 }
 
 
