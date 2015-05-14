@@ -13,8 +13,6 @@ Node& Node::set_children_distributions(plCompIte beg, plCompIte end ) {
 
 Node& Node::set_local_indexes( const Label2Index &label2Index ) {
   auto vars = get_children_variables();
-  // set_local_indexes( vars.begin(), vars.end(), label2Index );
-
   int i = 0;  
   for ( auto it = vars.begin(); it != vars.end(); ++it ) {
     auto var = *it;
@@ -62,21 +60,6 @@ Node& Node::set_joint_distribution( const plComputableObjectList& compList) {
   return *this;
 }
 
-// /**
-//  */
-// Node& Node::set_joint_( const plJointDistribution& compList ) {
-
-//   auto beg = compList.begin();
-//   // set_marginal_dist
-//   this->set_marginal_distribution(beg);
-//   // set_children_dist
-//   this->set_children_distributions(++beg, compList.end());
-
-//   return *this;
-// }
-
-
-
 Node& Node::set_position() {
   auto children_indexes = this->get_children_global_indexes();
   unsigned nbrChildren = this->nbr_children();  
@@ -100,8 +83,9 @@ Node& Node::update_level() {
     if (maxChildrenLevel <  n.level) {
       maxChildrenLevel = n.level;
     }
-  }        
+  }
   this->level = maxChildrenLevel + 1;
+    
   return *this;
 }
 

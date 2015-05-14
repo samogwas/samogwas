@@ -39,15 +39,7 @@ struct ComputeNodeJointEntropy {
     for (size_t i = 0; i < jointTab.size(); ++i) {
       sum += jointTab.at(i);
     }
-
-    if ( abs(sum - (double)SIZE)>0.0001) {
-      // for (auto it = jointTab.begin(); it != jointTab.end(); ++it ) {
-      //   std::cout << *it << std::endl;
-      // }
-      printf("sum %f vs size %f\n", sum, (double)SIZE);      
-      exit(-1);
-    }
-    
+   
     return log(SIZE) - 1.0/SIZE*std::accumulate( jointTab.begin(), jointTab.end(),
                                                  0.0, sum_log_count);
   }
@@ -56,16 +48,17 @@ struct ComputeNodeJointEntropy {
   /////////////////////////////////////////////////////////////
   double compute(const Node& nA, const Node& nB) const {
     if (nA.level > nB.level) return compute(nB,nA);
-    if (nA.is_leaf() && nB.is_leaf()) {
-      assert(nA.dataVec && nB.dataVec && nA.dataVec->size() == nB.dataVec->size());
-      return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
-    }
-    else if (nA.is_leaf() && !nB.is_leaf()) {
-      return compute_leaf_latent(nA,nB, *nA.dataVec, *nB.cndObsDist);
-    }
-    else {
-      return compute_latent_latent(nA, nB, *nA.cndObsDist, *nB.cndObsDist);
-    } 
+    return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
+    // if (nA.is_leaf() && nB.is_leaf()) {
+    //   assert(nA.dataVec && nB.dataVec && nA.dataVec->size() == nB.dataVec->size());
+    //   return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
+    // }
+    // else if (nA.is_leaf() && !nB.is_leaf()) {
+    //   return compute_leaf_latent(nA,nB, *nA.dataVec, *nB.cndObsDist);
+    // }
+    // else {
+    //   return compute_latent_latent(nA, nB, *nA.cndObsDist, *nB.cndObsDist);
+    // } 
   }
 
   double compute_leaf_leaf(const Node& nA, const Node& nB,

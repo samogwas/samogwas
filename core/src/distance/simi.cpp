@@ -36,18 +36,7 @@ double GraphMutInfoSimilarity::compute( const int localA, const int localB) {
     double jE_AB = jEntropy.compute(nA,nB);
     double mi_AB = eA + eB - jE_AB;
     norm_mutinfo = mi_AB / minEntropyAB;
-
-    if ( (norm_mutinfo > 1.000001) || (norm_mutinfo<0) ) {
-      printf("COMPUTING: %f - %f - %f --> %f\n", eA, eB, jE_AB, norm_mutinfo);
-      
-    }
-    //assert( (norm_mutinfo <= 1.0) && (norm_mutinfo>=0) ) ;
-
-    
   }
-
-
-
   return norm_mutinfo;
 }
 

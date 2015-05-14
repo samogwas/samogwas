@@ -11,6 +11,9 @@
 #include <memory>
 #include <vector>
 #include <cmath>
+
+#include "graph/graph.hpp"
+
 namespace samogwas
 {
 
@@ -37,6 +40,26 @@ struct PositionCriteria: public ConstraintCriteria {
   PosVecPtr posVec;
   int max_dist;
 };
+
+
+struct GraphPositionCriteria: public ConstraintCriteria {
+  GraphPositionCriteria( const Graph& g,  const std::vector<int>& lg, int max_d): graph(g), l2g(lg), max_dist(max_d) {}
+
+  virtual bool valid( const int vA, const int vB) const {
+    //return abs(posVec->at(vA) - posVec->at(vB)) < max_dist;
+    auto globalA = l2g.at(vA), globalB = l2g.at(vB);
+    auto delta = abs( graph[globalA].position - graph[globalB].position );
+    int delta_level = abs(graph[globalA].level - graph[globalB].level) + 1;
+    auto maxDist = 4*delta_level*max_dist;
+    return (delta) < maxDist;
+  }
+ private:
+  // PosVecPtr posVec;
+  const Graph& graph;
+  const std::vector<int>& l2g;
+  int max_dist;
+};
+
 
 } // namespace samogwas ends here. 
 

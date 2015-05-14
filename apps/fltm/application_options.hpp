@@ -29,7 +29,9 @@ struct Options {
   double fltm_alpha;
   double fltm_beta;
   int fltm_maxCard;
-  samogwas::FLTM_Params fltm_params;  
+  samogwas::FLTM_Params fltm_params;
+
+  int nbrConsidered;
 };
 
 
@@ -60,8 +62,7 @@ inline Options get_program_options(int argc, char** argv) {
         ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->required(), "FLTM nbr steps") 
 
         ("f_thres_info,i", po::value<double>(&result.fltm_params.latentVarQualityThres)->required(), "FLTM thres info")
-        ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")
-        
+        ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")      
         ;
     po::variables_map vm; 
     try { 

@@ -53,6 +53,12 @@ void MultiEM::update_parameters ( GraphPtr graph,
   auto latentVar = latentNode.variable;
   auto dataVec = std::make_shared<std::vector<int>>( missing_vals.size(), 0 );
 
+  auto it = dataVec->begin();  
+  for (size_t ind = 0; ind < missing_vals.size(); ++ind) {
+    plProbTable probTab(latentVar, prob_tabs[ind], true);
+    dataVec->at(ind) = probTab.draw()[0];
+  } 
+  
   auto SIZE = latentVar.cardinality()*missing_vals.size();
   auto cndDist = std::make_shared<std::vector<double>>( SIZE, 0.0 );
   auto cIt = cndDist->begin();  
@@ -63,7 +69,7 @@ void MultiEM::update_parameters ( GraphPtr graph,
     }    
   }
 
-  latentNode.set_cnd_obs_vec( cndDist )
+  latentNode.set_cnd_obs_vec( cndDist, false ).set_data_vec(dataVec, true)
       .set_children_distributions( ++jointDistCompList.begin(), jointDistCompList.end() )
       .set_position()
       .update_level();  

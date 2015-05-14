@@ -49,12 +49,12 @@ struct FLTM {
  private:
   int number_non_singletons( const Clustering &clustering );
   bool accept_latent_variable( Graph&, Node& node, double qualityThres );
-  Node create_latent_node( GraphPtr graph, plSymbol& var, Label2Index& l2i, Cluster& cluster );
+  Node create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster );
   Node& add_latent_node( Graph& graph, Node& n );
   Label2Index create_index_map( const Graph& graph );
   Local2GlobalPtr create_local_to_global_map(const Graph& graph);
-  void update_index_map( Local2Global& l2g, const Cluster& cluster);
-  void update_index_map( Local2Global& l2g, const Node& latentNode);
+  void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Cluster& cluster);
+  void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Node& latentNode);
   CriteriaPtr create_current_criteria(  Graph& graph, Local2Global& l2g, unsigned MAX_POS, int step);
 
 
