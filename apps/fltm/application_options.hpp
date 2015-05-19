@@ -31,6 +31,9 @@ struct Options {
   int fltm_maxCard;
   samogwas::FLTM_Params fltm_params;
 
+  int outType;
+
+
   int nbrConsidered;
 };
 
@@ -50,6 +53,8 @@ inline Options get_program_options(int argc, char** argv) {
         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
         
         ("out,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
+        ("outtype,t", po::value<int>(&result.outType)->required(), "Output Type (0): Distri (1) Tulip")
+
         ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->required(), "Max Dist")
 

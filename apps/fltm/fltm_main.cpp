@@ -76,24 +76,43 @@ int main( int argc, char** argv ) {
           << std::chrono::duration_cast<ms>(diff).count()/1000
           << " seconds" << std::endl;
 
-    std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
     boost::filesystem::create_directories(outputPath);
-    char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
-    sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
-    sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
-    sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
-    sprintf(imputedLab_fn, "fltm_%s_imputed.lab", algoClust->name() );
-    sprintf(graph_fn, "fltm_%s.graph", algoClust->name() );
 
-    outBayesVertex = (outputPath / bayesVertex_fn).string(),
-        outBayesDist = (outputPath / bayesDist_fn).string(),
-        outImpDat = (outputPath / imputedDat_fn).string(),
-        outImpLab = (outputPath / imputedLab_fn).string(),
-        outGraph = (outputPath / graph_fn).string();
 
-    BayesGraphSave()( *graph, outBayesVertex, outBayesDist );  
-    saveDatLab( *graph, outImpDat, outImpLab );
-    
+    switch( options.outType) {
+      case 0: {
+        std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
+        char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
+        sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
+        sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
+        sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
+        sprintf(imputedLab_fn, "fltm_%s_imputed.lab", algoClust->name() );
+        sprintf(graph_fn, "fltm_%s.graph", algoClust->name() );
+
+        outBayesVertex = (outputPath / bayesVertex_fn).string(),
+            outBayesDist = (outputPath / bayesDist_fn).string(),
+            outImpDat = (outputPath / imputedDat_fn).string(),
+            outImpLab = (outputPath / imputedLab_fn).string(),
+            outGraph = (outputPath / graph_fn).string();
+        BayesGraphSave()( *graph, outBayesVertex, outBayesDist );  
+        saveDatLab( *graph, outImpDat, outImpLab );
+        break;
+      }
+      case 1: {
+        std::string outNode, outEdge;
+        char edge_fn[256], node_fn[256];
+        sprintf( node_fn, "fltm_%s_tulip.vertex", algoClust->name() );
+        sprintf( edge_fn, "fltm_%s_tulip.edge", algoClust->name() );
+        outNode = (outputPath  /node_fn ).string(),
+            outEdge = (outputPath / edge_fn).string();
+        
+        TulipGraphSave()( *graph, outNode, outEdge );
+        break;
+      }
+
+      default:
+        break;
+    }    
   }  
   stats.close();
 }

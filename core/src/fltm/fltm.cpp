@@ -38,9 +38,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     std::vector<int> l2gTemp(*l2g);
     Local2Global().swap(*l2g);  
     int nbrGoodClusters = 0; int numClust = 0;
-    for ( auto &cluster: clustering ) {
-
-      
+    for ( auto &cluster: clustering ) {      
       if ( cluster.size() > 1 ) {
         numClust++;
         RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
@@ -53,6 +51,12 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
           add_latent_node( *graph, latentNode );
           update_index_map( *l2g, l2gTemp, latentNode );
           lab2Idx[ latentNode.getLabel() ] = latentNode.index;
+
+          for ( auto item: cluster ) {
+            // l2g.push_back( currentL2G.at(item) );
+            boost::add_edge( latentNode.index, l2gTemp.at(item), *graph); 
+          }
+            
         } else {
           update_index_map( *l2g, l2gTemp, cluster);
         }

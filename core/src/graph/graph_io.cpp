@@ -223,4 +223,34 @@ LabPosMap FLTMGraphReader::readLabPos( const std::string labPosFileName ) const 
   return lpMap;
 }
 
+
+
+
+//////////////////
+//static const std::string LABEL = "LABEL";
+void TulipGraphSave::operator()(const Graph& graph,
+                                const std::string nodeFile,
+                                const std::string edgeF) const {
+  std::ofstream vertexFile(nodeFile.c_str());
+  vertex_iterator vi, vi_end;
+  vertexFile << ID << GRAPH_SEPARATOR << LABEL << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << "\n";  // writes header
+  for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
+    int vertex = *vi;
+    vertexFile << graph[vertex].index << GRAPH_SEPARATOR
+               << graph[vertex].getLabel() << GRAPH_SEPARATOR
+               << graph[vertex].level << GRAPH_SEPARATOR
+               << graph[vertex].variable.cardinality()
+               << std::endl;
+  }  
+  vertexFile.close();
+
+  std::ofstream edgeFile(edgeF.c_str());
+  edgeFile << ID << GRAPH_SEPARATOR << PARENT_ID << "\n"; // writes header
+  edge_iterator ei, ei_end;
+  for( boost::tie(ei, ei_end) = boost::edges(graph); ei != ei_end; ++ei ) {
+    edgeFile << boost::target(*ei, graph) << GRAPH_SEPARATOR << boost::source(*ei, graph) << std::endl;
+  }
+  edgeFile.close(); 
+}
+
 }
