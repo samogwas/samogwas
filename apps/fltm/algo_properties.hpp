@@ -45,16 +45,7 @@ typedef std::shared_ptr<Matrix> MatrixPtr;
 typedef int Position;
 typedef std::map<std::string, std::string> AlgoConf;
 
-inline std::vector<AlgoConf> read_clustering_algos( 
-                                                    std::string confFile );
-
-// inline ClustAlgoPtr read_clustering_algo( GraphPtr graph,
-//                                           Local2GlobalPtr l2g,
-//                                           PosVecPtr positions,                                            
-//                                           const unsigned MAX_POST,
-//                                           std::string algoName,
-//                                           ...
-//                                           );
+inline std::vector<AlgoConf> read_clustering_algos( std::string confFile );
 
 } // namespace samogwas ends here.
 

@@ -392,23 +392,23 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Latent_Inp ) {
   plSymbol vY("Y", plIntegerType(0, CARD-1));
   Node nY = createObsNode( graph, vY, vec_Y, 12, lab2Idx);
 
-  Node nZ =  createLatentNode( graph, CARD, "Z", 13, 1);  
-  //nZ.cndObsDist = vec_Z;
-  nZ. set_cnd_obs_vec(vec_Z);
+  // Node nZ =  createLatentNode( graph, CARD, "Z", 13, 1);  
+  // //nZ.cndObsDist = vec_Z;
+  // nZ. set_cnd_obs_vec(vec_Z);
 
-  for (int i = 0; i < N;++i) {    
-    BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 0, i ), vec_X->at(i) == 0);
-    BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 1, i ), vec_X->at(i) == 1);    
-    BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 0, i ), vec_Z->at(i*2) );
-    BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 1, i ), vec_Z->at(i*2+1) );
-  }
+  // for (int i = 0; i < N;++i) {    
+  //   BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 0, i ), vec_X->at(i) == 0);
+  //   BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 1, i ), vec_X->at(i) == 1);    
+  //   BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 0, i ), vec_Z->at(i*2) );
+  //   BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 1, i ), vec_Z->at(i*2+1) );
+  // }
   
-  BOOST_CHECK(!nZ.is_parent_of(nX));
-  ComputeNodeJointEntropy jointEntropy; ComputeNodeMutInfo mut_info;
-  double je = jointEntropy.compute(nX, nZ);
+  // BOOST_CHECK(!nZ.is_parent_of(nX));
+  // ComputeNodeJointEntropy jointEntropy; ComputeNodeMutInfo mut_info;
+  // double je = jointEntropy.compute(nX, nZ);
  
-  double mi = mut_info.compute(nX, nZ);
-  BOOST_CHECK_CLOSE( je, 1.36554 , 0.001);
+  // double mi = mut_info.compute(nX, nZ);
+  // BOOST_CHECK_CLOSE( je, 1.36554 , 0.001);
 }
 
 BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent_2 ) {

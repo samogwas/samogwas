@@ -86,34 +86,34 @@ BOOST_AUTO_TEST_CASE( Test_FLTM_DBSCAN ) {
 
 Options get_test_program_options(std::string test);
 BOOST_AUTO_TEST_CASE( Test_FLTM_Simu ) {
-  auto options = get_test_program_options("Test_FLTM_Simu");
-  auto labels = std::make_shared<LabelVec>();
-  auto positions = std::make_shared<PosVec>();
-  auto ids = std::make_shared<PosVec>();
-  Label2Index lab2Idx;
+  // auto options = get_test_program_options("Test_FLTM_Simu");
+  // auto labels = std::make_shared<LabelVec>();
+  // auto positions = std::make_shared<PosVec>();
+  // auto ids = std::make_shared<PosVec>();
+  // Label2Index lab2Idx;
 
-  load_labels_positions( *labels, *ids, *positions, options.inputLabelFile );
+  // load_labels_positions( *labels, *ids, *positions, options.inputLabelFile );
 
-  auto mat = load_data_table(options.inputDataFile);
-  auto l2g = init_index_mapping( mat->size() );
-  auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
-  auto clustAlgos = read_clustering_algos( graph, l2g, positions, options );
+  // auto mat = load_data_table(options.inputDataFile);
+  // auto l2g = init_index_mapping( mat->size() );
+  // auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
+  // auto clustAlgos = read_clustering_algos( graph, l2g, positions, options );
 
-  FLTM fltm(options.fltm_params);
-  auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
-   std::cout << "\nrunning test FLTM" << std::endl;    
-  auto start = get_time::now();
-  for ( auto clustAlgo: clustAlgos ) {    
-    std::cout << "running FLTM for " << clustAlgo->name() << std::endl;    
-    fltm.execute(clustAlgo, cardF, graph);
-    auto rs = clustAlgo->run();
-    auto end = get_time::now();
-    auto diff = end - start;
-    std::cout<<"Elapsed time is:  "
-             << std::chrono::duration_cast<ms>(diff).count()/1000
-             << " seconds" <<std::endl <<std::endl <<std::endl;
+  // FLTM fltm(options.fltm_params);
+  // auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
+  //  std::cout << "\nrunning test FLTM" << std::endl;    
+  // auto start = get_time::now();
+  // for ( auto clustAlgo: clustAlgos ) {    
+  //   std::cout << "running FLTM for " << clustAlgo->name() << std::endl;    
+  //   fltm.execute(clustAlgo, cardF, graph);
+  //   auto rs = clustAlgo->run();
+  //   auto end = get_time::now();
+  //   auto diff = end - start;
+  //   std::cout<<"Elapsed time is:  "
+  //            << std::chrono::duration_cast<ms>(diff).count()/1000
+  //            << " seconds" <<std::endl <<std::endl <<std::endl;
 
-  }  
+  // }  
 
 }
 
