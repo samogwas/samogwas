@@ -233,13 +233,14 @@ void TulipGraphSave::operator()(const Graph& graph,
                                 const std::string edgeF) const {
   std::ofstream vertexFile(nodeFile.c_str());
   vertex_iterator vi, vi_end;
-  vertexFile << ID << GRAPH_SEPARATOR << LABEL << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << "\n";  // writes header
+  vertexFile << ID << GRAPH_SEPARATOR << LABEL << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << GRAPH_SEPARATOR <<  POSITION << "\n";  // writes header
   for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
     int vertex = *vi;
     vertexFile << graph[vertex].index << GRAPH_SEPARATOR
                << graph[vertex].getLabel() << GRAPH_SEPARATOR
                << graph[vertex].level << GRAPH_SEPARATOR
-               << graph[vertex].variable.cardinality()
+               << graph[vertex].variable.cardinality() << GRAPH_SEPARATOR
+               << graph[vertex].position
                << std::endl;
   }  
   vertexFile.close();
