@@ -67,9 +67,9 @@ Node& Node::set_position() {
     unsigned totalPos = 0;
     for (auto cidx: children_indexes) {      
       Node& n = (*graph)[cidx];
-      totalPos += n.position;
+      totalPos += n.position / nbrChildren;
     }       
-    this->position = totalPos / nbrChildren;
+    this->position = totalPos;
   }
   return *this;
 }
