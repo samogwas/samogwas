@@ -49,8 +49,8 @@ struct GraphPositionCriteria: public ConstraintCriteria {
     //return abs(posVec->at(vA) - posVec->at(vB)) < max_dist;
     auto globalA = l2g.at(vA), globalB = l2g.at(vB);
     auto delta = abs( graph[globalA].position - graph[globalB].position );
-    int delta_level = abs(graph[globalA].level - graph[globalB].level) + 1;
-    auto maxDist = 4*delta_level*max_dist;
+    int delta_level = abs(graph[globalA].level - graph[globalB].level);
+    auto maxDist = pow(4,delta_level+1)*max_dist;
     return (delta) < maxDist;
   }
  private:

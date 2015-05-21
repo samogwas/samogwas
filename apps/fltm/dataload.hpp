@@ -96,7 +96,19 @@ inline RealMatrixPtr load_real_data_table( const std::string& infile,
 }
 
 
+inline unsigned number_of_lines( const std::string& inf) {
+  unsigned int numLines = 0;
+  FILE *infile = fopen(inf.c_str(), "r");
+  int ch;
+  while (EOF != (ch=getc(infile)))
+    if ('\n' == ch)
+      ++numLines;
+  fclose(infile);
+  return numLines;
+}
+
 inline PtrMatrixPtr load_data_table( const std::string& infile,
+                                     const bool transpose = false,
                                      const char& sep = ',',
                                      const char& quote = '"' ) {
 
@@ -106,20 +118,47 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
     printf("file data %s not existing\n", infile.c_str());
     exit(-1);
   }
-  dt->reserve(200000);
-  samogwas::CSVIterator<int> matrixLine(matrixFile);
-  
-  for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
-    auto row = std::make_shared<Vec>(matrixLine->size(), 0);
-    for (unsigned i = 0; i < matrixLine->size(); ++i) {
-      (*row)[i] = matrixLine->at(i);
+
+  int nbrLines = number_of_lines( infile);
+  if ( !transpose ) {
+    dt->reserve(nbrLines);
+    samogwas::CSVIterator<int> matrixLine(matrixFile);
+
+    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
+      auto row = std::make_shared<Vec>(matrixLine->size(), 0);
+      for (unsigned i = 0; i < matrixLine->size(); ++i) {
+        (*row)[i] = matrixLine->at(i);
+      }
+      dt->push_back(row);    
     }
-    dt->push_back(row);    
+    dt->resize(dt->size());
+  } else {
+    samogwas::CSVIterator<int> tmpLine(matrixFile);
+    ++tmpLine;
+    auto nbrColumns = tmpLine->size();
+    matrixFile.clear();
+    matrixFile.seekg(0, std::ios_base::beg);
+    
+    dt->reserve(nbrColumns);
+    for (size_t i = 0; i < nbrColumns; ++i) { dt->push_back(std::make_shared<Vec>(nbrLines, 0)); }
+
+    unsigned row = 0;
+    samogwas::CSVIterator<int> matrixLine(matrixFile);
+    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
+      for (unsigned col = 0; col < matrixLine->size(); ++col) {
+        dt->at(col)->at(row) = matrixLine->at(col);
+      }
+      ++row;
+    }
+    dt->resize(dt->size());    
   }
-  dt->resize(dt->size());
-  size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
+
+
   return dt;
 }
+
+
+
 
 //////////////////////////////////////////////////////////////////
 
