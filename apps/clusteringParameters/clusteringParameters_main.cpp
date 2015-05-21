@@ -42,14 +42,14 @@ int main() {
     auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
     Label2Index lab2Idx;
 
-    load_labels_positions( *labels, *ids, *positions, "/home/jules/Bureau/donnees/input/lab_3000.csv");
+    load_labels_positions( *labels, *ids, *positions, "/home/jules/Bureau/donnees/input/lab.csv");
 
 
     printf("first SNP id = %d\n", ids->front());
     printf("last SNP id = %d\n", ids->back());
     printf("number of SNPs = %zu\n", ids->size());
 
-    auto mat = load_data_table("/home/jules/Bureau/donnees/input/dat_3000.csv");
+    auto mat = load_data_table("/home/jules/Bureau/donnees/input/dat.csv");
     auto l2g = init_index_mapping( mat->size() );
     auto graph = init_graph( *mat,  lab2Idx, 3, *labels, *positions );
 
@@ -57,12 +57,12 @@ int main() {
 
 
     Clustering clustering;
+        auto start = get_time::now();
 
-
-    for (double epsi = 0.63 ; epsi < 0.64 ;epsi +=0.01) {
+    for (double epsi = 0.63 ; epsi <= 0.66 ;epsi +=0.02) {
         printf("\n*******************************************************************\nMinPt = 2, epsilon = %f\n\n",epsi);
 
-        auto start = get_time::now();
+
 //        auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
 //        simi->set_criteria(criteria);
 //        CAST cast( simi, 0.5 );
@@ -72,21 +72,21 @@ int main() {
         DBSCAN dbscan(dissimi,2,epsi);
         Partition result = dbscan();
 
-        auto end = get_time::now();
-        auto diff = (end-start);
-        //we print the duration of the clustering
-        std::cout << diff.count()/1000000000 << " secs\n";
 
         clustering = result.to_clustering();
         printClusteringInformations(clustering);
 
     }
-    writeResultsForTulip(clustering, positions, ids, labels);
+    auto end = get_time::now();
+    auto diff = (end-start);
+    //we print the duration of the clustering
+    std::cout << diff.count()/1000000000 << " secs\n";
+    //writeResultsForTulip(clustering, positions, ids, labels);
 }
 
 void printClusteringInformations( Clustering clustering ){
     int singletons = 0;
-    int clustersBiggerThan15 = 0;
+    int clustersBiggerThan30 = 0;
     int clusters = 0;
     int snpInBigCluster = 0;
 
@@ -97,8 +97,8 @@ void printClusteringInformations( Clustering clustering ){
              singletons++;
         else {
             clusters++;
-            if (it->size() > 15) {
-                clustersBiggerThan15++;
+            if (it->size() > 30) {
+                clustersBiggerThan30++;
                 printf("%zu ", it->size());
                 snpInBigCluster += it->size();
             }
@@ -106,8 +106,8 @@ void printClusteringInformations( Clustering clustering ){
     }
     printf("\nnumber of clusters : %d\n", clusters);
     printf("number of singletons : %d\n", singletons);
-    printf("number of clusters bigger than 15 SNPs : %d\n", clustersBiggerThan15);
-    printf("number of SNPs in a cluster bigger than 15 SNPs : %d\n", snpInBigCluster);
+    printf("number of clusters bigger than 30 SNPs : %d\n", clustersBiggerThan30);
+    printf("number of SNPs in a cluster bigger than 30 SNPs : %d\n", snpInBigCluster);
     printf("=> number of SNPs not so good : %d\n", singletons + snpInBigCluster);
 }
 
