@@ -71,10 +71,14 @@ int main( int argc, char** argv ) {
       auto end = get_time::now();
       auto diff = end - start;
 
-     stats << "running FLTM for "
+      stats << "Parameter options : " << std::endl;
+      for (int i = 0 ; i < argc ; i++ )
+          stats << "\t" << argv[i] << std::endl;
+
+     stats << "Running FLTM for "
            << algoClust->name() << " on " << l2g->size() << " variables"
            << std::endl;
-    
+
      stats << "Elapsed time is:  "
            << std::chrono::duration_cast<ms>(diff).count()/1000
            << " seconds" << std::endl;
