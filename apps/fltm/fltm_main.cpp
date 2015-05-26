@@ -106,8 +106,8 @@ int main( int argc, char** argv ) {
        case 1: {
          std::string outNode, outEdge;
          char edge_fn[256], node_fn[256];
-         sprintf( node_fn, "fltm_%s_tulip.vertex", algoClust->name() );
-         sprintf( edge_fn, "fltm_%s_tulip.edge", algoClust->name() );
+         sprintf( node_fn, "fltm_%s_tulip_vertex.csv", algoClust->name() );
+         sprintf( edge_fn, "fltm_%s_tulip_edge.csv", algoClust->name() );
          outNode = (outputPath  /node_fn ).string(),
              outEdge = (outputPath / edge_fn).string();
         
