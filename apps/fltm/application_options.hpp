@@ -33,6 +33,7 @@ struct Options {
   
   int matrixType;
   int outType;
+  int seed;
   int nbrConsidered;
 };
 
@@ -54,6 +55,7 @@ inline Options get_program_options(int argc, char** argv) {
         
         ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
         ("outtype,t", po::value<int>(&result.outType)->default_value(1), "Output Type (0): Distri (1) Tulip. Default: 0")
+        ("random seed,R", po::value<int>(&result.seed)->default_value(time(NULL)), "to specify a random seed. Default: time based")
 
         ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist, default 50000bp")
@@ -67,7 +69,9 @@ inline Options get_program_options(int argc, char** argv) {
         ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->default_value(7), "FLTM nbr steps. Default 7") 
 
         ("f_thres_info,i", po::value<double>(&result.fltm_params.latentVarQualityThres)->required(), "FLTM thres info")
-        ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")      
+        ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")
+
+
         ;
     po::variables_map vm; 
     try { 
