@@ -1,6 +1,6 @@
 /****************************************************************************************
  * File: core_em.hpp
- * Description: 
+ * Description:
  * @author: siolag161 (thanh.phan@outlook.com)
  * @date: 31/03/2015
 
@@ -13,6 +13,8 @@
 #include <vector>
 #include <memory>
 #include "graph/graph.hpp"
+
+
 namespace samogwas
 {
 
@@ -22,7 +24,7 @@ typedef plVariablesConjunction Variables;
 typedef std::vector< std::vector<bool>> DefTab;
 typedef std::shared_ptr<DefTab> DefTabPtr;
 typedef size_t Cardinality;
-typedef size_t Size; 
+typedef size_t Size;
 typedef plEMLearner EMLearner;
 typedef std::vector<plLearnObject*> LearnObjectPtrs;
 typedef std::vector<EMLearner> CandidateModels;
@@ -41,22 +43,32 @@ typedef std::vector<EMLearner> CandidateModels;
  *
  */
 struct MultiEM {
-  
+
   typedef std::vector< std::vector<int> > Matrix;
   typedef std::shared_ptr<Matrix> MatrixPtr;
   typedef plMatrixDataDescriptor<int> DataDesc;
 
-  MultiEM(int nbrR): nbrRestarts(nbrR) {}
-  
+  MultiEM(int nbrR, int seed = 1): nbrRestarts(nbrR), generator(seed) {}
+
   enum ImputationType { ARGMAX = 0, DRAW };
   typedef size_t Cardinality;
   typedef size_t Size;
 
 
-  virtual void run( GraphPtr graph,
+  virtual double run( GraphPtr graph,
                     Node& latentNode,
                     const double threshold);
 
+
+  static void fill_vector_with_random_floats( std::vector<double>& vec,
+                                              std::default_random_engine& generator,
+                                              double lower,
+                                              double upper ) {
+    std::uniform_real_distribution<double> distribution (lower, upper);
+    for ( auto it = vec.begin(); it != vec.end(); it++){
+      *it = distribution(generator);
+    }
+  }
 
  private:
   LearnObjectPtrs create_learn_objects(const Variable & latentVar, const Variables& variables);
@@ -66,23 +78,18 @@ struct MultiEM {
   plComputableObjectList create_computable_objects( const Variable& latentVar, const Variables& variables );
   EMLearner get_best_model( CandidateModels& learners,
                             DataDesc& dataDesc );
-  
   double scoreBIC( EMLearner& learner, plMatrixDataDescriptor<int>& dataDesc );
 
   void update_parameters ( GraphPtr graph, Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
   // void update_parameters( GraphPtr graph, Node& latentNode, const std::vector<plValues>&,
   //                         const std::vector<std::vector<plProbValue>>& ,
   //                         const JointDist& jointDist );
-  
-  
  private:
   int nbrRestarts;
+  std::default_random_engine generator;
 };
 
-
-
 ///////////////////////////////////////////////////////////////////
-
 
 inline double m_log(double v) {
   return v == 0 ? 0 : log(v);
@@ -101,13 +108,13 @@ inline double log_likelihood_wo( const Node& latentNode, std::vector<int>& obs )
       Node& X = graph[cvars[j]];
       assert(X.dataVec->size() == obs.size());
       int x = X.dataVec->at(i);
-      rs += m_log( latentNode.compute_cond_prob(X,x,y) ); 
+      rs += m_log( latentNode.compute_cond_prob(X,x,y) );
     }
   }
 
   return rs;
 }
-    
+
 inline double log_likelihood( const Node& latentNode )  {
   double result = 0.0;
   size_t N = latentNode.cndObsDist->size() / latentNode.cardinality();
@@ -126,12 +133,12 @@ inline double log_likelihood( const Node& latentNode )  {
       result += llh;
     }
   }
-  
+
   return result;
 }
 
 
-} // namespace  ends here. 
+} // namespace  ends here.
 
 /****************************************************************************************/
 #endif // _CORE_EM_HPP

@@ -41,7 +41,6 @@ void saveDatLab( const Graph& g, const std::string& dat, const std::string& lab)
 
 int main( int argc, char** argv ) {
   auto options = get_program_options( argc, argv );
-//  srand(options.seed);
   auto labels = std::make_shared<LabelVec>();
   auto positions = std::make_shared<PosVec>();
   auto ids = std::make_shared<PosVec>();

@@ -13,7 +13,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
   auto lab2Idx = create_index_map(*graph);
   Local2GlobalPtr l2g = create_local_to_global_map(*graph);  
   auto criteria = clustAlgo->get_criteria();
-  
+ 
   for ( int step = 0; step < params.nbrSteps; ++step) {
     if (step > 0) {
       criteria = create_current_criteria( *graph, *l2g, params.maxDist, step);
@@ -44,7 +44,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
         RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
                     plIntegerType(0, cardFunc->compute(cluster) - 1 ));
         Node latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, cluster);
-        MultiEM em(params.nbrRestarts);
+        MultiEM em(params.nbrRestarts, params.seed);
         em.run( graph, latentNode, params.emThres);
         if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
           nbrGoodClusters++;
