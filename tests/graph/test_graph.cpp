@@ -44,7 +44,6 @@ BOOST_AUTO_TEST_CASE( Test_Node_Build ) {
   const int CARD = 3, N = 1000;
   std::vector<double> prob { 0.3, 0.5, 0.2 };
   DataVecPtr dataVec = std::make_shared<DataVec>(N, 0);
-  
   for (int i = 0; i < N; ++i) {
     if ( i < N*prob[0] ) {
       (*dataVec)[i] = 0;
@@ -67,7 +66,7 @@ BOOST_AUTO_TEST_CASE( Test_Node_Build ) {
 
 BOOST_AUTO_TEST_CASE( Test_Node_Entropy ) {
   const int CARD = 4, N = 1000;
-  std::vector<int> dataVec {0,0,1,1,2,2,3};  
+  std::vector<int> dataVec {0,0,1,1,2,2,3};
   auto graph = std::make_shared<Graph>();
   Node node = createNode( graph, dataVec, CARD, "aNode", 12, 0);
   ComputeNodeEntropy compute_node_entropy;
@@ -77,20 +76,18 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy ) {
 BOOST_AUTO_TEST_CASE( Test_Node_Joint_Entropy ) {
   const int CARD = 4, N = 1000;
   std::vector<int> datA {0,0,0,1,2,2,3};
-  std::vector<int> datB {0,0,1,1,2,2,3};  
+  std::vector<int> datB {0,0,1,1,2,2,3};
 
   auto graph = std::make_shared<Graph>();
   Node nB = createNode( graph, datB, CARD, "B", 12, 0);
   Node nA = createNode( graph, datA, CARD, "A", 12, 0);
   ComputeNodeEntropy compute_node_entropy;
 
-  double jEntropy = ComputeNodeJointEntropy().compute_leaf_leaf(nA,nB,datA,datB); 
+  double jEntropy = ComputeNodeJointEntropy().compute_leaf_leaf(nA,nB,datA,datB);
   BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy.compute(nB), 1.351784, 0.00001);
   BOOST_CHECK_CLOSE_FRACTION( compute_node_entropy.compute(nA), 1.277034, 0.00001);
   BOOST_CHECK_CLOSE_FRACTION( jEntropy, 1.549826, 0.00001);
 }
-
-
 
 BOOST_AUTO_TEST_CASE( Test_Node_Parent_Child_Entropy ) {
   const int CARD_X=3, CARD_Z=2;
@@ -118,8 +115,8 @@ BOOST_AUTO_TEST_CASE( Test_Node_Parent_Child_Entropy ) {
   plCndDistribution cndDist(X, Z, cndProb);
   plComputableObjectList jointTable;
   auto compList = (*distZ)*(cndDist);
-                                  
-  JointDist jd(Z^X, compList);  
+
+  JointDist jd(Z^X, compList);
   Node nodeX = createObsNode( graph, X, 0, distX, lab2idx);
   Node nodeZ = createLatentNode( graph, Z, jd, lab2idx);
 
@@ -160,21 +157,21 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Obs_Obs ) {
 
   std::vector<int> datA {0,1,0, 1,1,1,0};
   std::vector<int> datB {0,0,1, 1,0,0,1};
-  
+
   auto graph = std::make_shared<Graph>();
   Node nB = createNode( graph, datB, CARD, "B", 12, 0);
   Node nA = createNode( graph, datA, CARD, "A", 12, 0);
 
   BOOST_CHECK(nA.is_leaf());
   BOOST_CHECK(nB.is_leaf());
-  
+
   // auto jointTab = ComputeNodeJointEntropy::create_joint_tab_leaf_leaf(nA,nB,datA,datB);
   // BOOST_CHECK_EQUAL(jointTab.size(), 2);
   // BOOST_CHECK_EQUAL(jointTab[0].size(), 2);
 
   // auto sum = sum_joint_tab(jointTab);
-  
-  // BOOST_CHECK_EQUAL(sum, 1.0);  
+
+  // BOOST_CHECK_EQUAL(sum, 1.0);
   // std::vector<std::vector<double>> expected_tab {
   //   {1.0/7, 2.0/7},{3.0/7, 1.0/7 }
   // };
@@ -182,8 +179,8 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Obs_Obs ) {
   //   for (int j=0;j<2;++j) {
   //     BOOST_CHECK_EQUAL( jointTab[i][j], expected_tab[i][j] );
   //   }
-  // } 
-  
+  //
+
 }
 
 
@@ -211,7 +208,7 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent ) {
   plComputableObjectList jointTable;
   auto compList = (*distZ)*(cndDist);
   JointDist jd(Z^X, compList);
-  
+
   Node nodeX = createObsNode( graph, X, 0, distX, lab2idx);
   Node nodeZ = createLatentNode( graph, Z, jd, lab2idx);
 
@@ -219,7 +216,7 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent ) {
   auto jointTab = ComputeNodeJointEntropy::create_joint_table_leaf_latent(nodeX,nodeZ,dat_X, zGivenObs);
   BOOST_CHECK(nodeZ.is_parent_of(nodeX));
   double sum = 0.0;
-  
+
   for (auto& p: jointTab) {
     sum += p;
   }
@@ -272,10 +269,10 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Lat_Lat ) {
   plComputableObjectList jointTable;
   auto compList_xa = (*distA)*(cnd_distX_A);
   JointDist jd_xa(A^X, compList_xa);
-  
+
   auto compList_yb = (*distB)*(cnd_distY_B);
   JointDist jd_yb(B^Y, compList_yb);
-  
+
   Node nodeX = createObsNode( graph, X, 0, distX, lab2idx);
   Node nodeY = createObsNode( graph, Y, 0, distY, lab2idx);
 
@@ -293,7 +290,7 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Lat_Lat ) {
 
 
   // // samogwas::JointEntropy<samogwas::EMP> jointEntropy;
-  
+
   // double ll_xy = ComputeNodeJointEntropy::compute_from_joint_tab( jointTab_XY );
   // BOOST_CHECK_CLOSE_FRACTION( 1.02965, ll_xy, 0.00001);
 
@@ -317,24 +314,24 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Indp ) {
 
   int CARD = 2;
   auto graph = std::make_shared<Graph>();
-  
+
   plSymbol vA("A", plIntegerType(0, CARD-1)), vB("B", plIntegerType(0, CARD-1));
   Label2Index lab2Idx;
-  
+
   Node nA = createObsNode( graph, vA, mat[0], 12, lab2Idx);
   Node nB = createObsNode( graph, vB, mat[1], 12, lab2Idx);
-  
+
   ComputeNodeEntropy entropy; ComputeNodeJointEntropy jEntropy;  ComputeNodeMutInfo mut_info;
   double eA = entropy.compute(nA);
   double eB = entropy.compute(nB);
-  
+
   double mi = mut_info.compute(nA, nB);
-  
+
   BOOST_CHECK_CLOSE(eA, 0.6110167, 0.0001);
   BOOST_CHECK_CLOSE(eB, 0.6726287, 0.0001);
 
   double je = jEntropy.compute(nA,nB);
-  BOOST_CHECK_CLOSE(je, 1.283645,  0.0001);  
+  BOOST_CHECK_CLOSE(je, 1.283645,  0.0001);
 }
 
 
@@ -348,10 +345,10 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Inp ) {
 
   plSymbol vA("A", plIntegerType(0, CARD-1)), vB("B", plIntegerType(0, CARD-1));
   Label2Index lab2Idx;
-  
+
   Node nA = createObsNode( graph, vA, mat[0], 12, lab2Idx);
   Node nB = createObsNode( graph, vB, mat[1], 12, lab2Idx);
-  
+
   ComputeNodeEntropy entropy; ComputeNodeJointEntropy jEntropy; ComputeNodeMutInfo mut_info;
   double eA = entropy.compute(nA);
   double eB = entropy.compute(nB);
@@ -362,7 +359,7 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Obs_Inp ) {
   double je = jEntropy.compute(nA,nB);
   double mi = mut_info.compute(nA,nB);
   BOOST_CHECK_CLOSE(je, 1.319324, 0.001);
-  BOOST_CHECK_CLOSE(mi, 0.04543878, 0.001);  
+  BOOST_CHECK_CLOSE(mi, 0.04543878, 0.001);
 
 }
 
@@ -398,15 +395,15 @@ BOOST_AUTO_TEST_CASE( Test_Node_Entropy_Obs_Latent_Inp ) {
 
   // for (int i = 0; i < N;++i) {    
   //   BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 0, i ), vec_X->at(i) == 0);
-  //   BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 1, i ), vec_X->at(i) == 1);    
+  //   BOOST_CHECK_EQUAL( nX.compute_cond_prob_obs( 1, i ), vec_X->at(i) == 1);
   //   BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 0, i ), vec_Z->at(i*2) );
   //   BOOST_CHECK_EQUAL( nZ.compute_cond_prob_obs( 1, i ), vec_Z->at(i*2+1) );
   // }
-  
+
   // BOOST_CHECK(!nZ.is_parent_of(nX));
   // ComputeNodeJointEntropy jointEntropy; ComputeNodeMutInfo mut_info;
   // double je = jointEntropy.compute(nX, nZ);
- 
+
   // double mi = mut_info.compute(nX, nZ);
   // BOOST_CHECK_CLOSE( je, 1.36554 , 0.001);
 }
@@ -417,7 +414,7 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent_2 ) {
   for (int i = 0; i < 100; ++i) {
     if (i<36) vec_X->at(i) = 0;
     else if (i<80) vec_X->at(i) = 1;
-    else vec_X->at(i) = 2;    
+    else vec_X->at(i) = 2;
   }
 
   std::vector<double> cndProb { .4, .4, .2,   .2, .6, 2 };
@@ -443,17 +440,17 @@ BOOST_AUTO_TEST_CASE( Test_Create_Joint_Tab_Child_Parent_2 ) {
   plComputableObjectList jointTable;
   auto compList = (*distZ)*(cndDist_XZ)*(cndDist_YZ);
   JointDist jd(Z^X^Y, compList);
-  
+
   Node nodeX = createObsNode( graph, X, vec_X, 12, lab2idx);
   Node nodeY = createObsNode( graph, Y, vec_X, 12, lab2idx);
   Node nodeZ = createLatentNode( graph, Z, jd, lab2idx);
   nodeZ.set_cnd_obs_vec(zGivenObs);
 
-  ComputeNodeMutInfo mut_info;    
-  double mi_XZ = mut_info.compute(nodeX,nodeZ);  
+  ComputeNodeMutInfo mut_info;
+  double mi_XZ = mut_info.compute(nodeX,nodeZ);
   double mi_YZ = mut_info.compute(nodeY,nodeZ);
   AverageMutInfo averageMutInfo;
-  double expected_avi = (mi_XZ+mi_YZ)/2.0;  
+  double expected_avi = (mi_XZ+mi_YZ)/2.0;
 }
 
 ////////////////////////////////////////////////////////////////////////////
@@ -475,7 +472,7 @@ BOOST_AUTO_TEST_CASE(Test_Save_Load_1) {
   RandVar X("X", plIntegerType(0,CARD_X-1));
   RandVar Z("Z", plIntegerType(0,CARD_Z-1));
 
-  lab2idx["X"] = 0; lab2idx["Z"] = 1; 
+  lab2idx["X"] = 0; lab2idx["Z"] = 1;
 
   DistPtr distX = std::make_shared<plProbTable>(X, probX);
   DistPtr distZ = std::make_shared<plProbTable>(Z, probZ);
@@ -483,7 +480,7 @@ BOOST_AUTO_TEST_CASE(Test_Save_Load_1) {
   plComputableObjectList jointTable;
   auto compList = (*distZ)*(cndDist);
   JointDist jd(Z^X, compList);
-  
+
   Node nodeX = createObsNode( graph, X, 0, distX, lab2idx);
   Node nodeZ = createLatentNode( graph, Z, jd, lab2idx);
   nodeZ.set_local_indexes( lab2idx );
@@ -500,15 +497,15 @@ BOOST_AUTO_TEST_CASE(Test_Save_Load_1) {
              "../tests/data/graph/io/saved_graph_1_label.csv",
              "../tests/data/graph/io/saved_graph_1_vertex.csv",
              "../tests/data/graph/io/saved_graph_1_dist.csv",
-             "../tests/data/graph/io/saved_graph_1_cnd_data.csv",             
+             "../tests/data/graph/io/saved_graph_1_cnd_data.csv",
              "../tests/data/graph/io/saved_graph_1_data.csv" );
 
   auto loadedGraphRef = *loadedGraph;
   auto nX = loadedGraphRef[0], nZ = loadedGraphRef[1];
-    
+
   graphSave( loadedGraphRef,
              "../tests/data/graph/io/saved_graph_1a_vertex.csv",
-             "../tests/data/graph/io/saved_graph_1a_dist.csv" );  
+             "../tests/data/graph/io/saved_graph_1a_dist.csv" );
 }
 
 

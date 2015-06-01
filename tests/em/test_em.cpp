@@ -2,13 +2,16 @@
 
 #include <boost/test/unit_test.hpp>
 #include <BoostTestTargetConfig.h>
- 
+#include <random>
+
 #include "clustering/clustering.hpp"
 #include "clustering/dbscan.hpp"
-#include "test_tools/data_generation.hpp"
 #include "em/multi_em.hpp"
 #include "graph/graph.hpp"
 #include <pl.h>
+
+#include "test_tools/data_generation.hpp"
+#include "test_tools/dataload.hpp"
 
 using namespace samogwas_test;
 using namespace samogwas;
@@ -20,6 +23,7 @@ typedef plSymbol RandVar;
 CndDistPtr create_cndDist(Variable& l, Variable& r, std::vector<double>& tab) {
   return std::make_shared<plCndDistribution>(l, r, tab);
 }
+
 Node& createLatentNode( GraphPtr g, plSymbol& var, Label2Index& l2i, const std::vector<int>& cluster );
 
 
@@ -41,12 +45,12 @@ BOOST_AUTO_TEST_CASE( Test_Log_LLH ) {
   for (int i = 0; i < N; ++i) {
     vec_X1->at(i) = ( (i < 560) || (i > 800 && i < 920) ) ? 0 : 1;
     vec_X2->at(i) = ( (i < 480) || (i > 800 && i < 940) ) ? 0 : 1;
-    
+
     vec_Z->at(2*i) = ( i < 900 ) ? 1.0 : 0.0;
     vec_Z->at(2*i+1) = ( i < 900 ) ? 0.0 : 1.0;
-    vec_Z_wo->at(i) = ( i < 900 ) ? 0 : 1; 
+    vec_Z_wo->at(i) = ( i < 900 ) ? 0 : 1;
   }
-    
+
   Node n_X1 = createObsNode( graph, vX1, vec_X1, 12, lab2Idx);
   Node n_X2 = createObsNode( graph, vX2, vec_X2, 17, lab2Idx);
 
@@ -67,7 +71,7 @@ BOOST_AUTO_TEST_CASE( Test_DBSCAN ) {
   size_t N = 6, CARD = 3, MAX_POS = 5;
   int nrows = nclusts*N;
   std::vector<int> positions; for ( int i = 0; i < nrows; ++i ) positions.push_back(i);
-  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();  
+  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();
   auto graph = std::make_shared<samogwas::Graph>();
   auto l2g = std::make_shared<std::vector<int>>(nrows,0);
   Label2Index lab2Idx;
@@ -89,33 +93,62 @@ BOOST_AUTO_TEST_CASE( Test_DBSCAN ) {
   }
 
   auto clustering = result.to_clustering();
-  for ( auto clt: clustering ) {   
+  for ( auto clt: clustering ) {
     RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)), plIntegerType(0,2));
     Node n = createLatentNode(graph, var, lab2Idx, clt);
     MultiEM em(3);
     em.run( graph, n, 0.000001);
     break;
   }
+}
+
+BOOST_AUTO_TEST_CASE( Test_Seed_Randomization ) {
+  unsigned seed = 1;
+
+  std::default_random_engine generator(seed);
+
+  auto data = loadDataTable("../tests/data/em/dat_5.csv");
+  unsigned nrows = data->size(), CARD = 3;
+  auto graph = std::make_shared<samogwas::Graph>();
+  auto l2g = std::make_shared<std::vector<int>>(nrows,0);
+  Label2Index lab2Idx;
+  for (int i = 0; i < nrows; ++i) {
+    (*l2g)[i]=i;
+    plSymbol v(boost::lexical_cast<std::string>(i), plIntegerType(0, CARD-1));
+    auto dataVec = std::make_shared<DataVec>(*data->at(i));
+    createObsNode(graph, v, dataVec, 12, lab2Idx);
+  }
+
+  std::vector<int> cluster;
+  for ( size_t i = 0; i < nrows; ++i ) {
+    cluster.push_back(i);
+  }
+
+  RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)), plIntegerType(0,2));
+  Node n = createLatentNode(graph, var, lab2Idx, cluster);
+  MultiEM em(3, 3);
+  double vrai = em.run( graph, n, 0.000001);
 
 }
 
+//////////////////////////////////////////////////////////////
+Node& createLatentNode( GraphPtr graph, plSymbol& var,
+                        Label2Index& l2i,
+                        const std::vector<int>& cluster ) {
 
-Node& createLatentNode( GraphPtr graph, plSymbol& var, Label2Index& l2i, const std::vector<int>& cluster ) {
-
- vertex_t vertexId = boost::add_vertex(*graph); 
+ vertex_t vertexId = boost::add_vertex(*graph);
  Node& newNode = (*graph)[vertexId];
  plVariablesConjunction vars;
  for (auto idx: cluster) {
-   // auto idx = l2i.at(p.getLabel(e));
    Node& n = (*graph)[idx];
-   vars ^= n.variable;  
-
+   vars ^= n.variable;
  }
 
  newNode.set_index(vertexId).set_graph(graph).set_variable(var)
      .set_local_indexes( vars.begin(), vars.end(), l2i);
- return newNode;  
+ return newNode;
 }
+
 
 
 

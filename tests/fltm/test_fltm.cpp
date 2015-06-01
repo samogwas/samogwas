@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE( Test_FLTM_DBSCAN ) {
   size_t N = 6, CARD = 3, MAX_POS = 5;
   int nrows = nclusts*N;
   std::vector<int> positions; for ( int i = 0; i < nrows; ++i ) positions.push_back(i);
-  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();  
+  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();
   auto graph = std::make_shared<Graph>();
   auto l2g = std::make_shared<std::vector<int>>(nrows,0);
   Label2Index lab2Idx;

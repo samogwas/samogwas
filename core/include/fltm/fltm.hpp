@@ -32,6 +32,7 @@ struct FLTM_Params {
   double emThres; // controls EM algorithm convergence.
   double latentVarQualityThres;
   unsigned maxDist;
+  unsigned seed;
 };
 
 struct FLTM {
@@ -45,7 +46,7 @@ struct FLTM {
 
   FLTM( FLTM_Params &p ): params(p) { }
   void execute( ClustAlgoPtr clt, CardFuncPtr cardF, GraphPtr graph );
-  
+ 
  private:
   int number_non_singletons( const Clustering &clustering );
   bool accept_latent_variable( Graph&, Node& node, double qualityThres );
@@ -56,7 +57,6 @@ struct FLTM {
   void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Cluster& cluster);
   void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Node& latentNode);
   CriteriaPtr create_current_criteria(  Graph& graph, Local2Global& l2g, unsigned MAX_POS, int step);
-
 
  private:
   FLTM_Params params;
