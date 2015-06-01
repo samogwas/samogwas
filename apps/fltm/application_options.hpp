@@ -55,9 +55,9 @@ inline Options get_program_options(int argc, char** argv) {
         
         ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
         ("outtype,t", po::value<int>(&result.outType)->default_value(1), "Output Type (0): Distri (1) Tulip. Default: 0")
-        ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(999, "to specify a random seed. Default: 999")
+        ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(999), "to specify a random seed. Default: 999")
 
-        ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
+        ("clustConf,c", po::value<std::string>(&result.clustConf)->required(), "Clust Config File")
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist, default 50000bp")
 
         ///////////////////////////////////////////////////////////////////////////
