@@ -22,6 +22,8 @@ set(Boost_USE_MULTITHREADED ON)
 
 set(Boost_INCLUDE_DIRS "${LIB_DIR}/boost_1_55/include/")
 set(Boost_LIBRARY_DIRS "${LIB_DIR}/boost_1_55/lib/" )
+set(Boost_VERSION "105500" )
+message(${Boost_VERSION})
 
 #probt
 
