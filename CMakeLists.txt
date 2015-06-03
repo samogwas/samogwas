@@ -15,7 +15,7 @@ set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)  
 #$set(Boost_USE_STATIC_RUNTIME OFF) 
 
-set(BOOST_ROOT /home/jules/Bureau/build_boost)
+set(BOOST_ROOT /home/teulade-denantes-j/build_boost)
 find_package(Boost 1.55 COMPONENTS  log log_setup  system regex filesystem program_options thread REQUIRED )
 
 
@@ -24,6 +24,7 @@ find_package(OpenMP)
 if (OPENMP_FOUND)
     set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set (OMP_NUM_THREADS 1)
 endif()
 
 #probt
