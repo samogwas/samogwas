@@ -14,21 +14,21 @@ before_install:
 
   - sudo apt-get install -yqq git cmake autoconf libtool python-dev
 
-
+en fq
 
 #install:
   # Install boost
-  #- wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
-  #- export BOOST_ROOT="$TRAVIS_BUILD_DIR/../boost-trunk"
-  #- export CMAKE_MODULE_PATH="$BOOST_ROOT"
-  #- mkdir -p $BOOST_ROOT
-  #- tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
-  #- (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=date_time,filesystem,system,regex,program_options,test,log,thread)
-  #- (cd $BOOST_ROOT; ./b2 --prefix=$BOOST_ROOT --j7 cxxflags="-std=c++11" threading=multi link=static  -d0 install)
+  - wget --no-verbose --output-document=boost-trunk.tar.bz2 http://sourceforge.net/projects/boost/files/boost/1.55.0/boost_1_55_0.tar.bz2/download
+  - export BOOST_ROOT="$TRAVIS_BUILD_DIR/../boost-trunk"
+  - export CMAKE_MODULE_PATH="$BOOST_ROOT"
+  - mkdir -p $BOOST_ROOT
+  - tar jxf boost-trunk.tar.bz2 --strip-components=1 -C $BOOST_ROOT
+  - (cd $BOOST_ROOT; ./bootstrap.sh --with-libraries=date_time,filesystem,system,regex,program_options,test,log,thread)
+  - (cd $BOOST_ROOT; ./b2 --prefix=$BOOST_ROOT --j7 cxxflags="-std=c++11" threading=multi link=static  -d0 install)
 
 # test test test
 script: 
-  - export BOOST_ROOT="./dependencies/boost_1_55/"
+  #- export BOOST_ROOT="./dependencies/boost_1_55/"
   - $CXX --version
   - mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~
   - make -j4
