@@ -4,7 +4,7 @@
 #include <boost/log/trivial.hpp>
 
 #include <fstream>
-
+#include <vector>
 
 namespace samogwas {
 
@@ -36,6 +36,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     }
 
     std::vector<int> l2gTemp(*l2g);
+
     Local2Global().swap(*l2g);  
     int nbrGoodClusters = 0; int numClust = 0;
     for ( auto &cluster: clustering ) {      
