@@ -28,7 +28,7 @@ before_install:
 
 # test test test
 script: 
-  - export BOOST_ROOT="../dependencies/boost_1_55/"
+  - export BOOST_ROOT="./dependencies/boost_1_55/"
   - $CXX --version
   - mkdir -p build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX:PATH=~
   - make -j4
