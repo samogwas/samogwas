@@ -29,6 +29,7 @@
 
 *~
 build
+bin
 
 # QtCreator
 *.config
