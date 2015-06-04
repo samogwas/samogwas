@@ -1,0 +1,7 @@
+if [ -d build/ ]; then
+   rm -Rf build/
+fi
+mkdir build && cd build
+/opt/cmake/bin/cmake ..
+make -j4
+./tests/boosttest-tests-samogwas_test_suite
