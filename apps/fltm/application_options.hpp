@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <time.h>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp> // to obtain the program's name
@@ -22,34 +23,19 @@ namespace samogwas
 {
 
 struct Options {
-  /* Input */
   std::string inputDataFile;
   std::string inputLabelFile;
-  
-  /* Output */
-  // int verbose;
   std::string outputDir;
-
   std::string clustConf;
-  
-  // /* DBSCAN */
-  // int dbscan_minPts;
-  // double dbscan_eps;
-
-  // /* CAST */
-  // double cast_cast;
-
   double fltm_alpha;
   double fltm_beta;
   int fltm_maxCard;
-  int fltm_maxDist;
-  double fltm_simiThres;
+  samogwas::FLTM_Params fltm_params;
   
-  int fltm_nbrRestarts; 
-  int fltm_imputeMode; 
-  FLTM_Params fltm_params;
-
-  
+  int matrixType;
+  int outType;
+  // int seed;
+  int nbrConsidered;
 };
 
 
@@ -64,36 +50,29 @@ inline Options get_program_options(int argc, char** argv) {
     optDesc.add_options()
         ("help,h", "Print help messages")        
         ("in_dat,d", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
+        ("mat_type,m", po::value<int>(&result.matrixType)->default_value(0), "Matrix type (0): rows: variables, (1): rows: individuals. Default: 0")
         ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
-        // ("verbose,v", po::value<int>(&result.verbose)->default_value(0), "Verbose")
         
-        ("out,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
-        ("clustConf,c", po::value<std::string >(&result.clustConf)->required(), "Clust Config File")
+        ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
+        ("outtype,t", po::value<int>(&result.outType)->default_value(0), "Output Type (0): Distri (1) Tulip. Default: 0")
+        ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(time(NULL)), "to specify a random seed. Default: time based")
 
-        // ("clust,c", po::value<int>(&result.clustAlgo)->required(), "Clust Algo. (0): DBSCAN (1): CAST, (2): LOUV")
-
-        ("max_dist,x", po::value<int>(&result.fltm_maxDist)->required(), "Max Dist")
-        // ("simi_thres,t", po::value<double>(&result.fltm_simiThres)->required(), "Simi Thres")
-        // ///////////////////////////////////////////////////////////////////////////
-        // ("db_minp,M", po::value<int>(&result.dbscan_minPts)->default_value(0), "DBSCAN MinPts")
-        // ("db_eps,E", po::value<double>(&result.dbscan_eps)->default_value(0), "DBSCAN Eps")
+        ("clustConf,c", po::value<std::string>(&result.clustConf)->required(), "Clust Config File")
+        ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist, default 50000bp")
 
         ///////////////////////////////////////////////////////////////////////////
-        // ("cast_cast,C", po::value<double>(&result.cast_cast)->default_value(0), "CAST cast")
-        // ("f_imode,m", po::value<int>(&result.fltm_imputeMode)->required(), "FLTM impute mode") 
+        ("f_alpha,a", po::value<double>(&result.fltm_alpha)->default_value(0.5), "FLTM alpha. Default 0.5")
+        ("f_beta,b", po::value<double>(&result.fltm_beta)->default_value(1), "FLTM beta. Default 1")
+        ("f_maxCard,X", po::value<int>(&result.fltm_maxCard)->default_value(10), "FLTM maxCard. Default 10")
 
-        ///////////////////////////////////////////////////////////////////////////
-        ("f_alpha,a", po::value<double>(&result.fltm_alpha)->required(), "FLTM alpha")
-        ("f_beta,b", po::value<double>(&result.fltm_beta)->required(), "FLTM beta")
-        ("f_maxCard,X", po::value<int>(&result.fltm_maxCard)->required(), "FLTM maxCard")
-
-        ("f_nbr_restarts,r", po::value<int>(&result.fltm_nbrRestarts)->required(), "FLTM nbr restarts")
-        ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->required(), "FLTM nbr steps") 
+        ("f_nbr_restarts,r", po::value<int>(&result.fltm_params.nbrRestarts)->required(), "FLTM nbr restarts")
+        ("f_nbr_steps,s", po::value<int>(&result.fltm_params.nbrSteps)->default_value(7), "FLTM nbr steps. Default 7") 
 
         ("f_thres_info,i", po::value<double>(&result.fltm_params.latentVarQualityThres)->required(), "FLTM thres info")
         ("f_thres_em,e", po::value<double>(&result.fltm_params.emThres)->required(), "FLTM thres EM")
-        
+
+
         ;
     po::variables_map vm; 
     try { 

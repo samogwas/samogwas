@@ -19,7 +19,6 @@
 # Compiled Static libraries
 *.lai
 *.la
-*.a
 *.lib
 
 # Executables
@@ -29,6 +28,13 @@
 
 *~
 build
+bin
+
+# QtCreator
+*.config
+*.creator
+*.files
+*.includes
 
 # but not these guys
 !libspl.so

@@ -53,6 +53,19 @@ struct Partition {
     }
   }
 
+  Partition( const std::vector<Label>& clustering) {
+    // auto nbrClusters = clustering.size();
+    // for ( size_t clt = 0; clt < nbrClusters; ++clt ) {
+    //   for (auto& item: clustering.at(clt)) {
+    //     setLabel(item, clt);
+    //   }
+    // }
+
+    for ( size_t i = 0; i < clustering.size(); ++i ) {
+      setLabel(i, clustering.at(i));
+    }
+  }
+
  
   virtual size_t nbrClusters() const { return m_labelSet.size(); }
   virtual size_t nbrItems() const { return m_index2Label.size(); } 
@@ -99,15 +112,13 @@ struct Partition {
       }
     }
   }
+
+  const Index2Label& get_mapping() const { return m_index2Label; }
+ 
  protected:
   std::set<Label> m_labelSet; // A label is a cluster identifier. 
   Index2Label m_index2Label;
   std::map<Index,int> m_cluster_member_counts; // keeps track of the nbr of items per cluster
-
-
-  // std::vector<int> label2indexes;
-  // bool is_cached = false;
-  // bool is_cache_valid = false;
 
 };
 
@@ -142,7 +153,10 @@ class ClustAlgo
   virtual Partition run() = 0;
   virtual char* name() const = 0;
   virtual void invalidate() = 0; //@todo: invalidateCache
-  virtual void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr) = 0;
+  virtual void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr) {}
+  virtual CriteriaPtr get_criteria() { return nullptr; }
+
+  virtual double measure(const size_t a, const size_t b) { return -1.0; }
 };
 
 typedef std::shared_ptr<ClustAlgo> ClustAlgoPtr;

@@ -43,11 +43,13 @@ struct CAST: public ClustAlgo {
   CAST ( SimiPtr s, const double& thres): simi(s), thresCAST(thres) {}
 
   
+  virtual double measure(const size_t a, const size_t b) {
+    return simi->compute(a,b);
+  }
+  
   virtual void invalidate() {
     if (simi) {
-      printf("do you ask me abt the caching invalidation - 0\n");
-
-        simi->invalidate_entropy_cache();
+      simi->invalidate_entropy_cache();
     }
   }
 
@@ -59,22 +61,24 @@ struct CAST: public ClustAlgo {
     CAST_Cluster unAssignedCluster;
     auto nvars = simi->nbr_variables();
     for ( int i = 0; i < nvars; ++i ) { // SimilarityMatrix has type SimiMatrix (for instance
-                                                           // MutInfoSimilarityMatrix)
-                                                           // @todo: remove direct access, and change the name
+      // MutInfoSimilarityMatrix)
+      // @todo: remove direct access, and change the name
       unAssignedCluster.push_back(CAST_Item(i, 0.0) );    
     }
     /// Delegates the job to the method taking the newly initialized unassignedCluster as parameter.
     return run( unAssignedCluster );
   }
 
-  /** Provides the name of the algorithm along with its parameters
-   *
+  /** Provides the name of the algorithm along with its parameters *
    */
   virtual char* name() const {
     char* name = new char[80];
     sprintf( name, "CAST_%.3f", thresCAST);
     return name;
   }
+
+  virtual CriteriaPtr get_criteria() { return simi->get_criteria(); }
+
   virtual inline void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr);
 
  protected:
@@ -89,19 +93,20 @@ struct CAST: public ClustAlgo {
   
   // Adds good item to OpenCluster and removes it from unassignedCluster 
   inline void addGoodItem( CAST_Cluster& unassignedCluster, CAST_Cluster& openCluster, 
-                    GraphSimilarity& simMatrix, const int itemIdx );
+                           GraphSimilarity& simMatrix, const int itemIdx );
 
   /** Removes bad item from openCluster and moves it back to unassignedCluster  */
   inline void removeBadItem( CAST_Cluster& unassignedCluster, CAST_Cluster& openCluster, 
-                      GraphSimilarity& simMatrix, const int itemIdx );
+                             GraphSimilarity& simMatrix, const int itemIdx );
   
   /** Moves the item indexed by itemIdx from sourceCluster, puts into targetCluster and then updates the affinity. */
   inline void updateClustersAffinity( CAST_Cluster& sourceCluster, CAST_Cluster& targetCluster, 
-                               GraphSimilarity& simMatrix, const int itemIdx );
+                                      GraphSimilarity& simMatrix, const int itemIdx );
   
   /** Moves item indexed by itemIdx from sourceCluster to targetCluster  */
   inline void moveItemBetweenClusters( CAST_Cluster& source, CAST_Cluster& target, const int itemIdx );
 
+  
  protected:
   // main parameter of CAST
   double thresCAST;
@@ -179,7 +184,7 @@ void CAST::resetAffinities( CAST_Cluster& cluster ) {
 // Delegates the task to updateClusterAffinity which moves the item indexed by itemIdx from unassignedCluster 
 // to openCluster and update the affinity correspondingly. 
 void CAST::addGoodItem( CAST_Cluster& unAssignedCluster, CAST_Cluster& openCluster, 
-                                    GraphSimilarity& simiCompute, const int itemIdx ) {  
+                        GraphSimilarity& simiCompute, const int itemIdx ) {  
   updateClustersAffinity( unAssignedCluster, openCluster, 
                           simiCompute, itemIdx );  
 }
@@ -188,7 +193,7 @@ void CAST::addGoodItem( CAST_Cluster& unAssignedCluster, CAST_Cluster& openClust
 // Delegates the task to updateClusterAffinity which moves back the item indexed by itemIdx from openCluster to 
 // unassignedCluster and update the affinity correspondingly 
 void CAST::removeBadItem( CAST_Cluster& unAssignedCluster, CAST_Cluster& openCluster, 
-                                      GraphSimilarity& simiCompute, const int itemIdx ) {
+                          GraphSimilarity& simiCompute, const int itemIdx ) {
   updateClustersAffinity( openCluster, unAssignedCluster, 
                           simiCompute, itemIdx); 
 }
@@ -196,8 +201,8 @@ void CAST::removeBadItem( CAST_Cluster& unAssignedCluster, CAST_Cluster& openClu
 //////////////////////////////////////////////////////////////////////////////////////
 // Updates the affinity values in sourceCluster and targetCluster after the move of indeXItem.
 void CAST::updateClustersAffinity( CAST_Cluster& sourceCluster, CAST_Cluster& targetCluster,
-                                               GraphSimilarity& simiCompute, 
-                                               const int itemIdx )
+                                   GraphSimilarity& simiCompute, 
+                                   const int itemIdx )
 {
   const int itemGlobalIndex = sourceCluster.at(itemIdx).globalIndex;
   moveItemBetweenClusters( sourceCluster, targetCluster, itemIdx ); 
@@ -214,10 +219,10 @@ void CAST::updateClustersAffinity( CAST_Cluster& sourceCluster, CAST_Cluster& ta
 //////////////////////////////////////////////////////////////////////////////////////
 // Moves item from source cluster to target cluster.
 void CAST::moveItemBetweenClusters( CAST_Cluster& source,
-                                                CAST_Cluster& target,
-        const int itemIdx ) {
- target.push_back( source.at(itemIdx) );
- source.erase( source.begin() + itemIdx );
+                                    CAST_Cluster& target,
+                                    const int itemIdx ) {
+  target.push_back( source.at(itemIdx) );
+  source.erase( source.begin() + itemIdx );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////

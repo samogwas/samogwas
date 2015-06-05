@@ -34,33 +34,37 @@ struct ComputeNodeJointEntropy {
   }
 
   static inline double compute_entropy_from_joint_tab( std::vector<double>& jointTab, size_t SIZE ) {
+
+    double sum = 0.0;
+    for (size_t i = 0; i < jointTab.size(); ++i) {
+      sum += jointTab.at(i);
+    }
+   
     return log(SIZE) - 1.0/SIZE*std::accumulate( jointTab.begin(), jointTab.end(),
-                                        0.0, sum_log_count);
+                                                 0.0, sum_log_count);
   }
 
   
   /////////////////////////////////////////////////////////////
   double compute(const Node& nA, const Node& nB) const {
     if (nA.level > nB.level) return compute(nB,nA);
-    if (nA.is_leaf() && nB.is_leaf()) {
-      assert(nA.dataVec && nB.dataVec && nA.dataVec->size() == nB.dataVec->size());
-      return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
-    }
-    else if (nA.is_leaf() && !nB.is_leaf()) {
-      return compute_leaf_latent(nA,nB, *nA.dataVec, *nB.cndObsDist);
-    }
-    else {
-      return compute_latent_latent(nA, nB, *nA.cndObsDist, *nB.cndObsDist);
-    } 
+    return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
+    // if (nA.is_leaf() && nB.is_leaf()) {
+    //   assert(nA.dataVec && nB.dataVec && nA.dataVec->size() == nB.dataVec->size());
+    //   return compute_leaf_leaf(nA, nB, *nA.dataVec, *nB.dataVec);
+    // }
+    // else if (nA.is_leaf() && !nB.is_leaf()) {
+    //   return compute_leaf_latent(nA,nB, *nA.dataVec, *nB.cndObsDist);
+    // }
+    // else {
+    //   return compute_latent_latent(nA, nB, *nA.cndObsDist, *nB.cndObsDist);
+    // } 
   }
 
   double compute_leaf_leaf(const Node& nA, const Node& nB,
                            const VecT& dVecA, const VecT& dVecB) const {
     JointEntropy<EMP> jEntropy;
     return jEntropy(dVecA, dVecB);
-    // auto jointTab = create_joint_table_leaf_leaf(nA,nB,dVecA,dVecB);
-    // auto SIZE =  dVecA.size();
-    // return compute_entropy_from_joint_tab(jointTab, SIZE);
   }
 
   double compute_leaf_latent(const Node& nA, const Node& nB,
@@ -75,6 +79,7 @@ struct ComputeNodeJointEntropy {
     auto jt = create_joint_table_latent_latent(nA,nB,dVecA,dVecB);
     int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
     auto SIZE = dVecA.size()/nA.cardinality();
+
     return compute_entropy_from_joint_tab(jt, SIZE);
   }
 
@@ -135,14 +140,7 @@ struct ComputeNodeJointEntropy {
           jointTab[commonIdx] += dVecB[i*CARD_B+b];
         }
       }     
-      // for (int a = 0; a < CARD_A; ++a) {
-      //   for (int b = 0; b < CARD_B; ++b) {
-          
-      //     auto commonIdx = MAX_CARD*a+b;
-      //     jointTab[commonIdx] /= SIZE;
-      //     // jointTab[commonIdx] += dVecB[i*CARD_B+b];
-      //   }
-      // }
+
     } // for
 
     return jointTab;
@@ -156,122 +154,37 @@ struct ComputeNodeJointEntropy {
     int MAX_CARD = std::max(CARD_A, CARD_B);
     std::vector<double> jointTab(MAX_CARD*MAX_CARD, 0);
     auto SIZE = dVecA.size()/nA.cardinality();
+    
     if (nB.is_parent_of(nA)) {
       for (int a = 0; a < CARD_A; ++a) {
         for (int b = 0; b < CARD_B; ++b) {
           auto commonIdx = MAX_CARD*a+b;
           jointTab[commonIdx] = nB.compute_cond_prob(nA,a,b)*nB.compute_prob(b)*SIZE;
-        }
+        }        
       }
 
     } else {
       for (int i=0;i<SIZE;++i) {
         for (int a = 0; a < CARD_A; ++a) {
+          
           for (int b = 0; b < CARD_B; ++b) {
             auto commonIdx = MAX_CARD*a+b;
             jointTab[commonIdx] += dVecB[i*CARD_B+b]*dVecA[i*CARD_A+a];
           }
         }
       } // for observation
-
-      // for (int a = 0; a < CARD_A; ++a) {
-      //   for (int b = 0; b < CARD_B; ++b) { 
-      //     jointTab[a][b] /= sz;
-      //   }
-      // }
+      
     } // no relationship
-
-
-    return jointTab;
-  }
-  
-  
-  static JointProbTab create_joint_tab_leaf_leaf(const Node& nA, const Node& nB,
-                                                 const VecT& dVecA, const VecT& dVecB ) {
- 
-    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
-    JointProbTab jointTab(CARD_A, std::vector<double>(CARD_B,0.0));
-    auto sz = dVecA.size();    
-    for (int i=0;i<sz;++i) {
-      int a = dVecA[i];
-      int b = dVecB[i];
-      jointTab[a][b] += 1;
-    }     
-    for (int a = 0; a < CARD_A; ++a)  
-      for (int b = 0; b < CARD_B; ++b)
-        jointTab[a][b] /= sz;
-    return jointTab;
-  }
-
-  static JointProbTab create_joint_tab_latent_latent( const Node& nA, const Node& nB,
-                                                    const ProbVecT& dVecA, const ProbVecT& dVecB) {
-    if (nA.level > nB.level) return create_joint_tab_latent_latent(nB,nA,dVecB,dVecA);
-    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
-    JointProbTab jointTab(CARD_A, std::vector<double>(CARD_B,0.0));
-    auto sz = dVecA.size()/nA.cardinality();
-    if (nB.is_parent_of(nA)) {
-      for (int a = 0; a < CARD_A; ++a) {
-        for (int b = 0; b < CARD_B; ++b) {
-          jointTab[a][b] = nB.compute_cond_prob(nA,a,b)*nB.compute_prob(b);
-        }
-      }
-
-    } else {
-      for (int i=0;i<sz;++i) {
-        for (int a = 0; a < CARD_A; ++a) {
-          for (int b = 0; b < CARD_B; ++b) {
-            jointTab[a][b] += dVecB[i*CARD_B+b]*dVecA[i*CARD_A+a];
-          }
-        }
-      } // for observation
-
-      for (int a = 0; a < CARD_A; ++a) {
-        for (int b = 0; b < CARD_B; ++b) { 
-          jointTab[a][b] /= sz;
-        }
-      }
-    } // no relationship
-
-
-    return jointTab;
-  }
-
-  static JointProbTab create_joint_tab_leaf_latent( const Node& nA, const Node& nB,
-                                                    const VecT& dVecA, const ProbVecT& dVecB) {
-    int CARD_A = nA.cardinality(), CARD_B = nB.cardinality();
-    JointProbTab jointTab(CARD_A, std::vector<double>(CARD_B,0.0));
-    auto sz = dVecA.size();
-    if (nB.is_parent_of(nA)) {
-      for (int a = 0; a < CARD_A; ++a) {
-        for (int b = 0; b < CARD_B; ++b) {
-          jointTab[a][b] = nB.compute_cond_prob(nA,a,b)*nB.compute_prob(b);
-        }
-      }
-    } else {
-      for (int i=0;i<sz;++i) {
-        int a = dVecA[i];         
-        for (int b = 0; b < CARD_B; ++b) {
-          jointTab[a][b] += dVecB[i*CARD_B+b];
-        }
-      }     
-      for (int a = 0; a < CARD_A; ++a) {
-        for (int b = 0; b < CARD_B; ++b) {
-          jointTab[a][b] /= sz;        
-        }
-      }
-    } // for
-
     return jointTab;
   }  
+  
   
 };
 
 //////////////////////////////////////////////////////////////////
 struct ComputeNodeEntropy {
   inline double compute( const Node& node ) const {
-    // return 1;
-    // assert(node.marginalDist);
-   return node.marginalDist->compute_shannon_entropy();
+    return node.marginalDist->compute_shannon_entropy();
   }
 };
 

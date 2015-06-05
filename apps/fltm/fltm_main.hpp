@@ -14,6 +14,7 @@
 #include "graph/graph.hpp"
 
 #include "algo_properties.hpp"
+
 #include "dataload.hpp"
 
 #include <vector>
@@ -22,10 +23,6 @@
 
 namespace samogwas
 {
-// typedef std::vector<int> Vec;
-// typedef std::shared_ptr<Vec> VecPtr;
-// typedef std::vector<VecPtr> PtrMatrix;
-// typedef std::shared_ptr<PtrMatrix> PtrMatrixPtr;
 
 inline Local2GlobalPtr init_index_mapping(const size_t sz) {
   auto l2g = std::make_shared<Local2Global>(sz, -1);
@@ -35,7 +32,9 @@ inline Local2GlobalPtr init_index_mapping(const size_t sz) {
   return l2g;
 }
 
-inline GraphPtr init_graph( PtrMatrix& mat, Label2Index& lab2Idx, const int CARD, const LabelVec& labels, const PosVec& positions ) {
+inline GraphPtr init_graph( PtrMatrix& mat, Label2Index& lab2Idx,
+                            const int CARD, const LabelVec& labels,
+                            const PosVec& positions ) {
   auto graph = std::make_shared<Graph>();
 
   auto nrows = positions.size();
@@ -47,6 +46,7 @@ inline GraphPtr init_graph( PtrMatrix& mat, Label2Index& lab2Idx, const int CARD
 
   return graph;
 }
+
 
 } // namespace samogwas ends here. 
 

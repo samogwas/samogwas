@@ -28,6 +28,8 @@ struct GraphDissimilarity {
   // virtual void precompute_all();
 
   virtual ~GraphDissimilarity() {}
+
+  CriteriaPtr get_criteria() { return criteria; }
   
  protected:  
   GraphPtr graph;
@@ -50,15 +52,6 @@ struct GraphMutInfoDissimilarity: public GraphDissimilarity {
   virtual GraphDissimilarity& set_criteria(CriteriaPtr c) { simi.set_criteria(c); return *this; }
   virtual size_t nbr_variables() const { return simi.nbr_variables(); }
 
-
-  // virtual void precompute_all() {
-  //   for ( size_t a = 0; a < l2g->size(); ++a) {
-  //     for ( size_t b = a+1; b < l2g->size(); ++b ) {
-        
-  //     }
-  //   }
-  // }
-  
 
  private:
   GraphMutInfoSimilarity simi;

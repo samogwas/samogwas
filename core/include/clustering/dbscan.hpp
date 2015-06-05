@@ -61,6 +61,13 @@ struct DBSCAN: public ClustAlgo {
     sprintf( name, "DBSCAN_%d_%.3f", minPts, epsilon);
     return name;
   }
+  
+  virtual CriteriaPtr get_criteria() { return diss->get_criteria(); }
+
+  virtual double measure(const size_t a, const size_t b) {
+    return diss->compute(a,b);
+  }
+
 
  protected:
   /// Internal method that returns the set of neighbors for a given point.
@@ -106,7 +113,6 @@ Partition DBSCAN::run() {
       Neighbors neighbors  = find_neighbors(pid); 
       if ( neighbors.size() >= minPts ) { // If the neighborhood is dense,
         m_LabelSet[pid] = cluster_id; // we form a new cluster.
-        printf("clust(%d): %d\n", pid, cluster_id);
         for ( int i = 0; i < neighbors.size(); ++i) { // We grow this cluster by trying to reach other points
                                                      // from each of its members.
           int nPid = neighbors[i]; // 
@@ -120,7 +126,6 @@ Partition DBSCAN::run() {
             }
           }
           if ( m_LabelSet[nPid] ==  UNASSIGNED_LABEL ) { // to avoid overriding a possible previous cluster assignment
-
             m_LabelSet[nPid] = cluster_id; 
           }
         }
@@ -135,7 +140,6 @@ Partition DBSCAN::run() {
 /** A neighborhood of a given point is defined as all the points that are within a certain given radius (epsilon).
  */
 typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
-  std::cout << "finding neighbors of: " << pid;
   Neighbors ne;  
   size_t nvars = this->diss->nbr_variables(); // @todo: remove direct access to compMatrix
   for ( Index i = 0; i < nvars; ++i ) {
@@ -144,7 +148,6 @@ typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
     }
   }
 
-  std::cout << " of size: " << ne.size() << std::endl;
   return ne;
 }
 
@@ -155,8 +158,7 @@ Partition DBSCAN::toPartition( const LabelSet& LabelSet ) {
   std::vector<int> singletons;
   for ( size_t i = 0; i < LabelSet.size(); ++i ) {
     if ( LabelSet.at(i) != UNASSIGNED_LABEL ) {
-      partition.setLabel( i, LabelSet.at(i) ); // CS identifier could be more informative.
-                                           // The label is the cluster identifier.
+      partition.setLabel( i, LabelSet.at(i) ); 
       labs.insert( LabelSet.at(i) );
     } else {
       singletons.push_back(i);

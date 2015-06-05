@@ -11,15 +11,28 @@ Node& Node::set_children_distributions(plCompIte beg, plCompIte end ) {
     return *this;
 }
 
-Node& Node::set_local_indexes( VarIter beg, VarIter end, const Label2Index &label2Index) {
-  int i = 0;
+Node& Node::set_local_indexes( const Label2Index &label2Index ) {
+  auto vars = get_children_variables();
+  int i = 0;  
+  for ( auto it = vars.begin(); it != vars.end(); ++it ) {
+    auto var = *it;
+    auto lab = var.name();
+    auto idx = label2Index.at(lab);
+    global2localIdx[idx] = i++;
+  }
+  return *this;
+    
+}
+
+
+Node& Node::set_local_indexes( VarIter beg, VarIter end, const Label2Index &label2Index ) {  
+  int i = 0;  
   for ( auto it = beg; it != end; ++it ) {
     auto var = *it;
     auto lab = var.name();
     auto idx = label2Index.at(lab);
     global2localIdx[idx] = i++;
   }
-
   return *this;
 }
 
@@ -28,15 +41,24 @@ Node& Node::set_local_indexes( VarIter beg, VarIter end, const Label2Index &labe
 Node& Node::set_joint_distribution( const JointDist& jointDist) {
 
   auto compList = jointDist.get_computable_object_list();
+  // auto beg = compList.begin();
+  // // set_marginal_dist
+  // this->set_marginal_distribution(beg);
+  // // set_children_dist
+  // this->set_children_distributions(++beg, compList.end());
+
+  return set_joint_distribution(compList);
+}
+
+Node& Node::set_joint_distribution( const plComputableObjectList& compList) {
+  // auto compList = jointDist.get_computable_object_list();
   auto beg = compList.begin();
   // set_marginal_dist
   this->set_marginal_distribution(beg);
   // set_children_dist
   this->set_children_distributions(++beg, compList.end());
-
   return *this;
 }
-
 
 Node& Node::set_position() {
   auto children_indexes = this->get_children_global_indexes();
@@ -45,14 +67,14 @@ Node& Node::set_position() {
     unsigned totalPos = 0;
     for (auto cidx: children_indexes) {      
       Node& n = (*graph)[cidx];
-      totalPos += n.position;
+      totalPos += n.position / nbrChildren;
     }       
-    this->position = totalPos / nbrChildren;
+    this->position = totalPos;
   }
   return *this;
 }
 
-Node& Node::set_level() {
+Node& Node::update_level() {
   auto children_indexes = this->get_children_global_indexes();
   unsigned nbrChildren = this->nbr_children();
   int maxChildrenLevel = 0;
@@ -61,21 +83,28 @@ Node& Node::set_level() {
     if (maxChildrenLevel <  n.level) {
       maxChildrenLevel = n.level;
     }
-  }        
+  }
   this->level = maxChildrenLevel + 1;
+    
   return *this;
 }
 
-Node& Node::set_data_vec(DataVecPtr dtv) {
+Node& Node::set_data_vec(DataVecPtr dtv, const bool computeEmpDist) {
     this->dataVec = dtv;
-    auto marginalDist = create_emp_distribution(this->variable, *dtv);
-    return set_marginal_distribution(marginalDist);
+    if (computeEmpDist) {    
+      auto marginalDist = create_emp_distribution(this->variable, *dtv);
+      return set_marginal_distribution(marginalDist);
+    }
+    return *this;
 }
 
-Node& Node::set_cnd_obs_vec(CondObsDistPtr cndObsDist) {
+Node& Node::set_cnd_obs_vec(CondObsDistPtr cndObsDist, const bool computeEmpDist) {
   this->cndObsDist = cndObsDist;
-  auto marginalDist = create_emp_distribution(this->variable, *cndObsDist);
-  return set_marginal_distribution(marginalDist);
+  if (computeEmpDist) {    
+    auto marginalDist = create_emp_distribution(this->variable, *cndObsDist);
+    return set_marginal_distribution(marginalDist);
+  }
+  return *this;
 }
 
 
@@ -101,11 +130,13 @@ double Node::compute_cond_prob( const Node& cNode, const int childVal, const int
   return this->compute_cond_prob(childIdx, cVl, pVl);
 }
 
+// node.compute_cond_prob( (int)i,  plValues().add(varX, childVal), plValues().add(latentVar, val) )
+
 double Node::compute_cond_prob( const int cIdx, const int childVal, const int parentVal ) const {
-  plValues pVl = plValues().add(this->variable, parentVal);
+  plValues pVl = plValues().add( this->variable, parentVal );
   int globaIdx = local2GlobalIdx(cIdx);
-  plValues cVl = plValues().add((*graph)[globaIdx].variable, childVal);
-  return this->compute_cond_prob(cIdx, pVl, cVl);
+  plValues cVl = plValues().add( (*graph)[globaIdx].variable, childVal );
+  return this->compute_cond_prob(cIdx,cVl,pVl);
 }
 
 double Node::compute_cond_prob( const int cIdx, const plValues& cV, const plValues& pV ) const {
@@ -131,30 +162,6 @@ Node& Node::copy_data( const Node& n ) {
   this->level = n.level;
   
   return *this;
-  // int position; // physical position on the genome
-  // int level; // indicates the level to which this node belongs.
-  // GraphPtr graph; // reference to its graph
-  // RandomVariable variable; // represents the underlying random variable.
-
-  // DistPtr marginalDist;
-
-  // DataVecPtr dataVec;
-  // CondObsDistPtr cndObsDist;
-
-  // std::vector<CndDistPtr> cndChildrenDists;
-
-  // std::map<int,int> global2localIdx;
-  // Node& set_local_indexes( VarIter beg, VarIter endx, const Label2Index &label2Index);
-  // Node& set_position();
-  // Node& set_position(const int position) { this->position = position; return *this; }
-
-  // Node& set_level();
-
-  // Node& set_variable(plSymbol& var) { this->variable = var; return *this; }
-  // Node& set_graph(GraphPtr graph) { this->graph = graph; return *this; }
-  // Node& set_index(const int index) { this->index = index; return *this; }
-  // Node& set_data_vec(DataVecPtr dtv); 
-  // Node& set_cnd_obs_vec(CondObsDistPtr cndObsDist);
   
 }
 

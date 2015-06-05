@@ -20,6 +20,7 @@
 #include "clustering/clustering.hpp"
 #include "clustering/dbscan.hpp"
 #include "clustering/cast.hpp"
+#include "fltm/latent_var_criteria.hpp"
 
 namespace samogwas
 {
@@ -30,6 +31,8 @@ struct FLTM_Params {
   int nbrRestarts;
   double emThres; // controls EM algorithm convergence.
   double latentVarQualityThres;
+  unsigned maxDist;
+  unsigned seed;
 };
 
 struct FLTM {
@@ -43,16 +46,17 @@ struct FLTM {
 
   FLTM( FLTM_Params &p ): params(p) { }
   void execute( ClustAlgoPtr clt, CardFuncPtr cardF, GraphPtr graph );
-  
+ 
  private:
-  bool contains_only_singletons( const Clustering &clustering );
+  int number_non_singletons( const Clustering &clustering );
   bool accept_latent_variable( Graph&, Node& node, double qualityThres );
-  Node create_latent_node( GraphPtr graph, plSymbol& var, Label2Index& l2i, Cluster& cluster );
+  Node create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster );
   Node& add_latent_node( Graph& graph, Node& n );
   Label2Index create_index_map( const Graph& graph );
   Local2GlobalPtr create_local_to_global_map(const Graph& graph);
-  void update_index_map( Local2Global& l2g, const Cluster& cluster);
-  void update_index_map( Local2Global& l2g, const Node& latentNode);
+  void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Cluster& cluster);
+  void update_index_map( Local2Global& l2g, const Local2Global& currentL2G, const Node& latentNode);
+  CriteriaPtr create_current_criteria(  Graph& graph, Local2Global& l2g, unsigned MAX_POS, int step);
 
  private:
   FLTM_Params params;

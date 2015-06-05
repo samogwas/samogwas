@@ -1,6 +1,6 @@
 /****************************************************************************************
  * File: test_graph.hpp
- * Description: 
+ * Description:
  * @author: siolag161 (thanh.phan@outlook.com)
  * @date: 24/04/2015
 
@@ -15,7 +15,7 @@
 namespace samogwas_test
 {
 
-} // namespace samogwas_test ends here. 
+} // namespace samogwas_test ends here.
 
 /****************************************************************************************/
 #endif // SAMOGWAS_TEST_TEST_GRAPH_HPP
