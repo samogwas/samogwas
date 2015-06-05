@@ -10,6 +10,7 @@
 
 #include <string>
 #include <iostream>
+#include <time.h>
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp> // to obtain the program's name
@@ -54,8 +55,8 @@ inline Options get_program_options(int argc, char** argv) {
         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
         
         ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
-        ("outtype,t", po::value<int>(&result.outType)->default_value(1), "Output Type (0): Distri (1) Tulip. Default: 0")
-        ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(999), "to specify a random seed. Default: 999")
+        ("outtype,t", po::value<int>(&result.outType)->default_value(0), "Output Type (0): Distri (1) Tulip. Default: 0")
+        ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(time(NULL)), "to specify a random seed. Default: time based")
 
         ("clustConf,c", po::value<std::string>(&result.clustConf)->required(), "Clust Config File")
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist, default 50000bp")
