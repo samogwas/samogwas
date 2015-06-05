@@ -57,7 +57,10 @@ void MultiEM::update_parameters ( GraphPtr graph,
 
   auto it = dataVec->begin();
   for (size_t ind = 0; ind < missing_vals.size(); ++ind) {
+      //calcule la probabilité sachant
     plProbTable probTab(latentVar, prob_tabs[ind], true);
+    //ICI qu'on tire au hasard les valeurs des variables latentes....
+    // mettre une boucle for pour réitérer le tirage aléatoire
     dataVec->at(ind) = probTab.draw()[0];
   }
 
