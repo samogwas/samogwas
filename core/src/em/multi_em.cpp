@@ -12,7 +12,7 @@ namespace samogwas {
 using MatrixPtr = MultiEM::MatrixPtr;
 typedef plMatrixDataDescriptor<int> DataDesc;
 
-void MultiEM::run( GraphPtr graph,
+void MultiEM::run( const Graph& graph,
                    Node& latentNode,
                    const double threshold ) {
   
@@ -23,25 +23,58 @@ void MultiEM::run( GraphPtr graph,
  
   auto learnObjs = create_learn_objects(latentNode.variable, vars);  
   DataDesc dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
+
+//  EMLearner candidateModels_array[nbrRestarts];
+//  #pragma omp parallel for firstprivate(dataDesc)
+//  for (size_t it = 0; it < nbrRestarts; ++it) {
+//    //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
+//    plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
+//    // randomly initialized
+//    EMLearner learner(jointDist, learnObjs);
+//    learner.set_same_missing_variables(false);
+//    learner.run(dataDesc, threshold); // executes the EM learning process
+//    candidateModels_array[it] = learner; // puts the learnt model into the collection
+//}
+//  printf("super !\n");
+//  CandidateModels candidateModels;
+//   for (size_t it = 0; it < nbrRestarts; ++it) {
+//        candidateModels.push_back(candidateModels_array[it]);
+//   }
+
   CandidateModels candidateModels;  // vector to store different learners
 
-  for (size_t it = 0; it < nbrRestarts; ++it) {
-    //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
-    plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
-    // randomly initialized
-    EMLearner learner(jointDist, learnObjs);
-    learner.set_same_missing_variables(false);
-    learner.run(dataDesc, threshold); // executes the EM learning process
-    candidateModels.push_back(learner); // puts the learnt model into the collection
-  }
+   for (size_t it = 0; it < nbrRestarts; ++it) {
+     //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
+     plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
+     // randomly initialized
+     EMLearner learner(jointDist, learnObjs);
+     learner.set_same_missing_variables(false);
+     learner.run(dataDesc, threshold); // executes the EM learning process
+     candidateModels.push_back(learner); // puts the learnt model into the collection
+   }
 
+//  #pragma omp parallel
+//  {
+//      CandidateModels candidateModels_private;
+//       #pragma omp for nowait
+//    for (size_t it = 0; it < nbrRestarts; ++it) {
+//      //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
+//      plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
+//      // randomly initialized
+//      EMLearner learner(jointDist, learnObjs);
+//      learner.set_same_missing_variables(false);
+//      learner.run(dataDesc, threshold); // executes the EM learning process
+//      candidateModels_private.push_back(learner); // puts the learnt model into the collection
+//  }
+//   #pragma omp critical
+//    candidateModels.insert(candidateModels.end(), candidateModels_private.begin(), candidateModels_private.end());
+//  }
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
 
-  update_parameters( graph, latentNode, dataDesc, bestModel );
+  update_parameters( latentNode, dataDesc, bestModel );
 }
 
-void MultiEM::update_parameters ( GraphPtr graph,
-                                  Node& latentNode,
+void MultiEM::update_parameters ( Node& latentNode,
                                   DataDesc& dataDesc,
                                   plEMLearner& model ) {
   
@@ -90,15 +123,15 @@ LearnObjectPtrs MultiEM::create_learn_objects( const Variable & latentVar,
 
 
 // @todo: directly convert and not 
-MatrixPtr MultiEM::create_data_table( GraphPtr graph, const std::vector<int>& indexes ) {
+MatrixPtr MultiEM::create_data_table( const Graph& graph, const std::vector<int>& indexes ) {
   auto nbrVars = indexes.size() + 1; // chgildren + (-1)
   auto matrix = std::make_shared<Matrix>();
   matrix->reserve(nbrVars);
-  auto nbrInds = (*graph)[0].dataVec->size();
+  auto nbrInds = graph[0].dataVec->size();
   matrix->push_back(std::vector<int>( nbrInds, -1));
 
   for ( auto index: indexes ) {
-    Node& n = (*graph)[index];
+    const Node& n = graph[index];
     matrix->push_back(*n.dataVec);
   }
   return transpose(matrix);   

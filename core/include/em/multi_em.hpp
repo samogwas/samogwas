@@ -53,14 +53,14 @@ struct MultiEM {
   typedef size_t Size;
 
 
-  virtual void run( GraphPtr graph,
+  virtual void run( const Graph& graph,
                     Node& latentNode,
                     const double threshold);
 
 
  private:
   LearnObjectPtrs create_learn_objects(const Variable & latentVar, const Variables& variables);
-  MatrixPtr create_data_table( GraphPtr graph, const std::vector<int>& indexes );
+  MatrixPtr create_data_table( const Graph& graph, const std::vector<int>& indexes );
   DefTabPtr create_def_table( size_t rows, size_t cols ); //
   MatrixPtr transpose(MatrixPtr mat );
   plComputableObjectList create_computable_objects( const Variable& latentVar, const Variables& variables );
@@ -69,7 +69,7 @@ struct MultiEM {
   
   double scoreBIC( EMLearner& learner, plMatrixDataDescriptor<int>& dataDesc );
 
-  void update_parameters ( GraphPtr graph, Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
+  void update_parameters ( Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
   // void update_parameters( GraphPtr graph, Node& latentNode, const std::vector<plValues>&,
   //                         const std::vector<std::vector<plProbValue>>& ,
   //                         const JointDist& jointDist );
