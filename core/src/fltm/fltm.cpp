@@ -2,9 +2,10 @@
 #include "fltm/fltm.hpp"
 #include "fltm/latent_var_criteria.hpp"
 #include <boost/log/trivial.hpp>
+#include <omp.h> // openmp pragmas
 
 #include <fstream>
-#include <vector>
+
 
 namespace samogwas {
 
@@ -27,44 +28,128 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     auto partition = clustAlgo->run();
     auto clustering = partition.to_clustering();
     auto SIZE = l2g->size();
-    BOOST_LOG_TRIVIAL(trace) << "to obtain: " << clustering.size();   
     int nonSingletons =  number_non_singletons(clustering);
-    BOOST_LOG_TRIVIAL(trace) << "num non-singletons: " << nonSingletons;
+    BOOST_LOG_TRIVIAL(trace) << "to obtain " << clustering.size() << " clusters with " << nonSingletons << " non-singletons clusters" ;
     if ( nonSingletons == 0 ) {
       BOOST_LOG_TRIVIAL(trace) << "stop due to only singleton.";
       return;
     }
 
     std::vector<int> l2gTemp(*l2g);
-
     Local2Global().swap(*l2g);  
-    int nbrGoodClusters = 0; int numClust = 0;
-    for ( auto &cluster: clustering ) {      
-      if ( cluster.size() > 1 ) {
-        numClust++;
-        RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
-                    plIntegerType(0, cardFunc->compute(cluster) - 1 ));
-        Node latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, cluster);
-        MultiEM em(params.nbrRestarts, params.seed);
-        em.run( graph, latentNode, params.emThres);
-        if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
-          nbrGoodClusters++;
-          add_latent_node( *graph, latentNode );
-          update_index_map( *l2g, l2gTemp, latentNode );
-          lab2Idx[ latentNode.getLabel() ] = latentNode.index;
+    int nbrGoodClusters = 0;
 
-          for ( auto item: cluster ) {
-            // l2g.push_back( currentL2G.at(item) );
-            boost::add_edge( latentNode.index, l2gTemp.at(item), *graph); 
-          }
+
+
+
+//    for ( auto &cluster: clustering ) {
+//      if ( cluster.size() > 1 ) {
+//        //numClust++;
+//        RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+//                    plIntegerType(0, cardFunc->compute(cluster) - 1 ));
+//        Node latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, cluster);
+//        MultiEM em(params.nbrRestarts);
+//        em.run( *graph, latentNode, params.emThres);
+//        if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
+//          nbrGoodClusters++;
+//          add_latent_node( *graph, latentNode );
+//          update_index_map( *l2g, l2gTemp, latentNode );
+//          lab2Idx[ latentNode.getLabel() ] = latentNode.index;
+
+//          for ( auto item: cluster ) {
+//            // l2g.push_back( currentL2G.at(item) );
+//            boost::add_edge( latentNode.index, l2gTemp.at(item), *graph);
+//          }
             
-        } else {
-          update_index_map( *l2g, l2gTemp, cluster);
+//        } else {
+//          update_index_map( *l2g, l2gTemp, cluster);
+//        }
+//      } else {
+//        update_index_map( *l2g, l2gTemp, cluster);
+//      }
+//    }
+
+
+
+
+
+
+    Node latentVector[clustering.size()];
+
+        BOOST_LOG_TRIVIAL(trace) << "clustering.size() " << clustering.size();
+      #pragma omp parallel for schedule(dynamic)
+      for ( int i = 0 ; i < clustering.size() ; ++i) {
+          if ( clustering[i].size() > 1 ) {
+            RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+                        plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
+            latentVector[i] = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
+            MultiEM em(params.nbrRestarts);
+            em.run( *graph, latentVector[i], params.emThres);
+          }
         }
-      } else {
-        update_index_map( *l2g, l2gTemp, cluster);
-      }
-    }
+
+
+        BOOST_LOG_TRIVIAL(trace) << "Let's begin the critical section";
+        for ( int i = 0 ; i < clustering.size() ; ++i) {
+            if (clustering[i].size() > 1 && accept_latent_variable( *graph, latentVector[i], params.latentVarQualityThres)) {
+
+                RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+                            plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
+                latentVector[i].set_variable(var);
+                      nbrGoodClusters++;
+                      add_latent_node( *graph, latentVector[i] );
+                      update_index_map( *l2g, l2gTemp, latentVector[i] );
+                      lab2Idx[ latentVector[i].getLabel() ] = latentVector[i].index;
+                      for ( auto item: clustering[i] ) {
+                        boost::add_edge( latentVector[i].index, l2gTemp.at(item), *graph);
+                      }
+            } else {
+                update_index_map( *l2g, l2gTemp, clustering[i]);
+            }
+        }
+
+
+
+
+
+//    #pragma omp parallel for schedule(dynamic)
+//    for ( auto cluster = clustering.begin(); cluster < clustering.end() ; ++cluster) {
+//    //for ( auto &cluster: clustering ) {
+//      if ( cluster->size() > 1 ) {
+//        RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+//                    plIntegerType(0, cardFunc->compute(*cluster) - 1 ));
+//        Node latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, *cluster);
+//        MultiEM em(params.nbrRestarts);
+//        em.run( *graph, latentNode, params.emThres);
+
+//        if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
+//        #pragma omp critical
+//        {
+//          nbrGoodClusters++;
+//          add_latent_node( *graph, latentNode );
+//          update_index_map( *l2g, l2gTemp, latentNode );
+//          lab2Idx[ latentNode.getLabel() ] = latentNode.index;
+
+//          for ( auto item: *cluster ) {
+//            // l2g.push_back( currentL2G.at(item) );
+//            boost::add_edge( latentNode.index, l2gTemp.at(item), *graph);
+//          }
+//        }
+
+//        } else {
+//        #pragma omp critical
+//        {
+//          update_index_map( *l2g, l2gTemp, *cluster);
+//      }
+//            }
+
+//      } else {
+//        #pragma omp critical
+//        {
+//        update_index_map( *l2g, l2gTemp, *cluster);
+//        }
+//      }
+//    }
 
     BOOST_LOG_TRIVIAL(trace) << "nbrGoodClusters: " << nbrGoodClusters;
 
@@ -92,7 +177,7 @@ int FLTM::number_non_singletons( const Clustering &clustering ) {
 }
 
 
-bool FLTM::accept_latent_variable( Graph& g, Node& node, double qualityThres ) {
+bool FLTM::accept_latent_variable(const Graph& g, Node& node, double qualityThres ) {
   double q = AverageMutInfo::compute( g, node );
   return (q >= qualityThres);
 }
