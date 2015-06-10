@@ -127,7 +127,7 @@ BOOST_AUTO_TEST_CASE( Test_Seed_Randomization ) {
   RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)), plIntegerType(0,2));
   Node n = createLatentNode(graph, var, lab2Idx, cluster);
   MultiEM em(3, 3);
-  double vrai = em.run( graph, n, 0.000001);
+  double vrai = em.run( *graph, n, 0.000001);
 
 }
 
