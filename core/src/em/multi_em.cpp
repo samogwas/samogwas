@@ -7,14 +7,12 @@
 #define DEFAULT_VALUE -1
 #define MISSING_VALUE -1
 
-
 namespace samogwas {
-
 
 using MatrixPtr = MultiEM::MatrixPtr;
 typedef plMatrixDataDescriptor<int> DataDesc;
 
-double MultiEM::run( GraphPtr graph,
+double MultiEM::run( const Graph& graph,
                    Node& latentNode,
                    const double threshold ) {
 
@@ -22,8 +20,8 @@ double MultiEM::run( GraphPtr graph,
   auto indexes = latentNode.get_children_global_indexes();
   auto dataTable = create_data_table( graph, indexes );
   auto defTable = create_def_table(samogwas::nrows(*dataTable),samogwas::ncols(*dataTable));
-
-  auto learnObjs = create_learn_objects(latentNode.variable, vars);
+ 
+  auto learnObjs = create_learn_objects(latentNode.variable, vars);  
   DataDesc dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
   CandidateModels candidateModels;  // vector to store different learners
 
@@ -38,15 +36,15 @@ double MultiEM::run( GraphPtr graph,
   }
 
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
-  update_parameters( graph, latentNode, dataDesc, bestModel );
+  update_parameters( latentNode, dataDesc, bestModel );
 
   return bestModel.get_last_computed_loglikelihood();
 }
 
-void MultiEM::update_parameters ( GraphPtr graph,
-                                  Node& latentNode,
+void MultiEM::update_parameters ( Node& latentNode,
                                   DataDesc& dataDesc,
                                   plEMLearner& model ) {
+
   std::vector<plValues> missing_vals;
   std::vector<std::vector<plProbValue>> prob_tabs;
   model.compute_missing_values_infos(dataDesc, missing_vals, prob_tabs );
@@ -90,15 +88,15 @@ LearnObjectPtrs MultiEM::create_learn_objects( const Variable & latentVar,
 
 
 // @todo: directly convert and not
-MatrixPtr MultiEM::create_data_table( GraphPtr graph, const std::vector<int>& indexes ) {
+MatrixPtr MultiEM::create_data_table( const Graph& graph, const std::vector<int>& indexes ) {
   auto nbrVars = indexes.size() + 1; // chgildren + (-1)
   auto matrix = std::make_shared<Matrix>();
   matrix->reserve(nbrVars);
-  auto nbrInds = (*graph)[0].dataVec->size();
+  auto nbrInds = graph[0].dataVec->size();
   matrix->push_back(std::vector<int>( nbrInds, -1));
 
   for ( auto index: indexes ) {
-    Node& n = (*graph)[index];
+    const Node& n = graph[index];
     matrix->push_back(*n.dataVec);
   }
   return transpose(matrix);

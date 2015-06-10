@@ -1,3 +1,4 @@
+
 add_compile_options(-std=c++11) # 2b safe
 
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -Wall " )

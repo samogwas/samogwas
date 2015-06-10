@@ -1,6 +1,6 @@
 /****************************************************************************************
  * File: core_em.hpp
- * Description:
+ * Description: 
  * @author: siolag161 (thanh.phan@outlook.com)
  * @date: 31/03/2015
 
@@ -13,8 +13,6 @@
 #include <vector>
 #include <memory>
 #include "graph/graph.hpp"
-
-
 namespace samogwas
 {
 
@@ -24,7 +22,7 @@ typedef plVariablesConjunction Variables;
 typedef std::vector< std::vector<bool>> DefTab;
 typedef std::shared_ptr<DefTab> DefTabPtr;
 typedef size_t Cardinality;
-typedef size_t Size;
+typedef size_t Size; 
 typedef plEMLearner EMLearner;
 typedef std::vector<plLearnObject*> LearnObjectPtrs;
 typedef std::vector<EMLearner> CandidateModels;
@@ -43,7 +41,7 @@ typedef std::vector<EMLearner> CandidateModels;
  *
  */
 struct MultiEM {
-
+  
   typedef std::vector< std::vector<int> > Matrix;
   typedef std::shared_ptr<Matrix> MatrixPtr;
   typedef plMatrixDataDescriptor<int> DataDesc;
@@ -55,7 +53,7 @@ struct MultiEM {
   typedef size_t Size;
 
 
-  virtual double run( GraphPtr graph,
+  virtual double run( const Graph& graph,
                     Node& latentNode,
                     const double threshold);
 
@@ -72,15 +70,15 @@ struct MultiEM {
 
  private:
   LearnObjectPtrs create_learn_objects(const Variable & latentVar, const Variables& variables);
-  MatrixPtr create_data_table( GraphPtr graph, const std::vector<int>& indexes );
+  MatrixPtr create_data_table( const Graph& graph, const std::vector<int>& indexes );
   DefTabPtr create_def_table( size_t rows, size_t cols ); //
   MatrixPtr transpose(MatrixPtr mat );
   plComputableObjectList create_computable_objects( const Variable& latentVar, const Variables& variables );
   EMLearner get_best_model( CandidateModels& learners,
-                            DataDesc& dataDesc );
+                            DataDesc& dataDesc ); 
   double scoreBIC( EMLearner& learner, plMatrixDataDescriptor<int>& dataDesc );
 
-  void update_parameters ( GraphPtr graph, Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
+  void update_parameters ( Node& latentNode, DataDesc& dataDesc, plEMLearner& leaner );
   // void update_parameters( GraphPtr graph, Node& latentNode, const std::vector<plValues>&,
   //                         const std::vector<std::vector<plProbValue>>& ,
   //                         const JointDist& jointDist );
@@ -108,7 +106,7 @@ inline double log_likelihood_wo( const Node& latentNode, std::vector<int>& obs )
       Node& X = graph[cvars[j]];
       assert(X.dataVec->size() == obs.size());
       int x = X.dataVec->at(i);
-      rs += m_log( latentNode.compute_cond_prob(X,x,y) );
+      rs += m_log( latentNode.compute_cond_prob(X,x,y) ); 
     }
   }
 
