@@ -150,6 +150,12 @@ void saveImputedDataLabels( const Graph& g, const std::string& datF, const std::
 
   std::vector<std::string> labels;
   std::vector<DataVecPtr> dataMat;
+
+  labFile << "id" << sep << "label" << sep
+            << "cardinality" << sep
+            << "position" << sep
+            << "level" << std::endl;
+  
   for ( auto vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
     const Node& n = g[*vp.first];
     if (!n.is_leaf()) {
@@ -160,7 +166,6 @@ void saveImputedDataLabels( const Graph& g, const std::string& datF, const std::
             << n.cardinality() << sep
             << n.position << sep
             << n.level << std::endl;
-
   }
 
   datFile << "individual-id" << sep;
