@@ -14,7 +14,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
   auto lab2Idx = create_index_map(*graph);
   Local2GlobalPtr l2g = create_local_to_global_map(*graph);  
   auto criteria = clustAlgo->get_criteria();
-  int verticesNb = 300;
+  int verticesNb = boost::num_vertices(*graph);
 
   for ( int step = 0; step < params.nbrSteps; ++step) {
     if (step > 0) {
