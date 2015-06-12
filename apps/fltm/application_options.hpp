@@ -55,7 +55,7 @@ inline Options get_program_options(int argc, char** argv) {
         ("in_card,N", po::value<int>(&result.fltm_params.cardinality)->required(), "Input cardinality")
         
         ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
-        ("outtype,t", po::value<int>(&result.outType)->default_value(0), "Output Type (0): Distri (1) Tulip. Default: 0")
+        ("outtype,t", po::value<int>(&result.outType)->default_value(2), "Output Type (0): Distri, (1): Tulip, (2): Both. Default: 2")
         ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(time(NULL)), "to specify a random seed. Default: time based")
 
         ("clustConf,c", po::value<std::string>(&result.clustConf)->required(), "Clust Config File")
