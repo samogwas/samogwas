@@ -10,7 +10,7 @@
 
 #include <cmath>
 
-namespace stats
+namespace samogwas
 {
 
 struct TestChiSquared {

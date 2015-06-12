@@ -30,7 +30,7 @@
 //#include "plink.h"
 //#include "options.h"
 
-namespace stats {
+namespace samogwas {
 
 template<class T>
 inline const T SQR(const T a) {return a*a;}
@@ -78,7 +78,7 @@ inline bool realnum(double d);
 #include <cstdio>
 #include <ctime>
 
-namespace stats {
+namespace samogwas {
 
 inline void error(std::string msg)
 {

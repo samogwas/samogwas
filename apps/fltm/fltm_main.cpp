@@ -37,8 +37,7 @@ typedef std::shared_ptr<PositionCriteria> PositionCriteriaPtr;
 
 boost::filesystem::path outputDir( Options& progOpt );
 char* current_date();
-void saveImputedDataLabels( const Graph& g, const std::string& dat, const std::string& lab, const char sep=' ');
-using namespace samogwas;
+void saveDatLab( const Graph& g, const std::string& dat, const std::string& lab);
 
 int main( int argc, char** argv ) {
   auto options = get_program_options( argc, argv );
@@ -92,7 +91,7 @@ int main( int argc, char** argv ) {
          char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
          sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
          sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
-         sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
+         sprintf(imputedDat_fn, "fltm_%s_cond_indiv.dist", algoClust->name() );
          sprintf(imputedLab_fn, "fltm_%s_imputed.lab", algoClust->name() );
          sprintf(graph_fn, "fltm_%s.graph", algoClust->name() );
 
@@ -102,8 +101,7 @@ int main( int argc, char** argv ) {
              outImpLab = (outputPath / imputedLab_fn).string(),
              outGraph = (outputPath / graph_fn).string();
          BayesGraphSave()( *graph, outBayesVertex, outBayesDist );
-         // saveDatLab( *graph, outImpDat, outImpLab );
-         saveImputedDataLabels(*graph, outImpDat, outImpLab );
+         saveDatLab( *graph, outImpDat, outImpLab );
          break;
        }
        case 1: {
@@ -113,6 +111,7 @@ int main( int argc, char** argv ) {
          sprintf( edge_fn, "fltm_%s_tulip_edge.csv", algoClust->name() );
          outNode = (outputPath  /node_fn ).string(),
              outEdge = (outputPath / edge_fn).string();
+        
          TulipGraphSave()( *graph, outNode, outEdge );
          break;
        }
@@ -145,37 +144,20 @@ boost::filesystem::path outputDir( Options& progOpt ) {
   return path;
 }
 
-void saveImputedDataLabels( const Graph& g, const std::string& datF, const std::string& labF, const char sep ) {
+void saveDatLab( const Graph& g, const std::string& datF, const std::string& labF ) {
   std::ofstream datFile(datF), labFile(labF);
 
-  std::vector<std::string> labels;
-  std::vector<DataVecPtr> dataMat;
   for ( auto vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
-    const Node& n = g[*vp.first];
+    Node n = g[*vp.first];
+
     if (!n.is_leaf()) {
-      labels.push_back(n.getLabel());
-      dataMat.push_back(n.dataVec);
+      for ( size_t i = 0; i < n.cndObsDist->size() - 1; ++i ) {
+        datFile << n.cndObsDist->at(i) << ",";
+      }
+      datFile << n.cndObsDist->at(n.cndObsDist->size() - 1) << "\n";
     }
-    labFile << n.index << sep << n.getLabel() << sep
-            << n.cardinality() << sep
-            << n.position << sep
-            << n.level << std::endl;
-
-  }
-
-  datFile << "individual-id" << sep;
-  for (size_t i = 0; i < labels.size() - 1; ++i) {
-    datFile << labels.at(i) << sep;
-  }
-  datFile << labels.at(labels.size()-1) << std::endl;
-
-  auto COLS = labels.size(), ROWS = dataMat[0]->size();
-  for ( size_t r = 0; r < ROWS; ++r ) {
-    datFile << r << sep;
-    for ( size_t c = 0; c < COLS - 1; ++c) {
-      datFile << dataMat.at(c)->at(r) << sep;
-    }
-    datFile << dataMat.at(COLS-1)->at(r) << std::endl;
+    
+    labFile << n.index << "," << n.getLabel() << "," << n.cardinality() << "," << n.position << "," << n.level << std::endl;
   }
 
   datFile.close(); labFile.close();
