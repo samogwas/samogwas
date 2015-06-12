@@ -1,6 +1,6 @@
 /****************************************************************************************
  * File: graph_io.hpp
- * Description: 
+ * Description:
  * @author: siolag161 (thanh.phan@outlook.com)
  * @date: 06/05/2015
 
@@ -48,13 +48,13 @@ enum BN_VERTICES { BN_LATENT_ID = 0, NBR_CHILDREN };
 
 /*************************************************************************************/
 /*
- *  
+ *
  */
 struct FLTMGraphReader {
   /** Loads the nodes' idendities, labels and positions from a formatted file and returns a
    * map that maps the identity to a pair of label and position.
    */
-  LabPosMap readLabPos( const std::string labPosFileName ) const;  
+  LabPosMap readLabPos( const std::string labPosFileName ) const;
 };
 
 /** Loads the Bayian network corresponding to the FLTM model from two files:
@@ -77,33 +77,32 @@ struct FLTMGraphReader {
  */
 struct BayesGraphLoad: public FLTMGraphReader {
 
-  
   void operator()( GraphPtr graph,
                   const std::string labPosFileName,
                    const std::string vertexFileName,
                    const std::string distributionFileName,
                    const std::string cndDataFileName,
                    const std::string dataFileName ) const;
-  
+
   GraphPtr operator()( const std::string labPosFileName,
                        const std::string vertexFileName,
                        const std::string distributionFileName,
                        const std::string cndDataFileName,
                        const std::string dataFileName ) const  {
-    
+
     auto graph = std::make_shared<Graph>();
     (*this)( graph, labPosFileName, vertexFileName, distributionFileName, cndDataFileName, dataFileName);
-    return graph;    
+    return graph;
   }
 
- private: 
+ private:
   typedef std::vector<int> Vec;
   typedef std::vector<double> RealVec;
 
   typedef std::shared_ptr<Vec> VecPtr;
   typedef std::vector<VecPtr> PtrMatrix;
   typedef std::shared_ptr<PtrMatrix> PtrMatrixPtr;
-  
+
   void set_data( Graph& g,
                  const std::string cndDataFileName,
                  const std::string dataFileName ) const;
@@ -114,7 +113,7 @@ struct BayesGraphLoad: public FLTMGraphReader {
  *  - vertexOutputFilename: ID, LABEL, LATENT, PARENT, LEVEL, POSITION, CARDINALITY
  *  - distributionFileName: see above.
  */
-struct BayesGraphSave {  
+struct BayesGraphSave {
   void operator()( const Graph& graph,
                    const std::string vertexFileName,
                    const std::string distributionFileName ) const;
@@ -128,7 +127,7 @@ struct TulipGraphSave {
 };
 
 
-} // namespace samogwas ends here. 
+} // namespace samogwas ends here.
 
 
 /****************************************************************************************/

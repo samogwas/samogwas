@@ -15,7 +15,7 @@
 #include "fisher.hpp"
 #include "chisq.hpp"
 
-namespace stats
+namespace samogwas
 {
 
 template <int I>
@@ -77,7 +77,7 @@ struct StatisticTest {
 } // namespace stats ends here. 
 
 /****************************** IMLEMENTATION BELOW THIS POINT **************************/
-namespace stats
+namespace samogwas
 {
 
 template< int Test >
