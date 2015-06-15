@@ -2,7 +2,6 @@
 #include "fltm/fltm.hpp"
 #include "fltm/latent_var_criteria.hpp"
 #include <boost/log/trivial.hpp>
-#include <omp.h> // openmp pragmas
 
 #include <fstream>
 

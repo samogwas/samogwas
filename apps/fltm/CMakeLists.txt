@@ -1,5 +1,5 @@
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
-add_compile_options( -std=c++11  -fPIC -O5 -fopenmp -mtune=corei7-avx ) 
+add_compile_options( -std=c++11 -fPIC -O5 -mtune=corei7-avx )
 file(GLOB MAIN ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp  )
 
 
