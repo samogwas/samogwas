@@ -2,6 +2,9 @@
 #include "fltm/fltm.hpp"
 #include "fltm/latent_var_criteria.hpp"
 #include <boost/log/trivial.hpp>
+#ifdef _OPENMP
+    #include <omp.h>
+#endif
 
 #include <fstream>
 
@@ -71,6 +74,10 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
 
 //      loop with working parallelization
 
+       #ifdef _OPENMP
+           //sets the max number of threads we can use
+           omp_set_num_threads(params.jobsNumber);
+       #endif
        //the array of shared resources in which the differents threads write
        Node latentVector[nonSingletons];
 

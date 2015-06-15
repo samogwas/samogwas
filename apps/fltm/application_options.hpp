@@ -11,6 +11,9 @@
 #include <string>
 #include <iostream>
 #include <time.h>
+#ifdef _OPENMP
+    #include <omp.h>
+#endif
 
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp> // to obtain the program's name
@@ -57,6 +60,9 @@ inline Options get_program_options(int argc, char** argv) {
         ("out,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
         ("outtype,t", po::value<int>(&result.outType)->default_value(2), "Output Type (0): Distri, (1): Tulip, (2): Both. Default: 2")
         ("random seed,R", po::value<unsigned>(&result.fltm_params.seed)->default_value(time(NULL)), "to specify a random seed. Default: time based")
+        #ifdef _OPENMP
+            ("jobs_number,j", po::value<int>(&result.fltm_params.jobsNumber)->default_value(omp_get_max_threads()), "all available threads by default")
+        #endif
 
         ("clustConf,c", po::value<std::string>(&result.clustConf)->required(), "Clust Config File")
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist, default 50000bp")

@@ -33,6 +33,9 @@ struct FLTM_Params {
   double latentVarQualityThres;
   unsigned maxDist;
   unsigned seed;
+  #ifdef _OPENMP
+    int jobsNumber;
+  #endif
 };
 
 struct FLTM {
