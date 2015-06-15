@@ -132,7 +132,10 @@ Options get_test_program_options(std::string test) {
   options.fltm_params.nbrRestarts = 1;
   options.fltm_params.emThres = 0.01;
   options.fltm_params.latentVarQualityThres = 0.0;
-  
+#ifdef _OPENMP
+  options.fltm_params.jobsNumber = 1;
+#endif
+
   return options;
 
 }
