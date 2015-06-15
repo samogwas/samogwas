@@ -16,7 +16,6 @@
 #include <cmath>
 #include <boost/math/distributions/chi_squared.hpp>
 #include <numeric> // accumulate
-#include <omp.h>
 namespace stats
 {
 
