@@ -34,7 +34,7 @@ struct FLTM_Params {
   unsigned maxDist;
   unsigned seed;
   #ifdef _OPENMP
-    int jobsNumber;
+    int jobsNumber = 1;
   #endif
 };
 
