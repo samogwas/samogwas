@@ -41,7 +41,7 @@ typedef std::vector<size_t> Candidates;
 typedef std::vector<Candidates> CandidatesByLevel;
 typedef std::vector<int> Cardinalities;
 
-CandidatesByLevel get_candidates( const samogwas::Graph& g );
+CandidatesByLevel get_candidates_by_level( const samogwas::Graph& g );
 Cardinalities get_cardinalities( const samogwas::Graph& g );
 Cardinalities get_cardinalities( const samogwas::Graph& g, const Candidates& candidates );
 
@@ -58,6 +58,8 @@ void perform_test( const samogwas::Graph& graph,
                    const std::vector<double> thresholds,
                    const char sep,
                    boost::filesystem::path outDir);
+
+std::vector<double> read_thresholds(std::string filename);
 
 /****************************************************************************************/
 #endif // _GWAS_COMMON_HPP

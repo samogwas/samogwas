@@ -30,13 +30,13 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
   BOOST_LOG_TRIVIAL(trace) << "begin loading vertices\n";
 
   for( ; vertexLine != CSVIterator<std::string>(); ++vertexLine ) {
-    size_t id = boost::lexical_cast<size_t>( (*vertexLine)[TULIP_ID] );
-    // bool isLeaf = !(boost::lexical_cast<bool>( (*vertexLine)[TULIP_LATENT]));
-    int level =  boost::lexical_cast<size_t>( (*vertexLine)[TULIP_LEVEL] );
-    size_t cardinality = boost::lexical_cast<size_t>( (*vertexLine)[TULIP_CARDINALITY] );
+    size_t id = boost::lexical_cast<size_t>( (*vertexLine)[0] );
+    int level =  boost::lexical_cast<int>( (*vertexLine)[2] );
+    int cardinality = boost::lexical_cast<int>( (*vertexLine)[3] );
+    // printf("id: %lu, level: %d, card: %d, label: %s, pos: %d", id, level, cardinality, label.c_str(), position);
     std::string label = labPosMap[id].first;
     int position = labPosMap[id].second;
-    create_latent_node( graph, cardinality, label, position, level );
+    create_graph_node( graph, cardinality, label, position, level );
   }
 
   Graph& graphRef = *graph;
@@ -45,7 +45,6 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
 
   CSVIterator<std::string> distributionLine(distributionFile);
   while ( distributionLine != CSVIterator<std::string>() ) {
-    BOOST_LOG_TRIVIAL(trace) << "begin loading var - 0" << std::endl;
     plVariablesConjunction variables; // holds child variables
     plComputableObjectList jointDistri;
     size_t latentId =  boost::lexical_cast<size_t>( (*distributionLine)[BN_LATENT_ID] );
@@ -88,9 +87,9 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
 
 void BayesGraphLoad::set_data( Graph& graph,
                                const std::string cndFileName,
-                               const std::string obsFileName ) const {
+                               const std::string dataVecFileName ) const {
 
-  std::ifstream obsFile(obsFileName.c_str());
+  std::ifstream obsFile(dataVecFileName.c_str());
   assert(obsFile); // todo: throws instead
   samogwas::CSVIterator<int> obsLine(obsFile);
   size_t index = 0;
@@ -104,16 +103,17 @@ void BayesGraphLoad::set_data( Graph& graph,
   obsFile.close();
 
   std::ifstream cndFile(cndFileName.c_str());
-  assert(cndFile); // todo: throws instead
-  samogwas::CSVIterator<double> cndLine(cndFile);
-  for( ; cndLine != samogwas::CSVIterator<double>(); ++cndLine ) {
-    auto row = std::make_shared<RealVec>(cndLine->size(), 0);
-    for (unsigned i = 0; i < cndLine->size(); ++i) {
-      (*row)[i] = cndLine->at(i);
+  if (cndFile) {
+    samogwas::CSVIterator<double> cndLine(cndFile);
+    for( ; cndLine != samogwas::CSVIterator<double>(); ++cndLine ) {
+      auto row = std::make_shared<RealVec>(cndLine->size(), 0);
+      for (unsigned i = 0; i < cndLine->size(); ++i) {
+        (*row)[i] = cndLine->at(i);
+      }
+      graph[index++].set_cnd_obs_vec(row, false);
     }
-    graph[index++].set_cnd_obs_vec(row, false);
+    cndFile.close();
   }
-  cndFile.close();
 
 }
 
@@ -128,18 +128,17 @@ void BayesGraphSave::operator()( const Graph& graph,
   std::ofstream distFile(distFileName.c_str()), vertexFile(vertexFileName.c_str());
   vertex_iterator vi, vi_end;
   Label2Index label2Index;
-  vertexFile << ID << GRAPH_SEPARATOR << LATENT << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << "\n";  // writes header
+  vertexFile << ID << GRAPH_SEPARATOR << LATENT << GRAPH_SEPARATOR
+             << LEVEL << GRAPH_SEPARATOR << CARDINALITY << GRAPH_SEPARATOR << "label" << "\n";  // writes header
  BOOST_LOG_TRIVIAL(trace) << "saving vertices...\n";
   for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
     int vertex = *vi;
-    vertexFile << graph[vertex].index
-               << GRAPH_SEPARATOR
-               << !(graph[vertex].is_leaf())
-               << GRAPH_SEPARATOR
-               << graph[vertex].level
-               << GRAPH_SEPARATOR
-               << graph[vertex].variable.cardinality() << std::endl;
-    label2Index[ graph[*vi].label ] = graph[*vi].index;
+    vertexFile << graph[vertex].index << GRAPH_SEPARATOR
+               << !(graph[vertex].is_leaf()) << GRAPH_SEPARATOR
+               << graph[vertex].level << GRAPH_SEPARATOR
+               << graph[vertex].variable.cardinality() << GRAPH_SEPARATOR
+               << graph[vertex].getLabel() << std::endl;
+    label2Index[graph[vertex].getLabel()] = graph[vertex].index;
   }
   vertexFile.close();
   BOOST_LOG_TRIVIAL(trace) << "saving joint distribution...\n";
@@ -203,20 +202,22 @@ LabPosMap FLTMGraphReader::readLabPos( const std::string labPosFileName ) const 
   std::ifstream labPosFile(labPosFileName.c_str());
   CSVIterator<std::string> labPosLine(labPosFile);
 
-  size_t id = 0;
+  ++labPosLine;
   for( ; labPosLine != CSVIterator<std::string>(); ++labPosLine ) {
-    int position; std::string label;
-    if (labPosLine->size() == 4) {
-      // id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID] );
-      label = (*labPosLine)[LP_LABEL] ;
-      position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION] );
-    } else {
-      // id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID+1] );
-      label = (*labPosLine)[LP_LABEL+1] ;
-      position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION+1] );
-    }
+    int position; std::string label; size_t id;
+    // if (labPosLine->size() == 4) {
+    //   id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID] );
+    //   label = (*labPosLine)[LP_LABEL] ;
+    //   position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION] );
+    // } else {
+    //   id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID+1] );
+    //   label = (*labPosLine)[LP_LABEL+1] ;
+    //   position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION+1] );
+    // }
+    id = boost::lexical_cast<size_t>( (*labPosLine)[0] );
+    label = (*labPosLine)[1] ;
+    position = boost::lexical_cast<int>( (*labPosLine)[3] );
     lpMap[id] = std::pair<std::string, int>(label, position);
-    id++;
   }
   return lpMap;
 }

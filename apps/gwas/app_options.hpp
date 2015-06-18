@@ -40,11 +40,11 @@ struct Options {
 
 
 struct GWAS_Options: public Options {
-  double threshold;
+  std::string thresholdFile;
   int permutations;
 
   std::string cndDataFile;
-  std::string dataFile;
+  // std::string dataFile;
   std::string mappingFile;
 };
 
@@ -71,10 +71,10 @@ inline GWAS_Options get_gwas_program_options(int argc, char** argv) {
         ("in_bayes_dist,d", po::value<std::string>(&result.bayesDist)->required(), "Input Dist File")
 
         ("num_perms,n", po::value<int>(&result.permutations)->default_value(1000), "Nbr Permutations")
-        ("threshold,t", po::value<double>(&result.threshold)->default_value(.005), "threshold")
+        ("thresholdFile,r", po::value<std::string>(&result.thresholdFile), "threshold")
 
         ("test,t", po::value<int>(&result.stat_test)->default_value(0), "test: 0 (chi-square)")
-        ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output Separator")
+        ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output file deliminater (default: 'tab')")
         ("outDir,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
         ;
 

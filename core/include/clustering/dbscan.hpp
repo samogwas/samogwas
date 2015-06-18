@@ -107,7 +107,6 @@ Partition DBSCAN::run() {
   std::vector<size_t> visited( nvars, 0 ); // to keep track of visiting state for each point
   int cluster_id = 0; // Initially there is no cluster formed.
   for (int pid = 0; pid < nvars; ++pid) { // We visit every non-visited point. 
-                                         
     if ( !visited[pid] ) {
       visited[pid] = 1;
       Neighbors neighbors  = find_neighbors(pid); 
@@ -120,30 +119,30 @@ Partition DBSCAN::run() {
             visited[nPid] = 1;
             Neighbors subNeighbors = find_neighbors(nPid); // trying to find a new dense neighborhood
             if ( subNeighbors.size() >= minPts ) {
-              for (const auto & neighbor : subNeighbors) { 
+              for (const auto & neighbor : subNeighbors) {
                 neighbors.push_back(neighbor); // adds all the newly found points to the current cluster
               }
             }
           }
           if ( m_LabelSet[nPid] ==  UNASSIGNED_LABEL ) { // to avoid overriding a possible previous cluster assignment
-            m_LabelSet[nPid] = cluster_id; 
+            m_LabelSet[nPid] = cluster_id;
           }
         }
         ++cluster_id; // increments the current cluster id
       }
     }
   }
-  return toPartition(m_LabelSet); 
+  return toPartition(m_LabelSet);
 }
 
 /////////////////////////////////////////
 /** A neighborhood of a given point is defined as all the points that are within a certain given radius (epsilon).
  */
 typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
-  Neighbors ne;  
+  Neighbors ne;
   size_t nvars = this->diss->nbr_variables(); // @todo: remove direct access to compMatrix
   for ( Index i = 0; i < nvars; ++i ) {
-    if ( this->diss->compute( i, pid ) <= epsilon ) { // @todo: remove direct access to compMatrix      
+    if ( this->diss->compute( i, pid ) <= epsilon ) { // @todo: remove direct access to compMatrix
       ne.push_back(i);
     }
   }
