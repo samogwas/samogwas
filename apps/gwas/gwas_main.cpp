@@ -32,17 +32,23 @@ using namespace samogwas;
 int main( int argc, char** argv ) {
 
   auto args = get_gwas_program_options( argc, argv );
+
+  auto thresholds = read_thresholds(args.thresholdFile);
+
   std::cout << "Loading graph data...\n" << std::endl;
-  GraphPtr graph;
+  // GraphPtr graph;
+  auto g = std::make_shared<samogwas::Graph>();
+
+  // graph = std::make_shared<Graph>();
   BayesGraphLoad graphLoad;
-  graphLoad( graph,
+  graphLoad( g,
              args.inputLabelFile,
              args.bayesVertices,
              args.bayesDist,
              args.cndDataFile,
-             args.dataFile );
+             args.inputDataFile );
 
-  Graph& graphRef = *graph;
+  Graph& graphRef = *g;
 
   printf("Done loading graph of %lu edges and %lu vertices\n", boost::num_edges(graphRef),
          boost::num_vertices(graphRef));
@@ -52,31 +58,18 @@ int main( int argc, char** argv ) {
   auto pheno = load_phenotype( args.inputPheno );
   std::cout << "Loading label data from " << args.inputLabelFile << std::endl; // todo: logging
 
-  auto labels = std::make_shared<LabelVec>();
-  auto positions = std::make_shared<PosVec>();
-  auto ids = std::make_shared<PosVec>();
-  Label2Index lab2Idx;
-  load_labels_positions( *labels, *ids, *positions, args.inputLabelFile );
-
   std::cout << "Loading mapping snp data from " << args.mappingFile << std::endl; // todo: logging
   auto snp2rs = get_snp_mapping(args.mappingFile);
 
   std::cout << "retrieving the candidates...\n\n";
-  auto candidatesByLevel = get_candidates(graphRef);
+  auto candidatesByLevel = get_candidates_by_level(graphRef);
 
   std::cout << "retrieving the cardinalities...\n\n";
   auto cardinalities = get_cardinalities(graphRef);
 
-  // // auto outFileName = ( outputPath / "gwas_p_values_result.txt").string();
   auto stat_test =  get_stat_test(args.stat_test);
 
-  // auto chisq = std::make_shared<ChiSq>();
-
   std::cout << "start performing test...\n";
-
-  std::vector<double> thresholds {
-    0.5,1,1, 1, 1, 1, 1, 1
-  };
 
   perform_test( graphRef,
                 snp2rs,
@@ -90,16 +83,8 @@ int main( int argc, char** argv ) {
                 args.separator,
                 outputPath
                 );
-  // perform_test
-  //     ( raph, snp2rs,
-  //       *pheno, stat_test,
-  //       candidatesByLevel,
-  //       cardinalities,
-  //       pos.permutations,
-  //       pos.chromosome,
-  //       thresholds,
-  //       outputPath );
 
+  std::cout << "bye...\n";
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -172,7 +157,7 @@ std::vector<int> count_cluster_siblings( samogwas::Graph& graph ) {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-std::map<std::string, std::string> get_snp_mapping(std::string infile) {
+std::map<std::string, std::string> get_snp_mapping(std::string& infile) {
   std::map<std::string, std::string> snp2rs;
   std::ifstream mapFile(infile.c_str());
   if (!mapFile) {
@@ -188,6 +173,7 @@ std::map<std::string, std::string> get_snp_mapping(std::string infile) {
   }
 
   mapFile.close();
+  return snp2rs;
 }
 
 //////////////////////////////////////////////////////////////
@@ -206,15 +192,25 @@ std::shared_ptr<StatTest> get_stat_test( const int test ) {
   return statTest;
 }
 
-// std::string get_gwas_p_values_path( boost::filesystem::path outDir ) {
-//   auto gwas_outFile = ( outDir / "gwas.txt").string();
-//   auto parent = get_graph_parent(graph);
+CandidatesByLevel get_candidates_by_level( const samogwas::Graph& graph ) {
+  int max_level = -1;
+  for ( auto vp = boost::vertices(graph); vp.first != vp.second; ++vp.first ) {
+    auto vertex = *vp.first;
+    auto &node = graph[vertex];
+    max_level = std::max( node.level, max_level );
+  }
 
-//   char gwas_filtered_buffer[80];
-//   sprintf( gwas_filtered_buffer, "gwas_filtered.txt");
+  CandidatesByLevel candidates(max_level+1, Candidates());
+  for ( auto vp = boost::vertices(graph); vp.first != vp.second; ++vp.first ) {
+    auto vertex = *vp.first;
+    auto &node = graph[vertex];
+    int level = node.level;
+    candidates[level].push_back(vertex);
+  }
 
-//   return ( outDir / gwas_filtered_buffer).string();
-// }
+  return candidates;
+}
+
 
 void perform_test( const samogwas::Graph& graph,
                    std::map<std::string, std::string>& snp2rs,
@@ -235,6 +231,7 @@ void perform_test( const samogwas::Graph& graph,
   int levels = candidatesByLevel.size();
 
   std::vector<double> scores( boost::num_vertices(graph), 0.0);
+  auto parent =  get_graph_parent(graph);
 
   gwasFile << "chr" << chr << sep << "id" << sep
            << "snp" << sep << "snp-id" << sep
@@ -249,23 +246,71 @@ void perform_test( const samogwas::Graph& graph,
     std::vector<double> pvals;
     if ( candidates.size() ) {
       printf("\nWe now tests %lu vars - @level: %d over %d\n\n", candidates.size(), l, levels - 1);
-      // permutationProcedure( dist,
-      //                       pvals,
-      //                       statTest,
-      //                       pheno,
-      //                       candidates, cards,
-      //                       2, permutations);
+      permutation_procedure( dist,
+                             pvals,
+                             statTest,
+                             graph,
+                             pheno,
+                             candidates, cards,
+                             2, permutations);
+
+      for ( int i = 0; i < candidates.size(); ++i ) {
+        auto cand = candidates[i];
+        std::string rs = "";
+        if ( snp2rs.find(graph[cand].label) != snp2rs.end() ) {
+          rs =  snp2rs[graph[cand].label];
+        } else {
+          rs = "NA";
+        }
+        scores[cand] =  pvals[2*i+1];
+        gwasFile << "chr" << chr << sep
+                 << graph[cand].index << sep
+                 << graph[cand].label << sep
+                 << rs << sep
+                 << l << sep
+                 << parent[cand] << sep
+                 << graph[cand].position << sep
+                 << pvals[2*i] << sep
+                 << pvals[2*i+1] << std::endl;
+
+        if ( scores[cand] < thresholds[l]) {
+          Node node = graph[cand];
+          size_t sz_start = std::numeric_limits<int>::max(), sz_end = 0;
+          size_t sum = 0, pos = 0, count = 0;
+          for ( auto ei = boost::out_edges(cand, graph); ei.first != ei.second; ++ei.first ) {
+            auto child = graph[boost::target(*ei.first, graph)];
+            sz_start = std::min(sz_start, (size_t)child.position);
+            sz_end = std::max(sz_end, (size_t)child.position);
+            count++;
+          }
+          gwasFilteredFile << "chr" << chr << sep
+                           << cand << sep
+                           << graph[cand].label << sep
+                           << l << sep
+                           << parent[cand] << sep
+                           << graph[cand].position << sep
+                           << pvals[2*i] << sep
+                           << pvals[2*i+1] << std::endl;
+
+          if ( sz_start != sz_end && sz_start != node.position && sz_end != node.position  && count > 1 ) {
+            printf("level: %d, var: %lu, score: %f, thres: %f, start: %lu, end: %lu\n",
+                   l, cand, scores[cand], thresholds[l], sz_start, sz_end);
+            if (sz_start < 0) {
+              printf("level: %d, var: %lu, score: %f, thres: %f, start: %lu, end: %lu\n",
+                     l, cand, scores[cand], thresholds[l], sz_start, sz_end);
+              exit(-1);
+            }
+          }
+        }
+      }
     }
+
+    gwasFile.close(); gwasFilteredFile.close(); // regionFile.close();
+    std::cout << "writing to: " << gwas_outFile << std::endl;
+    std::cout << "writing to: " << gwas_filtered_outFile << std::endl;
+
   }
-
-  gwasFile.close(); gwasFilteredFile.close(); // regionFile.close();
-  std::cout << "writing to: " << gwas_outFile << std::endl;
-  std::cout << "writing to: " << gwas_filtered_outFile << std::endl;
-  // std::cout << "writing to: " << region_outFile << std::endl;
-
-
 }
-
 
 Cardinalities get_cardinalities( const Graph& graph ) {
   Cardinalities cards;
@@ -283,6 +328,35 @@ Cardinalities get_cardinalities( const Graph& g, const Candidates& candidates ) 
     cards.push_back(g[cand].variable.cardinality());
   }
   return cards;
+}
+
+std::vector<int> get_graph_parent( const samogwas::Graph& graph ) {
+  std::vector<int> parent( boost::num_vertices(graph), -1 );
+  for ( auto ei = boost::edges(graph); ei.first != ei.second; ++ei.first ) {
+    auto source = boost::source(*ei.first, graph);
+    auto target = boost::target(*ei.first, graph);
+    parent[target] = source;
+  }
+  return parent;
+}
+
+////////////////////////////////////////////////////////
+std::vector<double> read_thresholds(std::string filename) {
+  std::ifstream thresholdFile(filename.c_str());
+  if (!thresholdFile) {
+    printf("file data %s not existing\n", filename.c_str());
+    exit(-1);
+  }
+
+  samogwas::CSVIterator<double> thresholdLine(thresholdFile);
+  //auto row = std::make_shared<Vec>(thresholdLine->size(), 0);
+  std::vector<double> thresholds(thresholdLine->size(), 0.0);
+  for (unsigned i = 0; i < thresholdLine->size(); ++i) {
+    thresholds[i] = thresholdLine->at(i);
+  }
+
+  return thresholds;
+
 }
 
 /////////////////////////////////////////////////////////////////////////

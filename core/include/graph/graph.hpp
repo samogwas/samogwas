@@ -84,7 +84,7 @@ struct Node {
       std::cout << "hahaha" << std::endl;
     }
     this->marginalDist = dist; return *this;
-  }  
+  }
   Node& set_children_distributions( CondObsDistPtr dist);
   Node& set_children_distributions(plCompIte beg, plCompIte end);
 
@@ -356,7 +356,22 @@ inline Node& create_latent_node (std::shared_ptr<Graph> graph,
   return node;
 }
 
-    
+inline Node& create_graph_node (std::shared_ptr<Graph> graph,
+                                 const unsigned &cardinality,
+                                 const std::string &label = "",
+                                 const unsigned &position = -1,
+                                 const unsigned &level = -1 ) {
+
+  vertex_t vertexId = boost::add_vertex(*graph);
+
+  plSymbol var( label, plIntegerType(0, cardinality - 1) );
+  Node &node = (*graph)[vertexId];
+
+  node.set_index(vertexId).set_graph(graph).set_variable(var)//.set_data_vec(dataVec)
+      .set_position(position).set_level(level);
+  return node;
+}
+
 
 } // namespace novo ends here.
 

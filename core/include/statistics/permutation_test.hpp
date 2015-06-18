@@ -98,9 +98,9 @@ void permutation_procedure( std::vector<double> &distri,
     distri.resize(permu, 2.0);
     CollectionPermute permutate;
 
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for ( int p = 0; p < permu; ++p ) {
-      #pragma omp critical
+      //#pragma omp critical
       permutate(localYData);
 
       for ( size_t c = 0; c < nvars; ++c) {

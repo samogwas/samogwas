@@ -41,7 +41,7 @@ enum TULIP_VERTICES { TULIP_ID = 0, TULIP_LATENT, TULIP_LEVEL, TULIP_CARDINALITY
 enum TULIP_EDGES { /*TULIP_ID = 0,*/ TULIP_PARENT_ID = 1 };
 // by convention, TULIP_PARENT_ID set to -1 denotes a root.
 
-
+enum BAYES_VERTICES { BV_ID = 0, BV_LATENT, BV_LEVEL, BV_CARDINALITY, BV_POSITION };
 // format BN (two files, structure and parameters)
 enum BN_VERTICES { BN_LATENT_ID = 0, NBR_CHILDREN };
 
