@@ -67,7 +67,7 @@ int main( int argc, char** argv ) {
      auto l2g = init_index_mapping( mat->size() );
      auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
      FLTM fltm(options.fltm_params);
-  
+
      fltm.execute( algoClust, cardF, graph);
       auto end = get_time::now();
       auto diff = end - start;
@@ -111,7 +111,6 @@ int main( int argc, char** argv ) {
          sprintf( edge_fn, "fltm_%s_tulip_edge.csv", algoClust->name() );
          outNode = (outputPath  /node_fn ).string(),
              outEdge = (outputPath / edge_fn).string();
-        
          TulipGraphSave()( *graph, outNode, outEdge );
          break;
        }
