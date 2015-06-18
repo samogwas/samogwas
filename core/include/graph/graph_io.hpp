@@ -121,8 +121,7 @@ struct BayesGraphSave {
 
 struct TulipGraphSave {
   void operator()( const Graph& graph,
-                   const std::string nodeFile,
-                   const std::string edgeFile ) const;
+                   const std::string nodeFile ) const;
 };
 
 } // namespace samogwas ends here.

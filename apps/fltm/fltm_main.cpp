@@ -85,8 +85,7 @@ int main( int argc, char** argv ) {
            << " seconds" << std::endl;
      boost::filesystem::create_directories(outputPath);
 
-     switch( options.outType) {
-       case 0: {
+     if ( options.outType == 0 ||  options.outType == 2) {
          std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
          char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
          sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
@@ -102,22 +101,14 @@ int main( int argc, char** argv ) {
              outGraph = (outputPath / graph_fn).string();
          BayesGraphSave()( *graph, outBayesVertex, outBayesDist );
          saveDatLab( *graph, outImpDat, outImpLab );
-         break;
        }
-       case 1: {
-         std::string outNode, outEdge;
-         char edge_fn[256], node_fn[256];
-         sprintf( node_fn, "fltm_%s_tulip_vertex.csv", algoClust->name() );
-         sprintf( edge_fn, "fltm_%s_tulip_edge.csv", algoClust->name() );
-         outNode = (outputPath  /node_fn ).string(),
-             outEdge = (outputPath / edge_fn).string();
-         TulipGraphSave()( *graph, outNode, outEdge );
-         break;
+       if ( options.outType == 1 ||  options.outType == 2) {
+         std::string outNode;
+         char node_fn[256];
+         sprintf( node_fn, "fltm_%s_tulip.csv", algoClust->name() );
+         outNode = (outputPath  /node_fn ).string();
+         TulipGraphSave()( *graph, outNode );
        }
-
-       default:
-         break;
-     }
    }
    stats.close();
 }
