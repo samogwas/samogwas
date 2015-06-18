@@ -59,23 +59,23 @@ inline GWAS_Options get_gwas_program_options(int argc, char** argv) {
      */
     optDesc.add_options()
         ("help,h", "Print help messages")
-        ("chr,c", po::value<int>(&result.chromosome)->default_value(2), "chromosome")
+        ("chr,c", po::value<int>(&result.chromosome)->default_value(0), "Chromosome. Default: 0")
 
         ("in_dat,i", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
         ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
-        ("mappingFile,m", po::value<std::string>(&result.mappingFile)->required(), "SNP - RS Mapping File")
+        ("mappingFile,m", po::value<std::string>(&result.mappingFile)->default_value("../example/inputs/snp_mapping.csv"), "SNP-RS Mapping File. Default: ../example/inputs/snp_mapping.csv")
 
-        ("in_pheno,p", po::value<std::string>(&result.inputPheno)->required(), "Input Pheno File")
+        ("in_pheno,p", po::value<std::string>(&result.inputPheno)->default_value("../example/inputs/phenotype.csv"), "Input Pheno File. Default: ../example/inputs/phenotype.csv")
 
         ("in_bayes_vertex,v", po::value<std::string>(&result.bayesVertices)->required(), "Input Bayes File")
         ("in_bayes_dist,d", po::value<std::string>(&result.bayesDist)->required(), "Input Dist File")
 
-        ("num_perms,n", po::value<int>(&result.permutations)->default_value(1000), "Nbr Permutations")
-        ("thresholdFile,r", po::value<std::string>(&result.thresholdFile), "threshold")
+        ("num_perms,n", po::value<int>(&result.permutations)->default_value(1000), "Nbr Permutations. Default: 1000")
+        ("thresholdFile,r", po::value<std::string>(&result.thresholdFile)->default_value("../example/inputs/thresholds.csv"), "Thresholds. Default: ../example/inputs/thresholds.csv")
 
         ("test,t", po::value<int>(&result.stat_test)->default_value(0), "test: 0 (chi-square)")
-        ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output file deliminater (default: 'tab')")
-        ("outDir,o", po::value<std::string>(&result.outputDir)->required(), "Output Dir")
+        ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output file deliminater. Default: 'tab'")
+        ("outDir,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
         ;
 
     po::variables_map vm;
