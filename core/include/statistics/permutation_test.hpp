@@ -16,7 +16,6 @@
 #include <cmath>
 #include <chrono> // std::chrono::system_clock
 #include <algorithm> // std::min, std::max
-#include <omp.h> // openmp pragmas
 #include "statistics/association_test.hpp"
 #include "graph/graph.hpp"
 namespace samogwas
