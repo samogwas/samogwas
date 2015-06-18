@@ -1,4 +1,4 @@
-add_compile_options(-std=c++11 -fopenmp -mtune=corei7-avx -pthread -static-libstdc++ -static-libgcc ) # 2b safe
+add_compile_options(-std=c++11 -mtune=corei7-avx -pthread -static-libstdc++ -static-libgcc ) # 2b safe
 
 ENABLE_TESTING()
 

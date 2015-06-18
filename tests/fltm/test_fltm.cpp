@@ -78,6 +78,9 @@ BOOST_AUTO_TEST_CASE( Test_FLTM_DBSCAN ) {
   auto dbscan = std::make_shared<DBSCAN>( gdiss, 2, 0.45 );
 
   FLTM_Params params; params.nbrSteps = 5; params.nbrRestarts = 2; params.emThres = 0.01; params.latentVarQualityThres = 0.2;
+  #ifdef _OPENMP
+    params.jobsNumber = 1;
+  #endif
   FLTM fltm(params);
   auto cardF = std::make_shared<LinearCardinality>(1,1,2);
   fltm.execute(dbscan, cardF, graph);
@@ -132,7 +135,10 @@ Options get_test_program_options(std::string test) {
   options.fltm_params.nbrRestarts = 1;
   options.fltm_params.emThres = 0.01;
   options.fltm_params.latentVarQualityThres = 0.0;
-  
+#ifdef _OPENMP
+  options.fltm_params.jobsNumber = 1;
+#endif
+
   return options;
 
 }
