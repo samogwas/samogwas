@@ -222,27 +222,15 @@ LabPosMap FLTMGraphReader::readLabPos( const std::string labPosFileName ) const 
   return lpMap;
 }
 
-
-
-
-//////////////////
-//static const std::string LABEL = "LABEL";
 void TulipGraphSave::operator()(const Graph& graph,
-                                const std::string nodeFile ) const {
-
-  std::map<int,int> idToParentId;
-  edge_iterator ei, ei_end;
-  for( boost::tie(ei, ei_end) = boost::edges(graph); ei != ei_end; ++ei ) {
-      idToParentId[boost::target(*ei, graph)] = boost::source(*ei, graph);
-  }
+                                const std::string nodeFile,
+                                const std::string edgeF) const {
   std::ofstream vertexFile(nodeFile.c_str());
   vertex_iterator vi, vi_end;
-  vertexFile << ID << GRAPH_SEPARATOR << PARENT_ID << GRAPH_SEPARATOR << LABEL << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << GRAPH_SEPARATOR <<  POSITION << "\n";  // writes header
+  vertexFile << ID << GRAPH_SEPARATOR << LABEL << GRAPH_SEPARATOR << LEVEL << GRAPH_SEPARATOR << CARDINALITY << GRAPH_SEPARATOR <<  POSITION << "\n";  // writes header
   for ( boost::tie(vi, vi_end) = boost::vertices(graph); vi != vi_end; ++vi ) {
     int vertex = *vi;
     vertexFile << graph[vertex].index << GRAPH_SEPARATOR
-                  //-1 means the vertex doesn't have any parent.
-               << ((idToParentId.count(graph[vertex].index) > 0) ? idToParentId[graph[vertex].index] : -1) << GRAPH_SEPARATOR
                << graph[vertex].getLabel() << GRAPH_SEPARATOR
                << graph[vertex].level << GRAPH_SEPARATOR
                << graph[vertex].variable.cardinality() << GRAPH_SEPARATOR
@@ -259,5 +247,6 @@ void TulipGraphSave::operator()(const Graph& graph,
   }
   edgeFile.close();
 }
+
 
 }
