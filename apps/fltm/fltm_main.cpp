@@ -90,7 +90,7 @@ int main( int argc, char** argv ) {
          char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
          sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
          sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
-         sprintf(imputedDat_fn, "fltm_%s_cond_indiv.dist", algoClust->name() );
+         sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
          sprintf(imputedLab_fn, "fltm_%s_imputed.lab", algoClust->name() );
          sprintf(graph_fn, "fltm_%s.graph", algoClust->name() );
 
