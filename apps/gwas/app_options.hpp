@@ -71,7 +71,7 @@ inline GWAS_Options get_gwas_program_options(int argc, char** argv) {
         ("in_bayes_dist,d", po::value<std::string>(&result.bayesDist)->required(), "Input Dist File")
 
         ("num_perms,n", po::value<int>(&result.permutations)->default_value(1000), "Nbr Permutations. Default: 1000")
-        ("thresholdFile,r", po::value<std::string>(&result.thresholdFile)->default_value("../example/inputs/thresholds.csv"), "Thresholds. Default: ../example/inputs/thresholds.csv")
+        ("thresholdFile,r", po::value<std::string>(&result.thresholdFile)->default_value("../example/inputs/thresholds.txt"), "Thresholds. Default: ../example/inputs/thresholds.csv")
 
         ("test,t", po::value<int>(&result.stat_test)->default_value(0), "test: 0 (chi-square)")
         ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output file deliminater. Default: 'tab'")
