@@ -226,7 +226,8 @@ void perform_test( const samogwas::Graph& graph,
 
   auto gwas_filtered_outFile = ( outDir / "gwas_filtered.txt").string();
   auto gwas_outFile = ( outDir / "gwas.txt").string();
-  std::ofstream gwasFile(gwas_outFile), gwasFilteredFile(gwas_filtered_outFile);
+  auto gwas_tulip_outFile = ( outDir / "gwas_tulip.csv").string();
+  std::ofstream gwasFile(gwas_outFile), gwasFilteredFile(gwas_filtered_outFile), gwasTulipFile(gwas_tulip_outFile);
   printf("beginning of testing of %d permutations by test: %s\n", permutations, statTest->name.c_str());
   int levels = candidatesByLevel.size();
 
@@ -238,6 +239,11 @@ void perform_test( const samogwas::Graph& graph,
            << "level" << sep << "parent" << sep
            << "position"<< sep << "pval" << sep
            << "corrected-pval" << std::endl;
+
+  gwasTulipFile << "id" << sep << "parent_id" << sep
+                << "label" << sep << "level" << sep
+                << "cardinality" << sep << "position"<< sep
+                << "pval" << sep << "corrected-pval" << std::endl;
 
   for ( int l = 0; l < candidatesByLevel.size(); ++l) {
     auto &candidates = candidatesByLevel[l];
@@ -273,6 +279,15 @@ void perform_test( const samogwas::Graph& graph,
                  << pvals[2*i] << sep
                  << pvals[2*i+1] << std::endl;
 
+        gwasTulipFile << graph[cand].index << sep
+                 << parent[cand] << sep
+                 << graph[cand].getLabel() << sep
+                 << l << sep
+                 << graph[cand].variable.cardinality() << sep
+                 << graph[cand].position << sep
+                 << pvals[2*i] << sep
+                 << pvals[2*i+1] << std::endl;
+
         if ( scores[cand] < thresholds[l]) {
           Node node = graph[cand];
           size_t sz_start = std::numeric_limits<int>::max(), sz_end = 0;
@@ -304,12 +319,10 @@ void perform_test( const samogwas::Graph& graph,
         }
       }
     }
-
-    gwasFile.close(); gwasFilteredFile.close(); // regionFile.close();
-    std::cout << "writing to: " << gwas_outFile << std::endl;
-    std::cout << "writing to: " << gwas_filtered_outFile << std::endl;
-
   }
+  gwasFile.close(); gwasFilteredFile.close(); gwasTulipFile.close(); // regionFile.close();
+  std::cout << "writing to: " << gwas_outFile << std::endl;
+  std::cout << "writing to: " << gwas_filtered_outFile << std::endl;
 }
 
 Cardinalities get_cardinalities( const Graph& graph ) {
