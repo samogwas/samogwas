@@ -38,7 +38,9 @@ double MultiEM::run( const Graph& graph,
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
   update_parameters( latentNode, dataDesc, bestModel );
 
-  return bestModel.get_last_computed_loglikelihood();
+    //modification!!
+//  return bestModel.get_last_computed_loglikelihood();
+  return scoreBIC(bestModel, dataDesc);
 }
 
 void MultiEM::update_parameters ( Node& latentNode,
