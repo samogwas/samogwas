@@ -84,7 +84,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
        //the parallelizable section
        std::shared_ptr<Node> currentLatentVector,precLatentVector;
 
-        #pragma omp parallel for schedule(dynamic) private(precBIC,currentBIC,currentBIC,precBIC)
+        #pragma omp parallel for schedule(dynamic) private(precBIC,currentBIC,currentLatentVector,precLatentVector)
        for ( int i = 0 ; i < clustering.size() ; ++i) {
           if ( clustering[i].size() > 1 ) {
             int card = 2;
@@ -96,11 +96,11 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
                             plIntegerType(0, card++));
                 currentLatentVector = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
                 MultiEM em(params.nbrRestarts);
-                currentBIC = em.run( *graph, currentLatentVector, params.emThres);
+                currentBIC = em.run( *graph, *currentLatentVector, params.emThres);
             } while (precBIC==-10000 || precBIC < currentBIC);
             latentVector[i] = precLatentVector;
             card--;
-            printf("we found a good BIC for card = %d\n",card);
+            //printf("we found a good BIC for card = %d\n",card);
           }
         }
 
@@ -196,7 +196,7 @@ bool FLTM::accept_latent_variable(const Graph& g, Node& node, double qualityThre
 }
 
 std::shared_ptr<Node> FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
-  std::shared_ptr<Node> newNode;
+  std::shared_ptr<Node> newNode (new Node());
   plVariablesConjunction vars;
   for (auto idx: cluster) {
     auto globalIdx = l2g[idx];
