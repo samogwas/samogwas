@@ -7,6 +7,7 @@
 #endif
 
 #include <fstream>
+#include <climits>
 
 
 namespace samogwas {
@@ -79,28 +80,29 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
            omp_set_num_threads(params.jobsNumber);
        #endif
        //the array of shared resources in which the differents threads write
-       std::shared_ptr<Node> latentVector[nonSingletons];
-       double precBIC,currentBIC;
-       //the parallelizable section
-       std::shared_ptr<Node> currentLatentVector,precLatentVector;
+       NodePtr latentVector[nonSingletons];
 
-        #pragma omp parallel for schedule(dynamic) private(precBIC,currentBIC,currentLatentVector,precLatentVector)
+       //precedent and current variables allow to increase the latent variable cardinality as long as BIC score increase
+       double precedentBIC,currentBIC;
+       NodePtr currentLatentVariable,precedentLatentVariable;
+
+       //the parallelizable section
+        #pragma omp parallel for schedule(dynamic) private(precedentBIC,currentBIC,currentLatentVariable,precedentLatentVariable)
        for ( int i = 0 ; i < clustering.size() ; ++i) {
           if ( clustering[i].size() > 1 ) {
             int card = 2;
-            currentBIC = -10000;
+            currentBIC = INT_MIN;
             do {
-                precBIC = currentBIC;
-                precLatentVector = currentLatentVector;
+                precedentBIC = currentBIC;
+                precedentLatentVariable = currentLatentVariable;
                 RandVar var("latent-"+std::to_string(verticesNb + i),
                             plIntegerType(0, card++));
-                currentLatentVector = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
+                currentLatentVariable = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
                 MultiEM em(params.nbrRestarts);
-                currentBIC = em.run( *graph, *currentLatentVector, params.emThres);
-            } while (precBIC==-10000 || precBIC < currentBIC);
-            latentVector[i] = precLatentVector;
-            card--;
-            //printf("we found a good BIC for card = %d\n",card);
+                currentBIC = em.run( *graph, *currentLatentVariable, params.emThres);
+            } while (precedentBIC < currentBIC); //while BIC score increase
+            latentVector[i] = precedentLatentVariable;
+            //printf("we found a good BIC for card = %d\n",card-1);
           }
         }
 
@@ -195,8 +197,8 @@ bool FLTM::accept_latent_variable(const Graph& g, Node& node, double qualityThre
   return (q >= qualityThres);
 }
 
-std::shared_ptr<Node> FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
-  std::shared_ptr<Node> newNode (new Node());
+FLTM::NodePtr FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
+  NodePtr newNode = std::make_shared<Node>();
   plVariablesConjunction vars;
   for (auto idx: cluster) {
     auto globalIdx = l2g[idx];
