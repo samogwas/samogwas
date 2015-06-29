@@ -114,7 +114,8 @@ DefTabPtr MultiEM::create_def_table( size_t rows, size_t cols ) {
 }
 
 
-MatrixPtr MultiEM::transpose(MatrixPtr mat ) { size_t rows = samogwas::nrows(*mat), cols = samogwas::ncols(*mat);
+MatrixPtr MultiEM::transpose(MatrixPtr mat ) {
+  size_t rows = samogwas::nrows(*mat), cols = samogwas::ncols(*mat);
   auto matrix = std::make_shared<Matrix>( cols, std::vector<int>(rows) );
 
   for (unsigned row = 0; row < rows; row++) {

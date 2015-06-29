@@ -13,6 +13,8 @@
 #include "test_tools/data_generation.hpp"
 #include "test_tools/dataload.hpp"
 
+#include "em/core_em.hpp"
+
 using namespace samogwas_test;
 using namespace samogwas;
 
@@ -129,6 +131,36 @@ BOOST_AUTO_TEST_CASE( Test_Seed_Randomization ) {
   MultiEM em(3, 3);
   double vrai = em.run( *graph, n, 0.000001);
 
+}
+//////////////////////////////////////////////////////////////
+BOOST_AUTO_TEST_CASE( Test_Multi_Mixture_1 ) {
+  unsigned seed = 1;
+  std::default_random_engine generator(seed);
+
+  auto data = loadDataTable("../tests/data/em/dat_5.csv");
+  unsigned nrows = data->size(), CARD = 3;
+  auto graph = std::make_shared<samogwas::Graph>();
+  auto l2g = std::make_shared<std::vector<int>>(nrows,0);
+  Label2Index lab2Idx;
+  for (int i = 0; i < nrows; ++i) {
+    (*l2g)[i]=i;
+    plSymbol v(boost::lexical_cast<std::string>(i), plIntegerType(0, CARD-1));
+    auto dataVec = std::make_shared<DataVec>(*data->at(i));
+    createObsNode(graph, v, dataVec, 12, lab2Idx);
+  }
+
+  std::vector<int> cluster;
+  for ( size_t i = 0; i < nrows; ++i ) {
+    cluster.push_back(i);
+  }
+
+  RandVar var(boost::lexical_cast<std::string>(boost::num_vertices(*graph)), plIntegerType(0,2));
+  Node n = createLatentNode(graph, var, lab2Idx, cluster);
+  MultiMixtureEM em(0,0); // only randomized
+
+  em.run(*graph, n, 0.000001);
+  BOOST_CHECK(em.check_properties());
+  //em.randomize_parameters();
 }
 
 //////////////////////////////////////////////////////////////

@@ -86,12 +86,13 @@ void permutation_procedure( std::vector<double> &distri,
 
   for ( size_t c = 0; c < nvars; ++c) {
     size_t var = xCandidates[c];
+
     pvals[2*c] = statTest->execute( // xData.at(var)
         *graph[var].dataVec,
         yData,
         xCardinalities[c], yCardinality );
   }
-
+ 
   if ( permu > 0 ) {
     Vector localYData = yData;
     distri.resize(permu, 2.0);
