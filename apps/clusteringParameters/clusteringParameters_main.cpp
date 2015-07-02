@@ -55,14 +55,14 @@ int main() {
     auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
     Label2Index lab2Idx;
 
-    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab.csv");
+    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab_300.csv");
 
 
     printf("first SNP id = %d\n", ids->front());
     printf("last SNP id = %d\n", ids->back());
     printf("number of SNPs = %zu\n", ids->size());
 
-    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat.csv");
+    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat_300.csv");
     auto l2g = init_index_mapping( mat->size() );
     auto graph = init_graph( *mat,  lab2Idx, 3, *labels, *positions );
 
@@ -331,38 +331,45 @@ Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
         lastA  = itA->back();
         firstB = itB->front();
         lastB  = itB->back();
-        if (lastA== firstA || lastA <= firstB) { //if A contains 1 element or if the last element of A is lowest than the biggest element of B
+        if (lastA== firstA || lastA <= firstB) { //if A contains 1 element or if the last element of A is lower than the biggest element of B
             itA++;
         } else if (lastB== firstB || lastB <= firstA) { //idem with B
             itB++;
         } else { //otherwise A and B can share elements
             //we find the intersection between A and B
+            intersectCluster.resize(50);
             it=std::set_intersection (itA->begin(), itA->end(), itB->begin(), itB->end(), intersectCluster.begin());
             intersectCluster.resize(it-intersectCluster.begin());
 
-            it=std::set_difference (itA->begin(), itA->end(), intersectCluster.begin(), intersectCluster.end(), itA->begin());
-            if (it == itA->begin()) {
-                itA++;
-            } else {
-                itA->resize(it-itA->begin());
-            }
 
-            it=std::set_difference (itB->begin(), itB->end(), intersectCluster.begin(), intersectCluster.end(), itB->begin());
-            if (it == itB->begin()) {
-                itB++;
-            } else {
-                itB->resize(it-itB->begin());
-            }
-            if (intersectCluster.size() > 1)
-                res.push_back(intersectCluster);
-            if (intersectCluster.empty())
+            if (intersectCluster.empty()) //the intersection is empty -> we remove one element of the list.
                 (firstA < firstB) ? itA->erase(itA->begin()) : itB->erase(itB->begin());
-            intersectCluster.resize(50);
+            else {
+                if (intersectCluster.size() > 1)
+                    res.push_back(intersectCluster);
+                //we calculate the difference between A and the intersection
+                it=std::set_difference (itA->begin(), itA->end(), intersectCluster.begin(), intersectCluster.end(), itA->begin());
+                //if A is empty
+                if (it == itA->begin()) {
+                    itA++;
+                } else {
+                    itA->resize(it-itA->begin());
+                }
 
-            if (std::next(itA) != clusteringA.end() && std::next(itA)->front() < itA->front()) {
-                itA->swap(*std::next(itA));
+                //idem for B
+                it=std::set_difference (itB->begin(), itB->end(), intersectCluster.begin(), intersectCluster.end(), itB->begin());
+                if (it == itB->begin()) {
+                    itB++;
+                } else {
+                    itB->resize(it-itB->begin());
+                }
             }
-            if (std::next(itB) != clusteringB.end() && std::next(itB)->front() < itB->front()) {
+
+            //if there is a next element and this next element is lower than the current element
+            if (std::next(itA) != clusteringA.end() && std::next(itA)->front() < itA->front()) {
+                itA->swap(*std::next(itA)); //we swap the two elements
+            }
+            if (std::next(itB) != clusteringB.end() && std::next(itB)->front() < itB->front()) { //idem for B
                 itB->swap(*std::next(itB));
             }
         }
