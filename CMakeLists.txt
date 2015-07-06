@@ -41,8 +41,13 @@ include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${Boost_INCLUDE_DIRS}" "${Pro
 
 link_directories("${LIB_DIR}/probt_spl_2_3_99/lib/" "${LIB_DIR}/" "${Boost_INCLUDE_DIRS}" "${Boost_LIBRARY_DIRS}")
 
-add_subdirectory(core)
+if (NOT CMAKE_BUILD_TYPE)
+	message("No build type selected, default to Release")
+	set(CMAKE_BUILD_TYPE "Release")
+endif()
 
+
+add_subdirectory(core)
 add_subdirectory(apps)
 
 # test related

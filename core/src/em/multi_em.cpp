@@ -25,6 +25,7 @@ double MultiEM::run( const Graph& graph,
   DataDesc dataDesc( latentNode.variable^vars, dataTable.get(), defTable.get());
   CandidateModels candidateModels;  // vector to store different learners
 
+  nbrRestarts = nbrRestarts <= 0 ? 1 : nbrRestarts;
   for (size_t it = 0; it < nbrRestarts; ++it) {
     //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
     plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
@@ -37,7 +38,8 @@ double MultiEM::run( const Graph& graph,
 
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
   update_parameters( latentNode, dataDesc, bestModel );
-
+  std::cout << "max_llh: " << bestModel.get_last_computed_loglikelihood() << std::endl;
+  std::cout << "best model: " << bestModel.get_joint_distribution().get_computable_object_list() << std::endl;
   return bestModel.get_last_computed_loglikelihood();
 }
 

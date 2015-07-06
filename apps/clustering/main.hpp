@@ -14,7 +14,6 @@
 #include "graph/graph.hpp"
 
 #include "dataload.hpp"
-
 #include <vector>
 #include <string>
 #include <memory>
@@ -50,3 +49,5 @@ inline GraphPtr init_graph( PtrMatrix& mat, Label2Index& lab2Idx,
 
 /****************************************************************************************/
 #endif // SAMOGWAS_FLTM_MAIN_HPP
+
+

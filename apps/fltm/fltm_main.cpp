@@ -27,7 +27,8 @@
 #include "graph/graph_io.hpp"
 
 #include "dataload.hpp"
-#include "algo_properties.hpp"
+#include "clustering_config.hpp"
+#include "application_options.hpp"
 #include "fltm_main.hpp"
 
 using namespace samogwas;
