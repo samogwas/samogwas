@@ -9,6 +9,8 @@
 #define SAMOGWAS_FLTM_HPP
 
 #include <vector>
+
+#include <map>
 #include <memory>
 #include <boost/lexical_cast.hpp>
 

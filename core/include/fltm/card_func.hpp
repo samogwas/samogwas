@@ -16,6 +16,7 @@ struct CardFunc {
     return compute(observedVariables);
   }
   virtual int compute(const std::vector<int> &observedVariables) = 0;
+  virtual int compute(int nbrVariables) = 0;
 
 };
 
@@ -32,7 +33,11 @@ struct LinearCardinality: public CardFunc
 
   
   virtual int compute(const std::vector<int> &observedVariables) {
-    int nbrVariables = observedVariables.size();
+    return compute(observedVariables.size());
+  }
+
+  virtual int compute(int nbrVariables) {
+    //printf("%f * %d + %f = %d\n", alpha,nbrVariables,beta, std::min( int(alpha * nbrVariables + beta), maxCard));
     return std::min( int(alpha * nbrVariables + beta), maxCard);
   }
  protected:

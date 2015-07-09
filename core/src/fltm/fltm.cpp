@@ -8,7 +8,8 @@
 
 #include <fstream>
 #include <climits>
-
+#include <iostream>
+#include <cmath>
 
 namespace samogwas {
 
@@ -86,10 +87,11 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
        double precedentBIC,currentBIC;
        NodePtr currentLatentVariable,precedentLatentVariable;
 
+       std::map<int,std::vector<int>> childrenNbToCard;
        //the parallelizable section
         #pragma omp parallel for schedule(dynamic) private(precedentBIC,currentBIC,currentLatentVariable,precedentLatentVariable)
        for ( int i = 0 ; i < clustering.size() ; ++i) {
-          if ( clustering[i].size() > 1 ) {
+          if ( clustering[i].size() > 2 ) {
             int card = 2;
             currentBIC = INT_MIN;
             do {
@@ -101,10 +103,30 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
                 MultiEM em(params.nbrRestarts);
                 currentBIC = em.run( *graph, *currentLatentVariable, params.emThres);
             } while (precedentBIC < currentBIC); //while BIC score increase
+            if (childrenNbToCard.find(clustering[i].size()) == childrenNbToCard.end()) {
+                childrenNbToCard[clustering[i].size()] = std::vector<int>();
+            }
+            childrenNbToCard[clustering[i].size()].push_back(card - 2);
             latentVector[i] = precedentLatentVariable;
             //printf("we found a good BIC for card = %d\n",card-1);
+          } else if ( clustering[i].size() > 1 ) {
+              RandVar var("latent-"+std::to_string(verticesNb + i),
+                                      plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
+              latentVector[i] = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
+              MultiEM em(params.nbrRestarts);
+              em.run( *graph, *latentVector[i], params.emThres);
           }
         }
+       std::cout << "nbChildren -> [greedyCardinalities] = mean <> alphaBetaCardinality" << std::endl;
+       for (auto d : childrenNbToCard) {
+           double mean = 0;
+           std::cout << d.first << " -> [";
+           for (auto e : d.second) {
+               std::cout << e << ",";
+               mean +=e;
+           }
+           std::cout << "\b] = "<< mean/d.second.size() << " <> " << cardFunc->compute(d.first) - 1 <<std::endl;
+       }
 
         //the non parallelizable section
         for ( int i = 0 ; i < clustering.size() ; ++i) {
