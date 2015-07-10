@@ -55,14 +55,14 @@ int main() {
     auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
     Label2Index lab2Idx;
 
-    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab_300.csv");
+    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab.csv");
 
 
     printf("first SNP id = %d\n", ids->front());
     printf("last SNP id = %d\n", ids->back());
     printf("number of SNPs = %zu\n", ids->size());
 
-    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat_300.csv");
+    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat.csv");
     auto l2g = init_index_mapping( mat->size() );
     auto graph = init_graph( *mat,  lab2Idx, 3, *labels, *positions );
 
@@ -121,8 +121,37 @@ int main() {
         start = end;
         //we print the duration of the clustering
         std::cout << diff.count()/1000000000 << " secs\n";
+Clustering clusteringRES;
+//        Clustering , clusteringCAST, clusteringDBSCAN;
+//        Cluster c;
+//        c.push_back(0);
+//        c.push_back(4);
+//        c.push_back(7);
+//        clusteringCAST.push_back(c);
+//        c.clear();
+//        c.push_back(0);
+//        clusteringDBSCAN.push_back(c);
+//        c.clear();
+//        c.push_back(1);
+//        clusteringDBSCAN.push_back(c);
+//        c.clear();
+//        c.push_back(1);
+//        c.push_back(5);
+//        c.push_back(6);
+//        clusteringCAST.push_back(c);
+//        c.clear();
+//        c.push_back(2);
+//        c.push_back(3);
+//        clusteringCAST.push_back(c);
+//        clusteringDBSCAN.push_back(c);
+//        c.clear();
+//        c.push_back(4);
+//        c.push_back(5);
+//        c.push_back(6);
+//        c.push_back(7);
+//        clusteringDBSCAN.push_back(c);
 
-    std::cout << "[";
+        std::cout << "CAST[";
       for (auto i: clusteringCAST) {
         std::cout << "[";
         for (auto j: i)
@@ -131,7 +160,7 @@ int main() {
       }
     std::cout << "]"<< std::endl<< std::endl;
 
-    std::cout << "[";
+    std::cout << "DBSCAN[";
       for (auto i: clusteringDBSCAN) {
         std::cout << "[";
         for (auto j: i)
@@ -139,10 +168,9 @@ int main() {
         std::cout << "],";
       }
     std::cout << "]"<< std::endl<< std::endl;
-        Clustering clusteringRES;
 
         clusteringRES = compareMe(clusteringCAST, clusteringDBSCAN);
-        std::cout << "[";
+        std::cout << "RESU[";
           for (auto i: clusteringRES) {
             std::cout << "[";
             for (auto j: i)
@@ -280,7 +308,7 @@ void writeResultsForTulip( Clustering clustering, std::shared_ptr<PosVec> positi
     }
     printf("done writing.\n");
 }
-
+/*
 
 Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
     std::vector<Cluster>::iterator itA = clusteringA.begin() ;
@@ -341,7 +369,6 @@ Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
             it=std::set_intersection (itA->begin(), itA->end(), itB->begin(), itB->end(), intersectCluster.begin());
             intersectCluster.resize(it-intersectCluster.begin());
 
-
             if (intersectCluster.empty()) //the intersection is empty -> we remove one element of the list.
                 (firstA < firstB) ? itA->erase(itA->begin()) : itB->erase(itB->begin());
             else {
@@ -364,16 +391,47 @@ Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
                     itB->resize(it-itB->begin());
                 }
             }
-
-            //if there is a next element and this next element is lower than the current element
-            if (std::next(itA) != clusteringA.end() && std::next(itA)->front() < itA->front()) {
-                itA->swap(*std::next(itA)); //we swap the two elements
-            }
-            if (std::next(itB) != clusteringB.end() && std::next(itB)->front() < itB->front()) { //idem for B
-                itB->swap(*std::next(itB));
-            }
+        }
+        //if there is a next element and this next element is lower than the current element
+        if (itA != clusteringA.end() && std::next(itA) != clusteringA.end() && std::next(itA)->front() < itA->front()) {
+            itA->swap(*std::next(itA)); //we swap the two elements
+        }
+        if (itB != clusteringB.end() && std::next(itB) != clusteringB.end() && std::next(itB)->front() < itB->front()) { //idem for B
+            itB->swap(*std::next(itB));
         }
     }
     return res;
 
+}*/
+Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
+    std::vector<Index> intersectCluster(50);
+    std::map<Index, std::vector<Index>> indexToCluster;
+    Clustering res;
+    for (int i = 0 ; i < clusteringA.size() ; i++)
+        for (auto j : clusteringA[i]) {
+            indexToCluster[j] = Cluster();
+            indexToCluster[j].push_back(i);
+        }
+    for (int i = 0 ; i < clusteringB.size() ; i++)
+        for (auto j : clusteringB[i])
+            indexToCluster[j].push_back(i);
+    std::vector<Index> clusters;
+    std::vector<Index>::iterator it;
+//    for (auto i : indexToCluster)
+//        std::cout<< i.first <<"-> ("<< i.second[0] << "," << i.second[1]<<")  ";
+    while (!indexToCluster.empty()) {
+        //std::cout<< itIndexToCluster->first <<"-> ("<< itIndexToCluster->second[0] << "," << itIndexToCluster->second[1]<<")  " << std::endl;
+        clusters = indexToCluster.begin()->second;
+        intersectCluster.resize(50);
+        it=std::set_intersection (clusteringA[clusters[0]].begin(), clusteringA[clusters[0]].end(), clusteringB[clusters[1]].begin(), clusteringB[clusters[1]].end(), intersectCluster.begin());
+        intersectCluster.resize(it-intersectCluster.begin());
+        res.push_back(intersectCluster);
+        for (auto j : intersectCluster) {
+            indexToCluster.erase(j);
+            //std::cout<< "we erase "<<j<< std::endl;
+        }
+    }
+
+
+    return res;
 }
