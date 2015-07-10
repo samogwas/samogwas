@@ -67,7 +67,7 @@ int main( int argc, char** argv ) {
      auto l2g = init_index_mapping( mat->size() );
      auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
      FLTM fltm(options.fltm_params);
-  
+
      fltm.execute( algoClust, cardF, graph);
       auto end = get_time::now();
       auto diff = end - start;
@@ -85,13 +85,12 @@ int main( int argc, char** argv ) {
            << " seconds" << std::endl;
      boost::filesystem::create_directories(outputPath);
 
-     switch( options.outType) {
-       case 0: {
+     if ( options.outType == 0 ||  options.outType == 2) {
          std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
          char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
          sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
          sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
-         sprintf(imputedDat_fn, "fltm_%s_cond_indiv.dist", algoClust->name() );
+         sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
          sprintf(imputedLab_fn, "fltm_%s_imputed.lab", algoClust->name() );
          sprintf(graph_fn, "fltm_%s.graph", algoClust->name() );
 
@@ -102,28 +101,17 @@ int main( int argc, char** argv ) {
              outGraph = (outputPath / graph_fn).string();
          BayesGraphSave()( *graph, outBayesVertex, outBayesDist );
          saveDatLab( *graph, outImpDat, outImpLab );
-         break;
        }
-       case 1: {
-         std::string outNode, outEdge;
-         char edge_fn[256], node_fn[256];
-         sprintf( node_fn, "fltm_%s_tulip_vertex.csv", algoClust->name() );
-         sprintf( edge_fn, "fltm_%s_tulip_edge.csv", algoClust->name() );
-         outNode = (outputPath  /node_fn ).string(),
-             outEdge = (outputPath / edge_fn).string();
-        
-         TulipGraphSave()( *graph, outNode, outEdge );
-         break;
+       if ( options.outType == 1 ||  options.outType == 2) {
+         std::string outNode;
+         char node_fn[256];
+         sprintf( node_fn, "fltm_%s_tulip.csv", algoClust->name() );
+         outNode = (outputPath  /node_fn ).string();
+         TulipGraphSave()( *graph, outNode );
        }
-
-       default:
-         break;
-     }
    }
    stats.close();
 }
-
-
 
 char* current_date()
 {
@@ -146,17 +134,17 @@ boost::filesystem::path outputDir( Options& progOpt ) {
 
 void saveDatLab( const Graph& g, const std::string& datF, const std::string& labF ) {
   std::ofstream datFile(datF), labFile(labF);
+  labFile << "index" << "," << "label" << "," << "cardinality" << "," << "position" << "," << "level" << std::endl;
 
   for ( auto vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
     Node n = g[*vp.first];
 
     if (!n.is_leaf()) {
-      for ( size_t i = 0; i < n.cndObsDist->size() - 1; ++i ) {
-        datFile << n.cndObsDist->at(i) << ",";
+      for ( size_t i = 0; i < n.dataVec->size() - 1; ++i ) {
+         datFile << n.dataVec->at(i) << ",";
       }
-      datFile << n.cndObsDist->at(n.cndObsDist->size() - 1) << "\n";
+      datFile << n.dataVec->at(n.dataVec->size() - 1) << "\n";
     }
-    
     labFile << n.index << "," << n.getLabel() << "," << n.cardinality() << "," << n.position << "," << n.level << std::endl;
   }
 

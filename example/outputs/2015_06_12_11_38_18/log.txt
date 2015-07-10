@@ -1,0 +1,17 @@
+Parameter options : 
+	./fltm
+	-d
+	../example/inputs/data/dat_3000.csv
+	-l
+	../example/inputs/labels/lab_3000.csv
+	-c
+	../example/inputs/clustering.cfg
+	-o
+	../example/outputs
+	-r1
+	-s3
+	-e0.01
+	-i0.0
+	-N3
+Running FLTM for DBSCAN_2_0.700 on 3000 variables
+Elapsed time is:  356 seconds

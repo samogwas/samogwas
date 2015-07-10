@@ -1,6 +1,6 @@
 /****************************************************************************************
  * File: graph_io.hpp
- * Description: 
+ * Description:
  * @author: siolag161 (thanh.phan@outlook.com)
  * @date: 06/05/2015
 
@@ -41,20 +41,20 @@ enum TULIP_VERTICES { TULIP_ID = 0, TULIP_LATENT, TULIP_LEVEL, TULIP_CARDINALITY
 enum TULIP_EDGES { /*TULIP_ID = 0,*/ TULIP_PARENT_ID = 1 };
 // by convention, TULIP_PARENT_ID set to -1 denotes a root.
 
-
+enum BAYES_VERTICES { BV_ID = 0, BV_LATENT, BV_LEVEL, BV_CARDINALITY, BV_POSITION };
 // format BN (two files, structure and parameters)
 enum BN_VERTICES { BN_LATENT_ID = 0, NBR_CHILDREN };
 
 
 /*************************************************************************************/
 /*
- *  
+ *
  */
 struct FLTMGraphReader {
   /** Loads the nodes' idendities, labels and positions from a formatted file and returns a
    * map that maps the identity to a pair of label and position.
    */
-  LabPosMap readLabPos( const std::string labPosFileName ) const;  
+  LabPosMap readLabPos( const std::string labPosFileName ) const;
 };
 
 /** Loads the Bayian network corresponding to the FLTM model from two files:
@@ -77,33 +77,32 @@ struct FLTMGraphReader {
  */
 struct BayesGraphLoad: public FLTMGraphReader {
 
-  
   void operator()( GraphPtr graph,
                   const std::string labPosFileName,
                    const std::string vertexFileName,
                    const std::string distributionFileName,
                    const std::string cndDataFileName,
                    const std::string dataFileName ) const;
-  
+
   GraphPtr operator()( const std::string labPosFileName,
                        const std::string vertexFileName,
                        const std::string distributionFileName,
                        const std::string cndDataFileName,
                        const std::string dataFileName ) const  {
-    
+
     auto graph = std::make_shared<Graph>();
     (*this)( graph, labPosFileName, vertexFileName, distributionFileName, cndDataFileName, dataFileName);
-    return graph;    
+    return graph;
   }
 
- private: 
+ private:
   typedef std::vector<int> Vec;
   typedef std::vector<double> RealVec;
 
   typedef std::shared_ptr<Vec> VecPtr;
   typedef std::vector<VecPtr> PtrMatrix;
   typedef std::shared_ptr<PtrMatrix> PtrMatrixPtr;
-  
+
   void set_data( Graph& g,
                  const std::string cndDataFileName,
                  const std::string dataFileName ) const;
@@ -114,21 +113,18 @@ struct BayesGraphLoad: public FLTMGraphReader {
  *  - vertexOutputFilename: ID, LABEL, LATENT, PARENT, LEVEL, POSITION, CARDINALITY
  *  - distributionFileName: see above.
  */
-struct BayesGraphSave {  
+struct BayesGraphSave {
   void operator()( const Graph& graph,
                    const std::string vertexFileName,
                    const std::string distributionFileName ) const;
 };
 
-
 struct TulipGraphSave {
   void operator()( const Graph& graph,
-                   const std::string nodeFile,
-                   const std::string edgeFile ) const;
+                   const std::string nodeFile ) const;
 };
 
-
-} // namespace samogwas ends here. 
+} // namespace samogwas ends here.
 
 
 /****************************************************************************************/

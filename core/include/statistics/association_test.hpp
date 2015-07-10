@@ -4,13 +4,13 @@
  * @author: Adapted by Duc-Thanh Phan siolag161 (thanh.phan@outlook.com), under the supervision of Christine Sinoquet
  * @date: 25/06/2014
 
- ***************************************************************************************/
+ *************** ************************************************************************/
 #ifndef STATS_ASSOCIATION_TEST_HPP
 #define STATS_ASSOCIATION_TEST_HPP
 
 #include "test_statistics.hpp"
 
-namespace stats
+namespace samogwas
 {
 struct StatTest {
   
@@ -68,7 +68,7 @@ struct ChiSq: public StatTest  {
     return chisq(geno, pheno, cardGenotype, cardPhenotype);
   } 
   
-  stats::StatisticTest<stats::CHISQ> chisq;
+  samogwas::StatisticTest<samogwas::CHISQ> chisq;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -86,7 +86,7 @@ struct ChiSqCor: public StatTest  {
     return chisq(geno, pheno, cardGenotype, cardPhenotype);
   }
   
-  stats::StatisticTest<stats::CHISQ_YATES> chisq;
+  samogwas::StatisticTest<samogwas::CHISQ_YATES> chisq;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -102,7 +102,7 @@ struct Fisher: public StatTest  {
     return fisher(geno, pheno, cardGenotype, cardPhenotype);
   }
  
-  stats::StatisticTest<stats::FISHER> fisher;
+  samogwas::StatisticTest<samogwas::FISHER> fisher;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ struct G: public StatTest  {
     return g2(geno, pheno, cardGenotype, cardPhenotype);
   }
   
-  stats::StatisticTest<stats::G2> g2;
+  samogwas::StatisticTest<samogwas::G2> g2;
 };
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -133,7 +133,7 @@ struct G2Cor: public StatTest  {
                           const unsigned cardPhenotype ) {
     return g2( geno, pheno, cardGenotype, cardPhenotype );
   }
-  stats::StatisticTest<stats::G2_YATES> g2;
+  samogwas::StatisticTest<samogwas::G2_YATES> g2;
 };
 
 ////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ struct GWASAssociationTest {
 };
 
 
-} // namespace stats ends here.
+} // namespace samogwas ends here.
 
 
 /****************************************************************************************/
