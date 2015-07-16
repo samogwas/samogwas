@@ -24,6 +24,7 @@
 #include "clustering/clustering.hpp"
 #include "clustering/dbscan.hpp"
 #include "clustering/cast.hpp"
+#include "clustering/louvain/louv.hpp"
 
 #include "dataload.hpp"
 #include "algo_properties.hpp"
@@ -48,21 +49,21 @@ void writeResultsForTulip( Clustering clustering, std::shared_ptr<PosVec> positi
 void printClusteringInformations( Clustering clustering );
 ClusterInformation getClusteringInformations( Clustering clustering, SimiPtr diss );
 ClusterInformation getClusteringInformations( Clustering clustering, DissPtr diss );
-Clustering compareMe(Clustering clusteringA, Clustering clusteringB) ;
+Clustering compareMe(std::vector<Clustering> clusterings);
 
 
 int main() {
     auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
     Label2Index lab2Idx;
 
-    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab.csv");
+    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab_300.csv");
 
 
     printf("first SNP id = %d\n", ids->front());
     printf("last SNP id = %d\n", ids->back());
     printf("number of SNPs = %zu\n", ids->size());
 
-    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat.csv");
+    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat_300.csv");
     auto l2g = init_index_mapping( mat->size() );
     auto graph = init_graph( *mat,  lab2Idx, 3, *labels, *positions );
 
@@ -99,6 +100,10 @@ int main() {
         //we print the duration of the clustering
         std::cout << diff.count()/1000000000 << " secs\n";
 
+
+
+//+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
         auto dissimi = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
         dissimi->set_criteria(criteria);
         DBSCAN dbscan(dissimi,2,0.38);
@@ -108,20 +113,37 @@ int main() {
 
 
         Clustering clusteringDBSCAN = result.to_clustering();
-//        info = getClusteringInformations(clusteringDBSCAN,dissimi);
 
-//        std::cout<< "\tnbCluster = " << clusteringDBSCAN.size()
-//                 << "nbSingletons = " << info.nbSingletons
-//                 << "\tclusterScore = "<< info.clusterScore
-//                 << "\tclusterScore = "<< info.mutualInformation
-//                 << std::endl;
 
         end = get_time::now();
         diff = (end-start);
         start = end;
         //we print the duration of the clustering
         std::cout << diff.count()/1000000000 << " secs\n";
-Clustering clusteringRES;
+
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+
+        auto simi2 = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
+        simi2->set_criteria(criteria);
+
+        louvain::MethodLouvain louv(simi2);
+        result = louv();
+
+
+
+
+        Clustering clusteringLOUV = result.to_clustering();
+
+        end = get_time::now();
+        diff = (end-start);
+        start = end;
+        //we print the duration of the clustering
+        std::cout << diff.count()/1000000000 << " secs\n";
+
+
+        Clustering clusteringRES;
 //        Clustering , clusteringCAST, clusteringDBSCAN;
 //        Cluster c;
 //        c.push_back(0);
@@ -151,25 +173,38 @@ Clustering clusteringRES;
 //        c.push_back(7);
 //        clusteringDBSCAN.push_back(c);
 
-        std::cout << "CAST[";
-      for (auto i: clusteringCAST) {
-        std::cout << "[";
-        for (auto j: i)
-            std::cout << j << ',';
-        std::cout << "],";
-      }
-    std::cout << "]"<< std::endl<< std::endl;
+         std::cout << "CAST[";
+          for (auto i: clusteringCAST) {
+            std::cout << "[";
+            for (auto j: i)
+                std::cout << j << ',';
+            std::cout << "],";
+          }
+        std::cout << "]"<< std::endl<< std::endl;
 
-    std::cout << "DBSCAN[";
-      for (auto i: clusteringDBSCAN) {
-        std::cout << "[";
-        for (auto j: i)
-            std::cout << j << ',';
-        std::cout << "],";
-      }
-    std::cout << "]"<< std::endl<< std::endl;
+        std::cout << "DBSCAN[";
+          for (auto i: clusteringDBSCAN) {
+            std::cout << "[";
+            for (auto j: i)
+                std::cout << j << ',';
+            std::cout << "],";
+          }
+        std::cout << "]"<< std::endl<< std::endl;
 
-        clusteringRES = compareMe(clusteringCAST, clusteringDBSCAN);
+        std::cout << "LOUV[";
+          for (auto i: clusteringLOUV) {
+            std::cout << "[";
+            for (auto j: i)
+                std::cout << j << ',';
+            std::cout << "],";
+          }
+        std::cout << "]"<< std::endl<< std::endl;
+
+        std::vector<Clustering> clusterings;
+        clusterings.push_back(clusteringCAST);
+        clusterings.push_back(clusteringDBSCAN);
+        clusterings.push_back(clusteringLOUV);
+        clusteringRES = compareMe(clusterings);
         std::cout << "RESU[";
           for (auto i: clusteringRES) {
             std::cout << "[";
@@ -403,35 +438,32 @@ Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
     return res;
 
 }*/
-Clustering compareMe(Clustering clusteringA, Clustering clusteringB) {
-    std::vector<Index> intersectCluster(50);
+Clustering compareMe(std::vector<Clustering> clusterings) {
+    Cluster intersectedCluster;
     std::map<Index, std::vector<Index>> indexToCluster;
     Clustering res;
-    for (int i = 0 ; i < clusteringA.size() ; i++)
-        for (auto j : clusteringA[i]) {
-            indexToCluster[j] = Cluster();
-            indexToCluster[j].push_back(i);
-        }
-    for (int i = 0 ; i < clusteringB.size() ; i++)
-        for (auto j : clusteringB[i])
-            indexToCluster[j].push_back(i);
-    std::vector<Index> clusters;
-    std::vector<Index>::iterator it;
-//    for (auto i : indexToCluster)
-//        std::cout<< i.first <<"-> ("<< i.second[0] << "," << i.second[1]<<")  ";
+    //create for each clustering, for each index, the list of the associated clusters
+    for (Clustering clustering : clusterings)
+        for (int i = 0 ; i < clustering.size() ; i++)
+            for (Index clusterIndex : clustering[i])
+                indexToCluster[clusterIndex].push_back(i);
+    Cluster::iterator it;
+    //we run all the index in the map
     while (!indexToCluster.empty()) {
-        //std::cout<< itIndexToCluster->first <<"-> ("<< itIndexToCluster->second[0] << "," << itIndexToCluster->second[1]<<")  " << std::endl;
-        clusters = indexToCluster.begin()->second;
-        intersectCluster.resize(50);
-        it=std::set_intersection (clusteringA[clusters[0]].begin(), clusteringA[clusters[0]].end(), clusteringB[clusters[1]].begin(), clusteringB[clusters[1]].end(), intersectCluster.begin());
-        intersectCluster.resize(it-intersectCluster.begin());
-        res.push_back(intersectCluster);
-        for (auto j : intersectCluster) {
-            indexToCluster.erase(j);
-            //std::cout<< "we erase "<<j<< std::endl;
+        //we initialize the intersected cluster with the first clustering
+        intersectedCluster = clusterings[0][indexToCluster.begin()->second[0]];
+        //we find the intersection between all the clusterings
+        for (int i = 1 ; i < clusterings.size() ; i++) {
+            Cluster currentCluster = clusterings[i][indexToCluster.begin()->second[i]];
+            it=std::set_intersection (currentCluster.begin(), currentCluster.end(), intersectedCluster.begin(), intersectedCluster.end(), intersectedCluster.begin());
+            intersectedCluster.resize(it-intersectedCluster.begin());
         }
+        //we add the intersected cluster and we remove it from the map
+        res.push_back(intersectedCluster);
+        for (auto j : intersectedCluster) {
+            indexToCluster.erase(j);
+        }
+        intersectedCluster.resize(50);
     }
-
-
     return res;
 }
