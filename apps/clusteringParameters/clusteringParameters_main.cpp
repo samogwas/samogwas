@@ -50,7 +50,8 @@ void printClusteringInformations( Clustering clustering );
 ClusterInformation getClusteringInformations( Clustering clustering, SimiPtr diss );
 ClusterInformation getClusteringInformations( Clustering clustering, DissPtr diss );
 Clustering compareMe(std::vector<Clustering> clusterings);
-
+double getObservedEntropy( Cluster cluster, PtrMatrixPtr mat);
+double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat);
 
 int main() {
     auto labels = std::make_shared<LabelVec>(); auto positions = std::make_shared<PosVec>();  auto ids = std::make_shared<PosVec>();
@@ -104,7 +105,7 @@ int main() {
 
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-        auto dissimi = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
+   /*     auto dissimi = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
         dissimi->set_criteria(criteria);
         DBSCAN dbscan(dissimi,2,0.38);
         result = dbscan();
@@ -142,7 +143,7 @@ int main() {
         //we print the duration of the clustering
         std::cout << diff.count()/1000000000 << " secs\n";
 
-
+*/
         Clustering clusteringRES;
 //        Clustering , clusteringCAST, clusteringDBSCAN;
 //        Cluster c;
@@ -181,8 +182,7 @@ int main() {
             std::cout << "],";
           }
         std::cout << "]"<< std::endl<< std::endl;
-
-        std::cout << "DBSCAN[";
+/*        std::cout << "DBSCAN[";
           for (auto i: clusteringDBSCAN) {
             std::cout << "[";
             for (auto j: i)
@@ -200,7 +200,8 @@ int main() {
           }
         std::cout << "]"<< std::endl<< std::endl;
 
-        std::vector<Clustering> clusterings;
+        */
+     /*   std::vector<Clustering> clusterings;
         clusterings.push_back(clusteringCAST);
         clusterings.push_back(clusteringDBSCAN);
         clusterings.push_back(clusteringLOUV);
@@ -212,28 +213,88 @@ int main() {
                 std::cout << j << ',';
             std::cout << "],";
           }
-        std::cout << "]"<< std::endl;
+        std::cout << "]"<< std::endl;*/
+        clusteringCAST.begin()->push_back(45);
+        clusteringCAST.begin()->push_back(88);
+         clusteringCAST.begin()->push_back(108);
+          clusteringCAST.begin()->push_back(208);
+           clusteringCAST.begin()->push_back(54);
 
-        end = get_time::now();
-        diff = (end-start);
-        //we print the duration of the clustering
-        std::cout << diff.count()/1000000000 << " secs\n";
-
-//        auto end = get_time::now();
-//        auto diff = (end-start);
-        //we print the duration of the clustering
-//        std::cout << diff.count()/1000000000 << " secs\n";
-
-
-//    }
-
-
+double obs = getObservedEntropy(*clusteringCAST.begin(), mat);
+double exp = getExpectedEntropy(*clusteringCAST.begin(), mat);
+double epsilon = (exp - obs) /exp;
+std::cout << obs <<std::endl;
+std::cout << exp <<std::endl;
+std::cout << epsilon <<std::endl;
 //    for (ClusterInformation info : clusterVector) {
 //        std::cout<< "nbSingletons = " << info.nbSingletons << std::endl<< " clusterScore = "<< info.clusterScore<< std::endl;
 //    }
 
 //        writeResultsForTulip(clusteringDBSCAN, positions, ids, labels, "DBSCAN");
 }
+
+double getObservedEntropy( Cluster cluster, PtrMatrixPtr mat){
+    std::map<VecT, int> cluster2Occurrence;
+
+    for (int i = 0 ; i < mat->at(0)->size() ; ++i) {
+        VecT newVec;
+        for (int label : cluster) {
+            newVec.push_back(mat->at(label)->at(i));
+        }
+        if (cluster2Occurrence.count(newVec) > 0)
+            cluster2Occurrence[newVec]++;
+        else
+            cluster2Occurrence[newVec] = 1;
+    }
+
+//    CondObsDistPtr cndObsDist = std::make_shared<CondObsDist>();
+//    for (auto a : cluster2Occurrence) {
+//        cndObsDist->push_back(((double) a.second)/mat->size());
+//    }
+//    DistPtr dist = create_emp_distribution(p,*cndObsDist);
+//    return dist->compute_shannon_entropy();
+
+    double res = 0;
+    for (auto a : cluster2Occurrence) {
+        std::cout << std::endl << a.second << " -> ";
+        for (int j : a.first) {
+            std::cout << j << ",";
+        }
+        double x = ((double) a.second)/mat->at(0)->size();
+        res += -x * log2(x);
+    }
+    std::cout << std::endl;
+    return res;
+}
+
+double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat){
+    int distribution[cluster.size()][3] = {0};
+    int nbObs = mat->at(0)->size();
+    std::vector<double> resVec(nbObs,1);
+    for (int j = 0 ; j < cluster.size() ; j++) {
+        for (int i = 0 ; i < nbObs ; ++i) {
+            distribution[j][mat->at(cluster[j])->at(i)]++;
+        }
+        for (int i = 0 ; i < nbObs ; ++i) {
+            resVec[i] *= ((double) distribution[j][mat->at(cluster[j])->at(i)]) / nbObs;
+        }
+    }
+    for (int i = 0 ; i < 3 ;i++) {
+        for (int j =0 ;j < cluster.size() ; j++)
+            std::cout << distribution[j][i] << "\t";
+        std::cout << std::endl;
+    }
+
+
+    double res =0;
+    for (double x : resVec) {
+//        if (std::abs(x - 0.903654) >0.001)
+//            std::cout << x << ",";
+        res += -x * log2(x);
+    }
+    return res;
+}
+
 
 ClusterInformation getClusteringInformations( Clustering clustering, SimiPtr diss ){
     ClusterInformation info;
