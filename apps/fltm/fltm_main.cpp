@@ -140,12 +140,12 @@ void saveDatLab( const Graph& g, const std::string& datF, const std::string& lab
   for ( auto vp = boost::vertices(g); vp.first != vp.second; ++vp.first) {
     Node n = g[*vp.first];
 
-    if (!n.is_leaf()) {
+    //if (!n.is_leaf()) {
       for ( size_t i = 0; i < n.dataVec->size() - 1; ++i ) {
          datFile << n.dataVec->at(i) << ",";
       }
       datFile << n.dataVec->at(n.dataVec->size() - 1) << "\n";
-    }
+      //}
     labFile << n.index << "," << n.getLabel() << "," << n.cardinality() << "," << n.position << "," << n.level << std::endl;
   }
 
