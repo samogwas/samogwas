@@ -24,8 +24,8 @@ namespace samogwas
 namespace louvain {
 
 class MethodLouvain: public ClustAlgo {
-  
- public:  
+
+ public:
   typedef GraphSimilarity Weights; 
   typedef std::shared_ptr<Weights> WeightsPtr;
   typedef std::shared_ptr<Graph> GraphPtr;

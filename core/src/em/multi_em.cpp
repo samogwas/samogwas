@@ -38,8 +38,8 @@ double MultiEM::run( const Graph& graph,
 
   plEMLearner bestModel = get_best_model(candidateModels, dataDesc);
   update_parameters( latentNode, dataDesc, bestModel );
-  std::cout << "max_llh: " << bestModel.get_last_computed_loglikelihood() << std::endl;
-  std::cout << "best model: " << bestModel.get_joint_distribution().get_computable_object_list() << std::endl;
+  //std::cout << "max_llh: " << bestModel.get_last_computed_loglikelihood() << std::endl;
+  //std::cout << "best model: " << bestModel.get_joint_distribution().get_computable_object_list() << std::endl;
   return bestModel.get_last_computed_loglikelihood();
 }
 

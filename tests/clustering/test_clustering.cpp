@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE( test_CAST_1 )
   size_t N = 5, CARD = 3, MAX_POS = 5;
   int nrows = nclusts*N;
   std::vector<int> positions; for ( int i = 0; i < nrows; ++i ) positions.push_back(i);
-  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();  
+  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();
 
   auto graph = std::make_shared<samogwas::Graph>();
   auto l2g = std::make_shared<std::vector<int>>(nrows,0);
@@ -40,11 +40,11 @@ BOOST_AUTO_TEST_CASE( test_CAST_1 )
     createObsNode(graph, v, dataVec, 12, lab2Idx);
   }
 
-  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS); 
+  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);
   auto gsimi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
   gsimi->set_criteria(criteria);
 
-  CAST cast( gsimi, 0.5 );  
+  CAST cast( gsimi, 0.5 );
   Partition result = cast();
   for ( int i = 0; i < nrows; ++i ) {
     int expected_cluster = i / N;
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_DBSCAN_1 )
   size_t N = 3, CARD = 3, MAX_POS = 5;
   int nrows = nclusts*N;
   std::vector<int> positions; for ( int i = 0; i < nrows; ++i ) positions.push_back(i);
-  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();  
+  auto data = GenerateClusteredData( nclusts, N, CARD, ncols )();
 
   int lim_nrows = 6;  Label2Index lim_lab2Idx;
   auto graph = std::make_shared<Graph>();
@@ -69,7 +69,7 @@ BOOST_AUTO_TEST_CASE( test_DBSCAN_1 )
   for (int i = 0; i < nrows; ++i) {
     if (i < lim_nrows) {
       (*lim_l2g)[i]=i;
-    }      
+    }
     (*l2g)[i]=i;
     plSymbol v(boost::lexical_cast<std::string>(i), plIntegerType(0, CARD-1));
     auto dataVec = std::make_shared<DataVec>(data->at(i));
@@ -119,11 +119,11 @@ BOOST_AUTO_TEST_CASE( test_Louvain_1 )
     createObsNode(graph, v, dataVec, 12, lab2Idx);
   }
 
-  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);   
+  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);
   auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
   auto g = std::make_shared<louvain::Graph>( simi, false );
   louvain::Network network(g);
-  
+
   BOOST_CHECK_EQUAL(network.nbrCommunities(), commCount*commCard); // initially
   BOOST_CHECK_EQUAL(network.nbrNodes(), commCount*commCard);
 
@@ -155,16 +155,16 @@ BOOST_AUTO_TEST_CASE( Test_Louvain_Linked_Weights_Wikipedia ) {
   std::vector< std::vector<double> > sim {
     {0,1,1,0,0,0,0,0,0,1}, // 0
     {1,0,1,0,0,0,0,0,0,0}, // 1
-    {1,1,0,0,0,0,0,0,0,0}, // 2 
+    {1,1,0,0,0,0,0,0,0,0}, // 2
     {0,0,0,0,1,1,0,0,0,1}, // 3
     {0,0,0,1,0,1,0,0,0,0}, // 4
     {0,0,0,1,1,0,0,0,0,0}, // 5
     {0,0,0,0,0,0,0,1,1,1},
     {0,0,0,0,0,0,1,0,1,0},
     {0,0,0,0,0,0,1,1,0,0},
-    {1,0,0,1,0,0,1,0,0,0}    
+    {1,0,0,1,0,0,1,0,0,0}
   };
-  
+
   //std::shared_ptr<SimilarityMatrix> simi(new Simi(sim));
   auto simi = std::make_shared<Simi>(sim);
   auto louv = std::make_shared<louvain::MethodLouvain>(simi);
@@ -173,23 +173,23 @@ BOOST_AUTO_TEST_CASE( Test_Louvain_Linked_Weights_Wikipedia ) {
   louv->second_phase();
   double modul_2nd = louv->network->modularity();
   auto ntw = louv->network;
-  for ( auto comm: ntw->communities() ) {    
+  for ( auto comm: ntw->communities() ) {
     double iw = ntw->in_weights[comm];
     double tl = ntw->tot_linked_weights[comm];
-  }  
-  
+  }
+
   BOOST_CHECK_EQUAL(modul_1st , modul_2nd);
-  auto clustering = louv->run();  
+  auto clustering = louv->run();
   BOOST_CHECK_EQUAL( clustering.nbrClusters(), 3 );
   BOOST_CHECK_EQUAL( clustering.getLabel(0), clustering.getLabel(1));
   BOOST_CHECK_EQUAL( clustering.getLabel(1), clustering.getLabel(2));
-  BOOST_CHECK_EQUAL( clustering.getLabel(2), clustering.getLabel(9));  
+  BOOST_CHECK_EQUAL( clustering.getLabel(2), clustering.getLabel(9));
   for ( louvain::NodeIndex n = 0; n < clustering.nbrItems(); ++n ) {
     if ( n < 3 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 0);
     else if ( n < 6 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 1);
     else if ( n < 9 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 2);
     else if ( n == 9 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 0);
-  }  
+  }
 }
 
 BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
   std::vector<int> positions; for ( int i = 0; i < nrows; ++i ) positions.push_back(i);
   auto data = GenerateClusteredData( commCount, commCard, CARD, NCOLS )();
   // std::shared_ptr<SimilarityMatrix> simi( new MutInfoSimi(data, positions, MAX_POS, -1) );
-  // std::shared_ptr<Graph> g(new Graph(simi));  // 
+  // std::shared_ptr<Graph> g(new Graph(simi));  //
   Label2Index lab2Idx;
 
   auto graph = std::make_shared<samogwas::Graph>();
@@ -210,12 +210,12 @@ BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
     auto dataVec = std::make_shared<DataVec>(data->at(i));
     createObsNode(graph, v, dataVec, 12, lab2Idx);
   }
-  
-  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);   
+
+  auto criteria = std::make_shared<PositionCriteria>(std::make_shared<DataVec>(positions), MAX_POS);
   auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
   auto g = std::make_shared<louvain::Graph>( simi, false );
   louvain::Network network(g);
-  
+
   std::ofstream wg("../tests/data/clustering/graph.txt");
   auto sz = data->size();
   for ( int r = 0; r < sz; ++r) {
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
   BOOST_CHECK_EQUAL(modul_1st , modul_2nd);
 
   auto louv = std::make_shared<louvain::MethodLouvain>(simi);
-  auto clustering = louv->run();  
+  auto clustering = louv->run();
   for ( louvain::NodeIndex n = 0; n < clustering.nbrItems(); ++n ) {
     BOOST_CHECK_EQUAL( clustering.getLabel(n), n/5 ); // initially
   }
@@ -254,10 +254,10 @@ BOOST_AUTO_TEST_CASE( Test_Total_Modulariy_n ) {
     {0,0,0,0,0},
     {0,0,0,0,0},
     {0,0,0,0,0},
-    {0,0,0,0,0}, 
-    {0,0,0,0,0}       
+    {0,0,0,0,0},
+    {0,0,0,0,0}
   };
-  
+
   // SimilarityMatrix* simi = new Simi(sim);
   // std::shared_ptr<SimilarityMatrix> simi(new Simi(sim));
   auto simi = std::make_shared<Simi>(sim);
@@ -276,10 +276,10 @@ BOOST_AUTO_TEST_CASE( Test_Linked_Weights ) {
     {0,1,2,0,0},
     {1,0,0,3,0},
     {2,0,0,3,4},
-    {0,3,3,0,0}, 
-    {0,0,4,0,0}       
+    {0,3,3,0,0},
+    {0,0,4,0,0}
   };
-  
+
   // SimilarityMatrix* simi = new Simi(sim);
   // std::shared_ptr<SimilarityMatrix> simi(new Simi(sim));
   // std::shared_ptr<Graph> g(new Graph(simi));
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE( Test_Linked_Weights ) {
   auto simi = std::make_shared<Simi>(sim);
   auto g = std::make_shared<louvain::Graph>( simi, false );
   louvain::Network network(g);
-  
+
   BOOST_CHECK_EQUAL( g->linkedWeights(0), 3.0);
   BOOST_CHECK_EQUAL( g->linkedWeights(1), 4.0);
   BOOST_CHECK_EQUAL( g->linkedWeights(2), 9.0);
