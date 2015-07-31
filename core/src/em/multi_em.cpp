@@ -2,6 +2,10 @@
 #include "em/multi_em.hpp"
 #include "utils/matrix_utils.hpp"
 
+#ifdef _BOINC
+#include <boinc/boinc_api.h>
+#endif
+
 #define NOT_MISSING 1
 #define MISSING 0
 #define DEFAULT_VALUE -1
@@ -26,6 +30,11 @@ double MultiEM::run( const Graph& graph,
   CandidateModels candidateModels;  // vector to store different learners
 
   for (size_t it = 0; it < nbrRestarts; ++it) {
+#ifdef _BOINC
+	if (boinc_time_to_checkpoint()){
+	  boinc_checkpoint_completed();
+	}
+#endif
     //  joint distribution P(X,Z) = P(Z)*P(X_1 | Z)*...*P(X_n | Z), Z: latent variable
     plComputableObjectList jointDist = create_computable_objects(latentNode.variable, vars); // all distributions
     // randomly initialized

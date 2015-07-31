@@ -30,6 +30,10 @@
 #include "algo_properties.hpp"
 #include "fltm_main.hpp"
 
+#ifdef _BOINC
+#include <boinc/boinc_api.h>
+#endif
+
 using namespace samogwas;
 using ms = std::chrono::milliseconds;
 using get_time = std::chrono::steady_clock ;
@@ -45,10 +49,20 @@ int main( int argc, char** argv ) {
   auto positions = std::make_shared<PosVec>();
   auto ids = std::make_shared<PosVec>();
 
+#ifdef _BOINC
+  /* BOINC Initialisation */
+  BOINC_OPTIONS b_options;
+		
+  boinc_options_defaults(b_options);
+  b_options.multi_thread = true;
+
+  boinc_init_options(&b_options);  
+#endif
+
+
   Label2Index lab2Idx;
 
   load_labels_positions( *labels, *ids, *positions, options.inputLabelFile );
-
 
   auto mat = load_data_table(options.inputDataFile, options.matrixType);
    if (options.matrixType == 1) {
@@ -67,6 +81,12 @@ int main( int argc, char** argv ) {
      auto l2g = init_index_mapping( mat->size() );
      auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
      FLTM fltm(options.fltm_params);
+
+#ifdef _BOINC
+	 if (boinc_time_to_checkpoint()){
+	   boinc_checkpoint_completed();
+	 }
+#endif
 
      fltm.execute( algoClust, cardF, graph);
       auto end = get_time::now();
@@ -111,6 +131,10 @@ int main( int argc, char** argv ) {
        }
    }
    stats.close();
+
+#ifdef _BOINC
+   boinc_finish(0);
+#endif
 }
 
 char* current_date()

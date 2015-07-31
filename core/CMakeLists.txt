@@ -9,4 +9,4 @@ file(GLOB_RECURSE SOURCE "${PROJECT_SOURCE_DIR}/core/src/*.cpp" )
 
 
 add_library( lfltm ${SOURCE}  )
-target_link_libraries( lfltm  spl  )
+target_link_libraries( lfltm  spl boinc_api boinc )
