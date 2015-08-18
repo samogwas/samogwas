@@ -19,7 +19,7 @@ namespace samogwas
 {
 
 template <int I>
-struct Int2Type
+struct Int2TypeBis
 {
   enum { value = I };
 };
@@ -53,24 +53,24 @@ struct StatisticTest {
       int col = pheno[i];
       ++contingencyTab[row][col];
     };
-    return p_value( contingencyTab, Int2Type<test>() );    
+    return p_value( contingencyTab, Int2TypeBis<test>() );
   }
   
  private:  
   template<class ContingencyTableType>
-  double p_value( ContingencyTableType& mat, Int2Type<G2> ) const;
+  double p_value( ContingencyTableType& mat, Int2TypeBis<G2> ) const;
 
   template<class ContingencyTableType>
-  double p_value( ContingencyTableType& mat, Int2Type<G2_YATES> ) const;
+  double p_value( ContingencyTableType& mat, Int2TypeBis<G2_YATES> ) const;
   
   template<class ContingencyTableType>
-  double p_value( ContingencyTableType& mat, Int2Type<CHISQ> ) const;
+  double p_value( ContingencyTableType& mat, Int2TypeBis<CHISQ> ) const;
 
   template<class ContingencyTableType>
-  double p_value( ContingencyTableType& mat, Int2Type<CHISQ_YATES> ) const;
+  double p_value( ContingencyTableType& mat, Int2TypeBis<CHISQ_YATES> ) const;
   
   template<class ContingencyTableType>
-  double p_value( ContingencyTableType& mat, Int2Type<FISHER> ) const;
+  double p_value( ContingencyTableType& mat, Int2TypeBis<FISHER> ) const;
 
 };
 
@@ -82,7 +82,7 @@ namespace samogwas
 
 template< int Test >
 template<class ContingencyTableType>
-double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<G2> ) const {
+double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2TypeBis<G2> ) const {
   TestG2 g2;
   return g2.gtest(mat, false);
 }
@@ -90,14 +90,14 @@ double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<G2> ) c
 
 template< int Test >
 template<class ContingencyTableType>
-double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<G2_YATES> ) const {
+double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2TypeBis<G2_YATES> ) const {
   TestG2 g2;
   return g2.gtest(mat, true);
 }
 
 template< int Test >
 template<class ContingencyTableType>
-double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<CHISQ> ) const {
+double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2TypeBis<CHISQ> ) const {
   TestChiSquared chisq;
   return chisq.chisqTest(mat, false);
 }
@@ -105,14 +105,14 @@ double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<CHISQ> 
 
 template< int Test >
 template<class ContingencyTableType>
-double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<CHISQ_YATES> ) const {
+double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2TypeBis<CHISQ_YATES> ) const {
   TestChiSquared chisq;
   return chisq.chisqTest(mat, true);
 }
 
 template< int Test >
 template<class ContingencyTableType>
-double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2Type<FISHER> ) const {
+double StatisticTest<Test>::p_value( ContingencyTableType& mat, Int2TypeBis<FISHER> ) const {
   TestFisher fisher;
   return fisher.fisherTest(mat);
 }
