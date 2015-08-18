@@ -88,7 +88,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
             RandVar var("latent-"+std::to_string(verticesNb + i),
                         plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
             latentVector[i] = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
-            MultiEM em(params.nbrRestarts);
+            MultiEM em(params.nbrRestarts, params.seed);
             em.run( *graph, latentVector[i], params.emThres);
           }
         }
