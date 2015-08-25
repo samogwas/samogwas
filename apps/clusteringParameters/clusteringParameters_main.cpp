@@ -226,7 +226,12 @@ double getObservedEntropy( Cluster cluster, PtrMatrixPtr mat){
 
 double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat){
     //this array gives the probabilities for  each value and each variable
-    int distribution[cluster.size()][3] = {0};
+    int distribution[cluster.size()][3];
+    for (int i = 0 ; i < cluster.size() ; i++) {
+        for (int j = 0 ; j < 3 ; ++j) {
+            distribution[i][j] = 0;
+        }
+    }
     int nbObs = mat->at(0)->size();
     for (int i = 0 ; i < cluster.size() ; i++) {
         for (int j = 0 ; j < nbObs ; ++j) {
