@@ -191,7 +191,7 @@ BOOST_AUTO_TEST_CASE( adjusted_mi ) {
   BOOST_CHECK_EQUAL( contigency.size(), 3 );
   BOOST_CHECK_EQUAL( contigency[0].size(), 3 );
 
-  auto ami =  adjusted_mutual_information(pA, pB);
+  auto ami = adjusted_mutual_information(pA, pB);
   BOOST_CHECK_CLOSE_FRACTION( ami, 0.27502, 0.001 );
 }
 

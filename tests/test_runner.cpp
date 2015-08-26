@@ -4,3 +4,9 @@
 // #include <BoostTestTargetConfig.h>
 #include <boost/test/included/unit_test.hpp>
 #include <BoostTestTargetConfig.h>
+
+#include "global.hpp"
+
+namespace samogwas {
+ int number_of_threads = 3;
+}

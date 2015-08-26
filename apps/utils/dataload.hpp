@@ -26,6 +26,9 @@ typedef std::shared_ptr<RealVec> RealVecPtr;
 
 typedef std::vector<RealVecPtr> RealMatrix;
 typedef std::vector<int> Vec;
+typedef std::vector<Vec> Matrix;
+typedef std::shared_ptr<Matrix> MatrixPtr;
+
 typedef std::shared_ptr<Vec> VecPtr;
 typedef std::vector<VecPtr> PtrMatrix;
 typedef std::shared_ptr<PtrMatrix> PtrMatrixPtr;
@@ -80,13 +83,13 @@ inline RealMatrixPtr load_real_data_table( const std::string& infile,
   dt->reserve(10000);
 
   samogwas::CSVIterator<double> matrixLine(matrixFile);
-  
-  for( ; matrixLine != samogwas::CSVIterator<double>(); ++matrixLine ) {         
+
+  for( ; matrixLine != samogwas::CSVIterator<double>(); ++matrixLine ) {
     auto row = std::make_shared<RealVec>(matrixLine->size(), 0);
     for (unsigned i = 0; i < matrixLine->size(); ++i) {
       (*row)[i] = matrixLine->at(i);
     }
-    dt->push_back(row);    
+    dt->push_back(row);
   }
 
   dt->resize(dt->size());
@@ -94,7 +97,6 @@ inline RealMatrixPtr load_real_data_table( const std::string& infile,
 
   return dt;
 }
-
 
 inline unsigned number_of_lines( const std::string& inf) {
   unsigned int numLines = 0;
@@ -124,12 +126,12 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
     dt->reserve(nbrLines);
     samogwas::CSVIterator<int> matrixLine(matrixFile);
 
-    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
+    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {
       auto row = std::make_shared<Vec>(matrixLine->size(), 0);
       for (unsigned i = 0; i < matrixLine->size(); ++i) {
         (*row)[i] = matrixLine->at(i);
       }
-      dt->push_back(row);    
+      dt->push_back(row);
     }
     dt->resize(dt->size());
   } else {
@@ -138,25 +140,40 @@ inline PtrMatrixPtr load_data_table( const std::string& infile,
     auto nbrColumns = tmpLine->size();
     matrixFile.clear();
     matrixFile.seekg(0, std::ios_base::beg);
-    
     dt->reserve(nbrColumns);
     for (size_t i = 0; i < nbrColumns; ++i) { dt->push_back(std::make_shared<Vec>(nbrLines, 0)); }
 
     unsigned row = 0;
     samogwas::CSVIterator<int> matrixLine(matrixFile);
-    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {         
+    for( ; matrixLine != samogwas::CSVIterator<int>(); ++matrixLine ) {
       for (unsigned col = 0; col < matrixLine->size(); ++col) {
         dt->at(col)->at(row) = matrixLine->at(col);
       }
       ++row;
     }
-    dt->resize(dt->size());    
+    dt->resize(dt->size());
   }
-
-
   return dt;
 }
 
+
+MatrixPtr transpose_data_matrix(const PtrMatrix& mat) {
+  auto transposed_mat = std::make_shared<Matrix>();
+  auto nbrCols = mat.at(0)->size();
+  auto nbrRows = mat.size();
+  transposed_mat->reserve(nbrCols);
+  for (size_t i = 0; i < nbrCols; ++i) {
+    transposed_mat->push_back(Vec(nbrRows, 0));
+  }
+
+  for (size_t row = 0; row < nbrRows; ++row) {
+    for (size_t col = 0; col < nbrCols; ++col) {
+      transposed_mat->at(col).at(row) = mat.at(row)->at(col);
+    }
+  }
+
+  return transposed_mat;
+}
 
 
 

@@ -115,7 +115,7 @@ struct Node {
   Node& set_local_indexes( VarIter beg, VarIter endx, const Label2Index &label2Index);
   Node& set_local_indexes( const Label2Index &label2Index );
 
-  Node& set_level(const int level) { this->level = level; }
+  Node& set_level(const int level) { this->level = level; return *this; }
   
   Node& set_position();
   Node& set_position(const int position) { this->position = position; return *this; }
@@ -207,11 +207,11 @@ typedef std::pair<edge_iterator, edge_iterator> edge_iter_pair;
 
 inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<int>& dataVec) {
   std::vector<double>prob( variable.cardinality(), 0.0);
-  for (int i = 0; i < dataVec.size(); ++i) {
+  for (unsigned i = 0; i < dataVec.size(); ++i) {
     ++prob[dataVec[i]];
   }
 
-  for (int i = 0; i < variable.cardinality(); ++i) {
+  for (unsigned i = 0; i < variable.cardinality(); ++i) {
     prob[i] /= dataVec.size();
   }
 
@@ -223,8 +223,8 @@ inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<in
 
 inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<double>& cndDist) {
   std::vector<double>prob( variable.cardinality(), 0.0);
-  int N = cndDist.size() / variable.cardinality();
-  for (int i = 0; i < N; ++i) {
+  unsigned N = cndDist.size() / variable.cardinality();
+  for (unsigned i = 0; i < N; ++i) {
     for ( int j = 0; j < variable.cardinality(); ++j ) {
       prob[j] += cndDist[i*variable.cardinality()+j];
     }
@@ -232,7 +232,7 @@ inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<do
 
   double sum = 0.0;
 
-  for (int i = 0; i < variable.cardinality(); ++i) {
+  for (unsigned i = 0; i < variable.cardinality(); ++i) {
     sum += prob[i];
     prob[i] /= N;
 

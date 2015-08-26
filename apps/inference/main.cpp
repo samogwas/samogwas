@@ -1,17 +1,12 @@
-// /****************************************************************************************
-//  * File: fltm.cpp
-//  * Description: 
-//  * @author: siolag161 (thanh.phan@outlook.com)
-//  * @date: 09/07/2014
-//  ***************************************************************************************/
 
+#include "pl.h"
 #include <iostream>
-#include <thread>
+#include <map>
 #include <chrono>
 #include <memory>
-
 #include <fstream>
 #include <cstdio>
+#include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp> // to obtain the program's name
 
@@ -28,20 +23,26 @@
 
 #include "dataload.hpp"
 #include "clustering_config.hpp"
-#include "application_options.hpp"
-#include "fltm_main.hpp"
-#include "global.hpp"
+#include "inference/inference_engine.hpp"
+#include "app_options.hpp"
+#include "main.hpp"
 
-using namespace samogwas;
 using ms = std::chrono::milliseconds;
 using get_time = std::chrono::steady_clock ;
-typedef std::shared_ptr<PositionCriteria> PositionCriteriaPtr;
+using namespace samogwas;
+
+char* time_taken(unsigned long seconds);
+void infer_from_graph(Graph& graph, const PtrMatrix& mat, const int inferenceOption, std::ofstream& log);
 
 boost::filesystem::path outputDir( Options& progOpt );
 char* current_date();
 void saveDatLab( const Graph& g, const std::string& dat, const std::string& lab);
 
-int main( int argc, char** argv ) {
+
+/**
+ *
+ */
+int main(int argc, char* argv[]) {
   auto options = get_program_options( argc, argv );
   auto labels = std::make_shared<LabelVec>();
   auto positions = std::make_shared<PosVec>();
@@ -51,45 +52,42 @@ int main( int argc, char** argv ) {
 
   load_labels_positions( *labels, *ids, *positions, options.inputLabelFile );
 
-
   auto mat = load_data_table(options.inputDataFile, options.matrixType);
-   if (options.matrixType == 1) {
-     //*mat = Transpose(*mat)
-   }
-   auto clustAlgoConfs = read_clustering_algos( options.clustConf );
+  auto clustAlgoConfs = read_clustering_algos( options.clustConf );
 
-   FLTM fltm(options.fltm_params);
-   auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
+  FLTM fltm(options.fltm_params);
+  auto cardF = std::make_shared<LinearCardinality>(options.fltm_alpha, options.fltm_beta, options.fltm_maxCard);
 
-   auto outputPath = outputDir(options);
-   std::ofstream stats( (outputPath / "log.txt").string() );
-   auto start = get_time::now();
-   for ( auto cltConf: clustAlgoConfs ) {
-     auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
-     auto l2g = init_index_mapping( mat->size() );
-     auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
-     FLTM fltm(options.fltm_params);
+  auto start = get_time::now();
+  auto outputPath = outputDir(options);
+  boost::filesystem::create_directories(outputPath);
+  std::ofstream stats( (outputPath / "log.txt").string() );
 
-     fltm.execute( algoClust, cardF, graph);
-      auto end = get_time::now();
-      auto diff = end - start;
+  for (auto cltConf: clustAlgoConfs) {
+    auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
+    auto l2g = init_index_mapping( mat->size() );
+    auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
+    FLTM fltm(options.fltm_params);
+    fltm.execute( algoClust, cardF, graph);
+    auto end = get_time::now();
+    auto diff = end - start;
 
-      stats << "Parameter options : " << std::endl;
-      for (int i = 0 ; i < argc ; i++ )
-          stats << "\t" << argv[i] << std::endl;
+    stats << "Parameter options : " << std::endl;
+    for (int i = 0 ; i < argc ; i++ ) { stats << "\t" << argv[i] << std::endl; }
+    stats << "Running FLTM for "
+          << algoClust->name() << " on " << l2g->size() << " variables"
+          << std::endl;
+    stats << "Elapsed time is:  "
+          << std::chrono::duration_cast<ms>(diff).count()/1000
+          << " seconds" << std::endl;
 
-     stats << "Running FLTM for "
-           << algoClust->name() << " on " << l2g->size() << " variables"
-           << std::endl;
+    /** inference **/
+    infer_from_graph(*graph, *mat, options.inferenceOption, stats);
 
-     stats << "Elapsed time is:  "
-           << std::chrono::duration_cast<ms>(diff).count()/1000
-           << " seconds" << std::endl;
-     boost::filesystem::create_directories(outputPath);
-
-     if ( options.outType == 0 ||  options.outType == 2) {
-         std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
-         char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
+    /** saving results **/
+    if ( options.outType == 0 ||  options.outType == 2) {
+       std::string outBayesVertex, outBayesDist, outImpDat, outImpLab, outGraph;
+       char bayesVertex_fn[256], bayesDist_fn[256], imputedDat_fn[256], imputedLab_fn[256], graph_fn[256];
          sprintf(bayesVertex_fn, "fltm_%s_bayes.vertex", algoClust->name() );
          sprintf(bayesDist_fn, "fltm_%s_bayes.dist", algoClust->name() );
          sprintf(imputedDat_fn, "fltm_%s_imputed.dat", algoClust->name() );
@@ -125,6 +123,44 @@ char* current_date()
   strftime (buffer,80,"%Y_%m_%d_%H_%M_%S",timeinfo);
 
   return buffer;
+}
+
+char* time_taken(unsigned long total) {
+  unsigned minutes, seconds, hours;
+  minutes = total / 60;
+  seconds = total % 60;
+  hours = minutes / 60;
+  minutes = minutes % 60;
+  char* buffer = new char[120];
+  sprintf(buffer, "%d hours, %d minutes, %d seconds", hours, minutes, seconds);
+  return buffer;
+}
+
+
+void infer_from_graph(Graph& graph, const PtrMatrix& mat, const int inferenceOption, std::ofstream& stats) {
+
+  auto sample = transpose_data_matrix(mat);
+  auto start = get_time::now();
+  InferenceFLTM inference_engine(graph);
+  inference_engine.compile_evidence(inferenceOption); // compiling...
+
+  auto end = get_time::now();
+  auto diff = end - start;
+  stats << "model compilation takes: " << time_taken(std::chrono::duration_cast<ms>(diff).count()/1000) << std::endl;
+
+  start = get_time::now();
+
+  double complexity = inference_engine.model_complexity(*sample);
+  double log_llh = inference_engine.log_likelihood(*sample);
+  double bic_score = -2*log_llh + complexity; // formula of the bic score
+
+  stats << "complexity: " << complexity << std::endl;
+  stats << "log llh: " << log_llh << std::endl;
+  stats << "bic score: " << bic_score << std::endl;
+
+  end = get_time::now();
+  diff = end - start;
+  stats << "bic score computation takes: " << time_taken(std::chrono::duration_cast<ms>(diff).count()/1000) << std::endl;
 }
 
 boost::filesystem::path outputDir( Options& progOpt ) {

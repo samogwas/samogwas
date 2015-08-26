@@ -1,3 +1,4 @@
 add_subdirectory(fltm)
 add_subdirectory(gwas)
 add_subdirectory(clustering)
+add_subdirectory(inference)

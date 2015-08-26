@@ -60,7 +60,7 @@ struct CAST: public ClustAlgo {
     /// Initializes the cluster unAssignedCluster, grouping all the unassigned items.
     CAST_Cluster unAssignedCluster;
     auto nvars = simi->nbr_variables();
-    for ( int i = 0; i < nvars; ++i ) { // SimilarityMatrix has type SimiMatrix (for instance
+    for ( unsigned i = 0; i < nvars; ++i ) { // SimilarityMatrix has type SimiMatrix (for instance
       // MutInfoSimilarityMatrix)
       // @todo: remove direct access, and change the name
       unAssignedCluster.push_back(CAST_Item(i, 0.0) );    
@@ -109,8 +109,9 @@ struct CAST: public ClustAlgo {
   
  protected:
   // main parameter of CAST
-  double thresCAST;
   SimiPtr simi;
+  double thresCAST;
+
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -206,11 +207,11 @@ void CAST::updateClustersAffinity( CAST_Cluster& sourceCluster, CAST_Cluster& ta
 {
   const int itemGlobalIndex = sourceCluster.at(itemIdx).globalIndex;
   moveItemBetweenClusters( sourceCluster, targetCluster, itemIdx ); 
-  for (int i = 0; i < sourceCluster.size(); i++) {
+  for (unsigned i = 0; i < sourceCluster.size(); i++) {
     sourceCluster[i].affinity += simiCompute.compute( sourceCluster[i].globalIndex, itemGlobalIndex ); 
   }
 
-  for (int i = 0; i < targetCluster.size(); i++) {
+  for (unsigned i = 0; i < targetCluster.size(); i++) {
     targetCluster[i].affinity += simiCompute.compute( targetCluster[i].globalIndex, itemGlobalIndex ); 
   } 
 
@@ -233,7 +234,7 @@ template<typename Compare>
 const int ExtremumIndexAffinity::operator()( const std::vector<CAST_Item>& cluster, Compare comparat) const
 { 
   int result = 0; 
-  for (int idx = 1; idx < cluster.size(); idx++) {
+  for (unsigned idx = 1; idx < cluster.size(); idx++) {
     if ( comparat(cluster.at(idx).affinity, cluster.at(result).affinity) ) {
       result = idx;    
     }
