@@ -64,12 +64,12 @@ struct ClusterInformation {
 
 void writeResultsForTulip( samogwas::Clustering clustering, std::shared_ptr<samogwas::PosVec> positions, std::shared_ptr<samogwas::PosVec> ids, std::shared_ptr<samogwas::LabelVec> labels, std::string clusteringMethod);
 void printClusteringInformations( samogwas::Clustering clustering );
-ClusterInformation getClusteringInformations( samogwas::Clustering clustering, samogwas::SimiPtr diss );
-ClusterInformation getClusteringInformations( samogwas::Clustering clustering, samogwas::DissPtr diss );
+template <class T> ClusterInformation getClusteringInformations( samogwas::Clustering clustering, T diss );
 samogwas::Clustering computeConsensusCluster(std::vector<samogwas::Clustering> clusterings);
 double getObservedEntropy( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat);
 double getExpectedEntropy( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat);
 double getEpsilon(samogwas::Clustering clustering, samogwas::PtrMatrixPtr mat);
 samogwas::Clustering runClustering(samogwas::GraphPtr graph, samogwas::Local2GlobalPtr l2g, PositionCriteriaPtr criteria, int clusteringChoice);
+template <class T> double getRedundancyMeasure( samogwas::Clustering clustering, T distance );
 
 #endif // SAMOGWAS_CLUSTERINGPARAMETERS_MAIN_HPP

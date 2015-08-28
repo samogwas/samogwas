@@ -57,11 +57,6 @@ int main() {
 
     auto criteria = std::make_shared<PositionCriteria>( positions, 50000 );
 
-
-//    for (double epsi = 0.38 ; epsi <= 0.6 ;epsi +=1) {
-
-
-
     Clustering clusteringCAST = runClustering(graph, l2g, criteria,1);
     Clustering clusteringDBSCAN = runClustering(graph, l2g, criteria,2);
 //    Clustering clusteringLOUV = runClustering(graph, l2g, criteria,3);
@@ -69,12 +64,11 @@ int main() {
 
 //        clusteringCAST.erase(clusteringCAST.begin() + 53);
 
-
-//    std::vector<Clustering> clusterings;
-//    clusterings.push_back(clusteringCAST);
-//    clusterings.push_back(clusteringDBSCAN);
+    std::vector<Clustering> clusterings;
+    clusterings.push_back(clusteringCAST);
+    clusterings.push_back(clusteringDBSCAN);
 //    clusterings.push_back(clusteringLOUV);
-//    clusteringRES = computeConsensusCluster(clusterings);
+    clusteringRES = computeConsensusCluster(clusterings);
 //    std::cout << "RESU[";
 //      for (auto i: clusteringRES) {
 //        std::cout << "[";
@@ -84,27 +78,29 @@ int main() {
 //      }
 //    std::cout << "]"<< std::endl;
 
-    clusteringRES.push_back(Cluster());
-    for (int i=4;i < 300 ; i++) {
-    clusteringRES.begin()->push_back(i);
-    }
-    clusteringRES.begin()->push_back(1);
+//    clusteringRES.push_back(Cluster());
+//    for (int i=0;i < 300 ; i++) {
+//    clusteringRES.begin()->push_back(i);
+//    }
+    auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
+    simi->set_criteria(criteria);
+    std::cout << "gaston " << getRedundancyMeasure(clusteringRES,simi);
 
-    std::cout<< std::endl;
-    double obs = getObservedEntropy(*(clusteringRES.begin()), mat);
-    std::cout << obs <<std::endl;
-    double exp = getExpectedEntropy(*(clusteringRES.begin()), mat);
-    std::cout << exp <<std::endl;
-    std::cout << (exp - obs) /exp <<std::endl;
+//    std::cout<< std::endl;
+//    double obs = getObservedEntropy(*(clusteringRES.begin()), mat);
+//    std::cout << obs <<std::endl;
+//    double exp = getExpectedEntropy(*(clusteringRES.begin()), mat);
+//    std::cout << exp <<std::endl;
+//    std::cout << (exp - obs) /exp <<std::endl;
 
-        double epsilon = getEpsilon(clusteringCAST, mat);
-        std::cout << std::endl << "clusteringCAST : " << epsilon <<std::endl;
-        epsilon = getEpsilon(clusteringDBSCAN, mat);
-        std::cout << std::endl << "clusteringDBSCAN : " << epsilon <<std::endl;
+    double epsilon = getEpsilon(clusteringCAST, mat);
+    std::cout << std::endl << "clusteringCAST : " << epsilon <<std::endl;
+    epsilon = getEpsilon(clusteringDBSCAN, mat);
+    std::cout << std::endl << "clusteringDBSCAN : " << epsilon <<std::endl;
 //        epsilon = getEpsilon(clusteringLOUV, mat);
 //        std::cout << std::endl << "clusteringLOUV : " << epsilon <<std::endl;
-//        epsilon = getEpsilon(clusteringRES, mat);
-//        std::cout << std::endl << "clusteringRES : " << epsilon <<std::endl;
+        epsilon = getEpsilon(clusteringRES, mat);
+        std::cout << std::endl << "clusteringRES : " << epsilon <<std::endl;
 
 
 //        writeResultsForTulip(clusteringDBSCAN, positions, ids, labels, "DBSCAN");
@@ -115,27 +111,30 @@ Clustering runClustering(GraphPtr graph, Local2GlobalPtr l2g, PositionCriteriaPt
     Partition result;
     switch (clusteringChoice) {
         case 1: {
-            std::cout << "CAST clustering";
+            std::cout << "CAST clustering = ";
             auto simi = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
             simi->set_criteria(criteria);
             CAST cast( simi, 0.6 );
             result = cast();
+            std::cout << getRedundancyMeasure(result.to_clustering(),simi);
             break;
         }
         case 2: {
-            std::cout << "DBSCAN clustering";
+            std::cout << "DBSCAN clustering = ";
             auto dissimi = std::make_shared<GraphMutInfoDissimilarity>(graph, l2g);
             dissimi->set_criteria(criteria);
             DBSCAN dbscan(dissimi,2,0.38);
             result = dbscan();
+            std::cout << getRedundancyMeasure(result.to_clustering(),dissimi);
             break;
         }
         case 3: {
-            std::cout << "LOUVAIN clustering";
+            std::cout << "LOUVAIN clustering = ";
             auto simi2 = std::make_shared<GraphMutInfoSimilarity>(graph, l2g);
             simi2->set_criteria(criteria);
             louvain::MethodLouvain louv(simi2);
             result = louv();
+            std::cout << getRedundancyMeasure(result.to_clustering(),simi2);
             break;
         }
     }
@@ -152,16 +151,6 @@ Clustering runClustering(GraphPtr graph, Local2GlobalPtr l2g, PositionCriteriaPt
        std::cout << "],";
      }
     std::cout << "]"<< std::endl << std::endl;
-
-
-//        ClusterInformation info = getClusteringInformations(clustering,simi);
-
-//        std::cout<< "nbCluster = " << clustering.size()
-//                 << "\tnbSingletons = " << info.nbSingletons
-//                 << "\tclusterScore = "<< info.clusterScore
-//                 << "\tclusterScore = "<< info.mutualInformation
-//                 << std::endl;
-
 
     return clustering;
 }
@@ -182,10 +171,7 @@ double getEpsilon(Clustering clustering, PtrMatrixPtr mat) {
 //            std::cout << " -> " << (exp - obs) / exp  <<std::endl;
             epsilon +=  cluster.size() * (exp - obs) / exp;
             nb += cluster.size();
-        }/* else {
-            epsilon ++;
         }
-         nb += cluster.size();*/
     }
 
     return epsilon/nb;
@@ -257,33 +243,34 @@ double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat){
     return res;
 }
 
-
-ClusterInformation getClusteringInformations( Clustering clustering, SimiPtr diss ){
-    ClusterInformation info;
-
+template <class T>
+double getRedundancyMeasure( Clustering clustering, T distance ){
+    double score = 0;
+    int nbClusters = 0;
     for (std::vector<Cluster>::iterator it = clustering.begin() ; it != clustering.end() ; ++it) {
-        if (it->size() < 1)
-            printf("bizarre, un cluster vide..");
-        else if (it->size() == 1)
-             info.nbSingletons++;
-        else {
+        if (it->size() > 1) {
+            double scoreCluster = 0;
             for (std::vector<Index>::iterator itA = it->begin() ; itA != it->end() ; ++itA) {
-
                 for (std::vector<Index>::iterator itB = std::next(itA) ; itB != it->end() ; ++itB) {
-                    info.mutualInformation += diss->compute(*itA,*itB);
+                    if (((std::string) typeid(T).name()).find("Diss") != std::string::npos)
+                        scoreCluster += 1.0 - distance->compute(*itA,*itB);
+                    else
+                        scoreCluster += distance->compute(*itA,*itB);
                 }
             }
-            if (it->size() > 20) {
-                info.clusterScore += (it->size() - 20) * (it->size() - 20);
-                std::cout << it->size() << " ";
-            }
+            scoreCluster *= 2;
+            scoreCluster /= it->size() * (it->size() -1);
+            score += scoreCluster;
+
         }
+        nbClusters++;
     }
-    std::cout<<std::endl;
-    return info;
+    return score / nbClusters;
 }
 
-ClusterInformation getClusteringInformations( Clustering clustering, DissPtr diss ){
+
+template <class T>
+ClusterInformation getClusteringInformations( Clustering clustering, T diss ){
     ClusterInformation info;
 
     for (std::vector<Cluster>::iterator it = clustering.begin() ; it != clustering.end() ; ++it) {
@@ -293,6 +280,7 @@ ClusterInformation getClusteringInformations( Clustering clustering, DissPtr dis
              info.nbSingletons++;
         else {
             for (std::vector<Index>::iterator itA = it->begin() ; itA != it->end() ; ++itA) {
+
                 for (std::vector<Index>::iterator itB = std::next(itA) ; itB != it->end() ; ++itB) {
                     info.mutualInformation += diss->compute(*itA,*itB);
                 }
