@@ -21,6 +21,7 @@
 #include "dataload.hpp"
 
 #include <vector>
+#include <array>
 #include <string>
 #include <memory>
 
@@ -66,10 +67,14 @@ void writeResultsForTulip( samogwas::Clustering clustering, std::shared_ptr<samo
 void printClusteringInformations( samogwas::Clustering clustering );
 template <class T> ClusterInformation getClusteringInformations( samogwas::Clustering clustering, T diss );
 samogwas::Clustering computeConsensusCluster(std::vector<samogwas::Clustering> clusterings);
-double getObservedEntropy( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat);
+//double getObservedEntropy( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat);
+std::map<samogwas::VecT, double> getClusterToFrequencyMap( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat );
+double getObservedEntropy( std::map<samogwas::VecT, double> clusterToFrequencyMap);
+double getExpectedEntropy( std::map<samogwas::VecT, double> clusterToFrequencyMap );
 double getExpectedEntropy( samogwas::Cluster cluster, samogwas::PtrMatrixPtr mat);
-double getEpsilon(samogwas::Clustering clustering, samogwas::PtrMatrixPtr mat);
-samogwas::Clustering runClustering(samogwas::GraphPtr graph, samogwas::Local2GlobalPtr l2g, PositionCriteriaPtr criteria, int clusteringChoice);
+double getEpsilon(samogwas::Clustering clustering, samogwas::PtrMatrixPtr mat, int mode);
+samogwas::Clustering runClustering(samogwas::GraphPtr graph, samogwas::Local2GlobalPtr l2g, PositionCriteriaPtr criteria, int clusteringChoice, double epsilon=0.38);
 template <class T> double getRedundancyMeasure( samogwas::Clustering clustering, T distance );
+samogwas::Clustering randomSubClustering(samogwas::Clustering clustering);
 
 #endif // SAMOGWAS_CLUSTERINGPARAMETERS_MAIN_HPP
