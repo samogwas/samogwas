@@ -75,16 +75,14 @@ struct Node {
 
   typedef plComputableObjectList::const_iterator plCompIte;
   Node& set_marginal_distribution( plCompIte it) {
-
     auto dist = std::make_shared<plDistribution>(*it);
     return set_marginal_distribution(dist);
   }
+
   Node& set_marginal_distribution( DistPtr dist) {
-    if (this->variable.name() == "300") {
-      std::cout << "hahaha" << std::endl;
-    }
     this->marginalDist = dist; return *this;
   }
+
   Node& set_children_distributions( CondObsDistPtr dist);
   Node& set_children_distributions(plCompIte beg, plCompIte end);
 

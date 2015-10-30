@@ -33,7 +33,6 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
     size_t id = boost::lexical_cast<size_t>( (*vertexLine)[0] );
     int level =  boost::lexical_cast<int>( (*vertexLine)[2] );
     int cardinality = boost::lexical_cast<int>( (*vertexLine)[3] );
-    // printf("id: %lu, level: %d, card: %d, label: %s, pos: %d", id, level, cardinality, label.c_str(), position);
     std::string label = labPosMap[id].first;
     int position = labPosMap[id].second;
     create_graph_node( graph, cardinality, label, position, level );

@@ -4,21 +4,30 @@
 namespace samogwas {
 
 struct InferenceFLTM {
-  InferenceFLTM(const Graph& g);
+ public:
+  virtual void compile_evidence(const int option) = 0;
+  // virtual double log_likelihood(const std::vector<int>& sample) const = 0;
+  virtual double log_likelihood(const std::vector<std::vector<int>>& sample) const = 0;
+  virtual double bic_score(const std::vector<std::vector<int>>& sample,
+                   bool recompile = false, int option = 0) = 0;
 
-  void compile_evidence(const int option);
+  virtual double model_complexity(const std::vector<std::vector<int>>& sample) const = 0;
 
-  double log_likelihood(const std::vector<int>& sample) const;
-  //double log_likelihood(const std::vector<std::vector<int>>& sample) const;
-  double log_likelihood(const std::vector<std::vector<int>>& sample) const;
+  virtual long number_of_free_parameters() const = 0;
+};
 
-  double bic_score(const std::vector<std::vector<int>>& sample,
+struct MCMCInferenceFLTM: public InferenceFLTM {
+ public:
+  MCMCInferenceFLTM(const Graph& g);
+
+  virtual void compile_evidence(const int option);
+  virtual double log_likelihood(const std::vector<std::vector<int>>& sample) const;
+  virtual double bic_score(const std::vector<std::vector<int>>& sample,
                    bool recompile = false, int option = 0);
 
   virtual double model_complexity(const std::vector<std::vector<int>>& sample) const;
 
- private:
-  long number_of_free_parameters() const;
+  virtual long number_of_free_parameters() const;
 
  private:
   plJointDistribution jointDist;
@@ -26,5 +35,36 @@ struct InferenceFLTM {
   plDistribution ovJointDist;
 
 };
+
+/**
+ *
+ */
+struct JTInferenceFLTM: public InferenceFLTM {
+
+ public:
+  JTInferenceFLTM(const Graph& g);
+
+  virtual void compile_evidence(const int option);
+  virtual double log_likelihood(const std::vector<std::vector<int>>& sample) const;
+  virtual double bic_score(const std::vector<std::vector<int>>& sample,
+                   bool recompile = false, int option = 0);
+
+  virtual double model_complexity(const std::vector<std::vector<int>>& sample) const;
+
+  virtual long number_of_free_parameters() const;
+
+ private:
+  plJointDistribution jointDist;
+  Variables observedVariables;
+
+  plJtDistribution ovJointDist;
+  plJunctionTree jt;
+
+
+};
+
+/******************************************************************************************/
+
+
 
 }
