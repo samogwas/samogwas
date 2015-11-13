@@ -46,6 +46,7 @@ struct FLTM {
   typedef plSymbol RandVar;
   typedef std::vector<int> Local2Global;
   typedef std::shared_ptr<Local2Global> Local2GlobalPtr;
+  typedef std::shared_ptr<Node> NodePtr;
 
   FLTM( FLTM_Params &p ): params(p) { }
   void execute( ClustAlgoPtr clt, CardFuncPtr cardF, GraphPtr graph );
@@ -53,7 +54,7 @@ struct FLTM {
  private:
   int number_non_singletons( const Clustering &clustering );
   bool accept_latent_variable(const Graph&, Node& node, double qualityThres );
-  Node create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster );
+  std::shared_ptr<Node> create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster );
   Node& add_latent_node( Graph& graph, Node& n );
   Label2Index create_index_map( const Graph& graph );
   Local2GlobalPtr create_local_to_global_map(const Graph& graph);

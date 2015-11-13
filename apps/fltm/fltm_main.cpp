@@ -67,16 +67,19 @@ int main( int argc, char** argv ) {
    for ( auto cltConf: clustAlgoConfs ) {
      auto graph = init_graph( *mat,  lab2Idx, options.fltm_params.cardinality, *labels, *positions );
      auto l2g = init_index_mapping( mat->size() );
-     auto algoClust = read_clustering_algo( cltConf, graph, l2g, positions, options.fltm_params.maxDist);
+     auto algoClust = read_clustering_algo(cltConf, graph, l2g, positions);
+
+     options.fltm_params.maxDist = boost::lexical_cast<int>(cltConf["max_pos"]);
      FLTM fltm(options.fltm_params);
 
      fltm.execute( algoClust, cardF, graph);
-      auto end = get_time::now();
-      auto diff = end - start;
+     auto end = get_time::now();
+     auto diff = end - start;
 
-      stats << "Parameter options : " << std::endl;
-      for (int i = 0 ; i < argc ; i++ )
-          stats << "\t" << argv[i] << std::endl;
+     stats << "Parameter options : " << std::endl;
+     for (int i = 0 ; i < argc ; i++ ) {
+       stats << "\t" << argv[i] << std::endl;
+     }
 
      stats << "Running FLTM for "
            << algoClust->name() << " on " << l2g->size() << " variables"

@@ -7,12 +7,10 @@
 #endif
 
 #include <fstream>
-#include "global.hpp"
 
 
 namespace samogwas {
 
-//int number_of_threads;
 
 void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph ) {
   auto lab2Idx = create_index_map(*graph);
@@ -26,12 +24,13 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
       clustAlgo->set_measure( graph, l2g, criteria );
     }
 
+   
     BOOST_LOG_TRIVIAL(trace) << "FLTM - step[" << step << "] over " << params.nbrSteps;
     BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
-                             << " on " << l2g->size();
+                             << " on " << l2g->size() << " with maxDist: " << params.maxDist;
     auto partition = clustAlgo->run();
     auto clustering = partition.to_clustering();
-    // auto SIZE = l2g->size();
+    auto SIZE = l2g->size();
     int nonSingletons =  number_non_singletons(clustering);
     BOOST_LOG_TRIVIAL(trace) << "to obtain " << clustering.size() << " clusters with " << nonSingletons << " non-singletons clusters" ;
     if ( nonSingletons == 0 ) {
@@ -40,70 +39,69 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     }
 
     std::vector<int> l2gTemp(*l2g);
-    Local2Global().swap(*l2g);
+    Local2Global().swap(*l2g);  
     int nbrGoodClusters = 0;
 
 //      loop without any parallelization
 
-//    for ( auto &cluster: clustering ) {
-//      if ( cluster.size() > 1 ) {
-//        //numClust++;
-//        RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
-//                    plIntegerType(0, cardFunc->compute(cluster) - 1 ));
-//        Node latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, cluster);
-//        MultiEM em(params.nbrRestarts);
-//        em.run( *graph, latentNode, params.emThres);
-//        if ( accept_latent_variable( *graph, latentNode, params.latentVarQualityThres) ) {
-//          nbrGoodClusters++;
-//          add_latent_node( *graph, latentNode );
-//          update_index_map( *l2g, l2gTemp, latentNode );
-//          lab2Idx[ latentNode.getLabel() ] = latentNode.index;
+   // for ( auto &cluster: clustering ) {
+   //   if ( cluster.size() > 1 ) {
+   //     //numClust++;
+   //     RandVar var("latent-"+boost::lexical_cast<std::string>(boost::num_vertices(*graph)),
+   //                 plIntegerType(0, cardFunc->compute(cluster) - 1 ));
+   //     std::shared_ptr<Node> latentNode = create_latent_node( graph, var, l2gTemp, lab2Idx, cluster);
+   //     MultiEM em(params.nbrRestarts);
+   //     em.run( *graph, *latentNode, params.emThres);
+   //     if ( accept_latent_variable( *graph, *latentNode, params.latentVarQualityThres) ) {
+   //       nbrGoodClusters++;
+   //       add_latent_node( *graph, *latentNode );
+   //       update_index_map( *l2g, l2gTemp, *latentNode );
+   //       lab2Idx[ latentNode->getLabel() ] = latentNode->index;
 
-//          for ( auto item: cluster ) {
-//            // l2g.push_back( currentL2G.at(item) );
-//            boost::add_edge( latentNode.index, l2gTemp.at(item), *graph);
-//          }
+   //       for ( auto item: cluster ) {
+   //         // l2g.push_back( currentL2G.at(item) );
+   //         boost::add_edge( latentNode->index, l2gTemp.at(item), *graph);
+   //       }
             
-//        } else {
-//          update_index_map( *l2g, l2gTemp, cluster);
-//        }
-//      } else {
-//        update_index_map( *l2g, l2gTemp, cluster);
-//      }
-//    }
+   //     } else {
+   //       update_index_map( *l2g, l2gTemp, cluster);
+   //     }
+   //   } else {
+   //     update_index_map( *l2g, l2gTemp, cluster);
+   //   }
+   // }
 
 
 //      loop with working parallelization
 
        #ifdef _OPENMP
            //sets the max number of threads we can use
-           // omp_set_num_threads(params.jobsNumber);
-           omp_set_num_threads(number_of_threads);
+           omp_set_num_threads(params.jobsNumber);
        #endif
        //the array of shared resources in which the differents threads write
-       Node latentVector[nonSingletons];
+  	std::shared_ptr<Node> latentVector[clustering.size()];
 
        //the parallelizable section
        #pragma omp parallel for schedule(dynamic)
-       for ( unsigned i = 0 ; i < clustering.size() ; ++i) {
+       for ( int i = 0 ; i < clustering.size() ; ++i) {
           if ( clustering[i].size() > 1 ) {
             RandVar var("latent-"+std::to_string(verticesNb + i),
                         plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
             latentVector[i] = create_latent_node( graph, var, l2gTemp, lab2Idx, clustering[i]);
-            MultiEM em(params.nbrRestarts);
-            em.run( *graph, latentVector[i], params.emThres);
-          }
+            MultiEM em(params.nbrRestarts, params.seed);
+            em.run( *graph, *latentVector[i], params.emThres);
+  }
         }
 
         //the non parallelizable section
-        for ( unsigned i = 0 ; i < clustering.size() ; ++i) {
-            if (clustering[i].size() > 1 && accept_latent_variable( *graph, latentVector[i], params.latentVarQualityThres)) {
+        for ( int i = 0 ; i < clustering.size() ; ++i) {
+            if (clustering[i].size() > 1 && accept_latent_variable( *graph, *latentVector[i], params.latentVarQualityThres)) {
                   nbrGoodClusters++;
-                  add_latent_node( *graph, latentVector[i] );
-                  update_index_map( *l2g, l2gTemp, latentVector[i] );
-                  lab2Idx[ latentVector[i].getLabel() ] = latentVector[i].index;
+                  add_latent_node( *graph, *latentVector[i] );
+                  update_index_map( *l2g, l2gTemp, *latentVector[i] );
+                  lab2Idx[ latentVector[i]->getLabel() ] = latentVector[i]->index;
                   for ( auto item: clustering[i] ) {
-                    boost::add_edge( latentVector[i].index, l2gTemp.at(item), *graph);
+                    boost::add_edge( latentVector[i]->index, l2gTemp.at(item), *graph);
                   }
             } else {
                 update_index_map( *l2g, l2gTemp, clustering[i]);
@@ -170,9 +168,8 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
 }
 
 int FLTM::number_non_singletons( const Clustering &clustering ) {
-  int // singletonCount = 0,
-      nonSingletons = 0; // reset ount
-  for ( auto clt: clustering ) {
+  int singletonCount = 0, nonSingletons = 0; // reset ount
+  for ( auto clt: clustering ) {      
     if ( clt.size() <= 1) {
     } else {
       nonSingletons++;
@@ -187,18 +184,18 @@ bool FLTM::accept_latent_variable(const Graph& g, Node& node, double qualityThre
   return (q >= qualityThres);
 }
 
-Node FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
-  Node newNode;
+std::shared_ptr<Node> FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
+    NodePtr newNode = std::make_shared<Node>();
   plVariablesConjunction vars;
   for (auto idx: cluster) {
     auto globalIdx = l2g[idx];
     Node& n = (*graph)[globalIdx];
     vars ^= n.variable;  
   }
-  newNode.set_graph(graph);
-  newNode.set_variable(var);
+  newNode->set_graph(graph);
+  newNode->set_variable(var);
 
-  newNode.set_local_indexes( vars.begin(), vars.end(), l2i);
+  newNode->set_local_indexes( vars.begin(), vars.end(), l2i);
   return newNode;  
 }
 
@@ -258,6 +255,5 @@ CriteriaPtr FLTM::create_current_criteria( Graph& graph, Local2Global& l2g, unsi
 }
 
 }
-
 
 

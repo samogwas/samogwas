@@ -67,7 +67,7 @@ inline Options get_program_options(int argc, char** argv) {
         #endif
 
         ("clustConf,c", po::value<std::string>(&result.clustConf)->default_value("../example/inputs/clustering.cfg"), "Clust Config File. Default: ../example/inputs/clustering.cfg")
-        ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist. Default: 50000 bp")
+        // ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist. Default: 50000 bp")
 
         ///////////////////////////////////////////////////////////////////////////
         ("f_alpha,a", po::value<double>(&result.fltm_alpha)->default_value(0.5), "FLTM alpha. Default 0.5")

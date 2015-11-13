@@ -65,11 +65,11 @@ std::vector<AlgoConf> read_clustering_algos(std::string cPath ) {
     if( v.first == "algorithm" ) {
       auto algo_cfg = v.second;
       conf["name"] = algo_cfg.get<std::string>("name");
-
       for( const ptree::value_type &pam: algo_cfg.get_child("parameters") ) {
         auto dat = pam.second.data();
         auto key = pam.second.get<std::string>("<xmlattr>.name");
         conf[key] = dat;
+        std::cout << key << " : " << dat << std::endl << std::endl;
       }
     }
     rs.push_back(conf);
@@ -81,10 +81,12 @@ std::vector<AlgoConf> read_clustering_algos(std::string cPath ) {
 inline ClustAlgoPtr read_clustering_algo( AlgoConf& conf,
                                           GraphPtr graph,
                                           Local2GlobalPtr l2g,
-                                          PosVecPtr positions,
-                                          const unsigned MAX_POS
+                                          PosVecPtr positions
                                           ) {
   ClustAlgoPtr algorithm;
+  std::cout << "reading algo: \n";
+  int MAX_POS = boost::lexical_cast<int>(conf["max_pos"]);
+  std::cout << "max_pos: " << MAX_POS << std::endl;
   if ( conf["name"] == "DBSCAN" ) {
     int minPts; double eps;
     minPts = boost::lexical_cast<int>(conf["minPts"]);
@@ -105,7 +107,7 @@ inline ClustAlgoPtr read_clustering_algo( AlgoConf& conf,
   } else if ( conf["name"] == "LOUVAIN" ) {
 
   }
-
+  std::cout << "done algo: " << algorithm->name() << std::endl;
   return algorithm;
 }
 
