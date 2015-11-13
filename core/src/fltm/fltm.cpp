@@ -185,7 +185,7 @@ bool FLTM::accept_latent_variable(const Graph& g, Node& node, double qualityThre
 }
 
 std::shared_ptr<Node> FLTM::create_latent_node( GraphPtr graph, plSymbol& var, Local2Global& l2g, Label2Index& l2i, Cluster& cluster ) {
-    NodePtr newNode = std::make_shared<Node>();
+  std::shared_ptr<Node> newNode = std::make_shared<Node>();
   plVariablesConjunction vars;
   for (auto idx: cluster) {
     auto globalIdx = l2g[idx];
