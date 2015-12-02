@@ -1,10 +1,10 @@
- 
-#include "clustering/louvain/community.hpp"
 
+#include <assert.h>     /* assert */
+
+#include "clustering/louvain/community.hpp"
 #include "clustering/louvain/graph.hpp"
 #include "clustering/clustering.hpp"
 
-#include <assert.h>     /* assert */
 
 namespace samogwas
 {
@@ -63,11 +63,6 @@ std::vector<NodeIndex> Network::membersOf( const CommunityIndex& comm ) const {
   return members;
 }
 
-// /**
-//  */
-// double Network::weight2community( const NodeIndex& node, const CommunityIndex& target ) const {
-  
-// }
 
 /**
  */
@@ -80,7 +75,7 @@ double Network::modularity() {
 
   for ( auto comm: communities() ) {
     curr_modularity += in_weights[comm] / tw2 - (tot_linked_weights[comm]/tw2)*(tot_linked_weights[comm]/tw2);
-  }  
+  }
   return curr_modularity;
 }
 
@@ -94,7 +89,7 @@ void Network::moveNode( const NodeIndex& node, const CommunityIndex& target,
   removeNode(node, old_shared_weights);
   addNode(node, target, new_shared_weights);
 }
- 
+
 
 /**
  */
@@ -105,7 +100,7 @@ void Network::moveNode( const NodeIndex& node, const CommunityIndex& target ) {
   double new_shared_weights = sharedWeights( node, target );
   moveNode( node, target, old_shared_weights, new_shared_weights);
 }
-  
+
 double Network::modularityGain( const NodeIndex& node,
                                 const CommunityIndex& comm,
                                 const double shared_weights) const
@@ -176,10 +171,8 @@ void Network::removeNode( const NodeIndex& node,
       removeLabel(comm);
     }
 
-    double tmp = tot_linked_weights[comm];
     tot_linked_weights[comm] -= linkedWeights(node);
     in_weights[comm] -=  2*shared_weights + graph->selfLoopWeight(node);
-    // printf("removing %d from %d, old_tot: %f, new_tot: %f \n", node, comm, tmp, tot_linked_weights[comm]);
   }
 }
 
@@ -189,18 +182,11 @@ void Network::addNode(const NodeIndex& node,
                       const CommunityIndex& comm,
                       const double shared_weights) {
   if ( comm >= 0 && comm < nbrNodes() ) {
-    double tmp = in_weights[comm], loop_1 = graph->selfLoopWeight(node);
     setCommunity(node,comm);
     community_member_counts[comm]++;
     tot_linked_weights[comm] += linkedWeights(node);
     in_weights[comm] += 2*shared_weights + graph->selfLoopWeight(node);
-    double loop_2 = graph->selfLoopWeight(node);;
-    // if (community_member_counts[comm]==1) {
-    //   printf("adding %d -> %d, with shared_weights = %f -> %f, loop: %f->%f, in_w: %f\n", node, comm, tmp, 
-    //          shared_weights, loop_1, loop_2, in_weights[comm]);
-      
-    // }
-  }  
+  }
 }
 
 
@@ -225,7 +211,7 @@ double Network::interCommunityWeight( const CommunityIndex& i,
   for ( auto vp = graph->allLinks(); vp.first != vp.second; ++vp.first ) {
     NodeIndex l = graph->source(*vp.first), r = graph->target(*vp.first);
     CommunityIndex c_l = getCommunity(l), c_r = getCommunity(r);
-    if ( c_l == i && c_r == j || c_l == j && c_r == i ) { 
+    if ( c_l == i && c_r == j || c_l == j && c_r == i ) {
       inter_weight += graph->weight(l,r);
     }
   }

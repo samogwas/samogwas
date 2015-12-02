@@ -57,7 +57,6 @@ inline void load_labels_positions( LabelVec& labels,
   std::vector<std::string>().swap(labels); //lab2Pos.clear();
   std::vector<int>().swap(positions); //.clear();
   CSVIterator<std::string> labPosLine(labPosFile);// ++labPosLine;
-  int id = 0;
   for( ; labPosLine != CSVIterator<std::string>(); ++labPosLine ) {
     std::string label =  (*labPosLine)[2];
     int position = boost::lexical_cast<int>( (*labPosLine)[3]);
@@ -93,8 +92,6 @@ inline RealMatrixPtr load_real_data_table( const std::string& infile,
   }
 
   dt->resize(dt->size());
-  size_t ncols = dt->empty() ? 0 : (*dt)[0]->size();
-
   return dt;
 }
 

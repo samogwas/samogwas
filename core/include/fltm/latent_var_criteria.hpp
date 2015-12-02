@@ -13,8 +13,6 @@
 
 namespace samogwas
 {
-
-
 /** This functor computes (estimates) the average mutual information between the latent variable
  * and its children. The functor simply returns sum(scaledMutInfo) / nbrOfChildren.
  *
@@ -23,7 +21,6 @@ struct AverageMutInfo {
   static double compute( const Graph& graph, const Node& latentNode ) {
     auto childIndexes = latentNode.get_children_global_indexes();
     ComputeNodeMutInfo mutinfo;
-  
     double totalSum = 0.0;
     for ( auto idx: childIndexes ) {
       const Node& cNode = graph[idx];
@@ -35,7 +32,7 @@ struct AverageMutInfo {
       double minE = std::min(eA,eB);
       if (minE != 0) {
         totalSum += mutInfo / minE;
-      }           
+      }
     }
     return totalSum / childIndexes.size();
   }

@@ -81,7 +81,7 @@ inline Options get_program_options(int argc, char** argv) {
     }
 
   }
-  catch(std::exception e)
+  catch(std::exception& e)
   {
     std::cout << "Unhandled Exception reached the top of main: "
               << e.what() << ", application will now exit" << std::endl;

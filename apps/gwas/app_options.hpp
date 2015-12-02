@@ -25,16 +25,11 @@ struct Options {
   std::string inputPheno;
   int chromosome;
 
-  // std::string graphFile;
   std::string bayesVertices;
   std::string bayesDist;
-
-  std::string mappingFile;
   std::string outputDir;
 
   char separator;
-
-  // int task;
   int stat_test;
 };
 
@@ -98,7 +93,7 @@ inline GWAS_Options get_gwas_program_options(int argc, char** argv) {
     }
 
   }
-  catch(std::exception e)
+  catch(std::exception& e)
   {
     std::cout << "Unhandled Exception reached the top of main: "
               << e.what() << ", application will now exit" << std::endl;

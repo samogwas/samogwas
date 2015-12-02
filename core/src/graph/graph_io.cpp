@@ -25,7 +25,9 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
   BOOST_LOG_TRIVIAL(trace) << "begin loading label..." << std::endl;
   LabPosMap labPosMap = readLabPos(labPosFileName);
   BOOST_LOG_TRIVIAL(trace) << "end loading label..." << std::endl;
-  std::ifstream vertexFile(vertexFileName.c_str()), distributionFile(distributionFileName.c_str()), dataFile(dataFileName.c_str());
+  std::ifstream vertexFile(vertexFileName.c_str()),
+      distributionFile(distributionFileName.c_str());
+
   CSVIterator<std::string> vertexLine(vertexFile); ++vertexLine; // skips header.
   BOOST_LOG_TRIVIAL(trace) << "begin loading vertices\n";
 

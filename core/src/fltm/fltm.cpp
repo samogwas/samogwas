@@ -14,7 +14,7 @@ namespace samogwas {
 
 void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph ) {
   auto lab2Idx = create_index_map(*graph);
-  Local2GlobalPtr l2g = create_local_to_global_map(*graph);  
+  Local2GlobalPtr l2g = create_local_to_global_map(*graph);
   auto criteria = clustAlgo->get_criteria();
   int verticesNb = boost::num_vertices(*graph);
 
@@ -24,7 +24,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
       clustAlgo->set_measure( graph, l2g, criteria );
     }
 
-   
+
     BOOST_LOG_TRIVIAL(trace) << "FLTM - step[" << step << "] over " << params.nbrSteps;
     BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
                              << " on " << l2g->size() << " with maxDist: " << params.maxDist;
@@ -168,8 +168,8 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
 }
 
 int FLTM::number_non_singletons( const Clustering &clustering ) {
-  int singletonCount = 0, nonSingletons = 0; // reset ount
-  for ( auto clt: clustering ) {      
+  int nonSingletons = 0; // reset ount
+  for ( auto clt: clustering ) {
     if ( clt.size() <= 1) {
     } else {
       nonSingletons++;

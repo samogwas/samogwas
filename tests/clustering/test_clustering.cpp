@@ -138,10 +138,6 @@ BOOST_AUTO_TEST_CASE( test_Louvain_1 )
 struct Simi: public GraphSimilarity {
   Simi(std::vector< std::vector<double> > d): sim(d) {}
 
-  virtual size_t nbrVariables() const {
-    return sim.size();
-  }
-
   virtual size_t nbr_variables() const { return sim.size(); }
   virtual double compute( const int varA, const int varB ) { return sim[varA][varB]; }
   virtual void invalidate_entropy_cache() {}

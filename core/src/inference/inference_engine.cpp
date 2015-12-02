@@ -142,21 +142,20 @@ VarIndicesByLevel get_var_indices_by_level( const samogwas::Graph& graph ) {
   return indices;
 }
 
-/////////////////////////////////////////////////////////
-VarIndices get_marginal_var_indices( const samogwas::Graph& graph ) {
-  int max_level = get_max_level(graph);
-  VarIndices indices;
-  for ( auto vp = boost::vertices(graph); vp.first != vp.second; ++vp.first ) {
-    auto vertex = *vp.first;
-    auto &node = graph[vertex];
-    int level = node.level;
-    if (level == max_level) {
-      indices.push_back(vertex);
-    }
-  }
+// VarIndices get_marginal_var_indices( const samogwas::Graph& graph ) {
+//   int max_level = get_max_level(graph);
+//   VarIndices indices;
+//   for ( auto vp = boost::vertices(graph); vp.first != vp.second; ++vp.first ) {
+//     auto vertex = *vp.first;
+//     auto &node = graph[vertex];
+//     int level = node.level;
+//     if (level == max_level) {
+//       indices.push_back(vertex);
+//     }
+//   }
 
-  return indices;
-}
+//   return indices;
+// }
 
 int get_max_level(const Graph& graph) {
   int max_level = -1;
