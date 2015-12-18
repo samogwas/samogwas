@@ -4,47 +4,45 @@
 #include <boost/graph/graph_traits.hpp>
 
 #include "clustering/clustering.hpp" // AlgoClust
-// #include "clustering/partition.hpp"  // Partition, Clustering
-// #include "distance/comparable.hpp"
 #include "clustering/louvain/graph.hpp"
 
 
 namespace samogwas
 {
 namespace louvain {
-  
-Graph::Graph( WeightMatPtr l, bool keep_self_loops): weights(l), total_weights(0.0), nbr_links(0) {
+
+Graph::Graph( WeightMatPtr l, bool keep_self_loops): weights(l), nbrLinks(0), total_weights(0.0) {
   initialize(keep_self_loops);
-  
+
 }
 
 void Graph::initialize(bool keep_self_loops) {
-  
-  linked_weights = std::make_shared<Weights>(nbrNodes(), -1);
-  self_loops = std::make_shared<Weights>(nbrNodes(), 0.0);
-  
-  for ( int i = 0; i < this->nbrNodes(); ++i) {      
-    addNode();      
+
+  linked_weights = std::make_shared<Weights>(nbr_nodes(), -1);
+  self_loops = std::make_shared<Weights>(nbr_nodes(), 0.0);
+
+  for ( unsigned i = 0; i < this->nbr_nodes(); ++i) {
+    addNode();
   }
-  
-  for ( int i = 0; i < this->nbrNodes(); ++i) {
+
+  for ( unsigned i = 0; i < this->nbr_nodes(); ++i) {
     if (keep_self_loops) {
       (*self_loops)[i] = this->weights->compute(i,i);
     }
     total_weights += selfLoopWeight(i)/2;
 
-    for ( int j = i+1; j < this->nbrNodes(); ++j ) {
+    for ( unsigned j = i+1; j < this->nbr_nodes(); ++j ) {
       Weight w = this->weights->compute(i,j);
-      if (w > 0) { 
+      if (w > 0) {
         addLink(i,j,w);
         total_weights += w;
-        nbr_links++;
+        nbrLinks++;
       }
     }
   }
 
 }
-  
+
 
 /*
  */
@@ -73,8 +71,8 @@ Graph::OutLinkIteRng Graph::linksFrom( const NodeIndex& i ) const {
 /**
  *
  */
-size_t Graph::nbrLinks() const {
-  return nbr_links;
+size_t Graph::nbr_links() const {
+  return nbrLinks;
 }
 
 Weight Graph::totalWeights() {
@@ -84,12 +82,12 @@ Weight Graph::totalWeights() {
       total_weights += 2*weight(*vp.first); //linkWeightMap[*vp.first];
     }
 
-    for ( int i = 0; i < this->nbrNodes(); ++i)
+    for (unsigned i = 0; i < this->nbr_nodes(); ++i)
       total_weights += selfLoopWeight(i) / 2;
-  }  
+  }
+
   return total_weights;
 }
-
 
 
 }} // namespace

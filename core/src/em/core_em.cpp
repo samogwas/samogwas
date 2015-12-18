@@ -50,16 +50,15 @@ std::shared_ptr<MultiMixtureModel> MultiMixtureEM::run_preset(const Graph& graph
     normalize_vals(this->model->delta->at(i));
   }
 
-  double curr_llk = 0.0, prev_llh = threshold;
+  double prev_llh = threshold;
   for (unsigned step = 0; step < iterMax; ++step) {
     E_Step(dataTable);
     M_Step(dataTable);
-    curr_llk = this->log_likelihood(dataTable, true);
+    double curr_llk = this->log_likelihood(dataTable, true);
     if (std::abs(curr_llk - prev_llh) < std::abs(threshold)) {
       break;
     }
     prev_llh = curr_llk;
-    printf("step: %d, %f\n", step, curr_llk);
   }
   return this->model;
 }
@@ -76,11 +75,11 @@ std::shared_ptr<MultiMixtureModel> MultiMixtureEM::run(const Graph& graph,
   std::shared_ptr<MultiMixtureModel> max_model;
   init_params(latentVar, vars, nbrElems);
 
-  double curr_llk = 0.0, prev_llh = threshold;
+  double prev_llh = threshold;
   for (unsigned step = 0; step < iterMax; ++step) {
     E_Step(dataTable);
     M_Step(dataTable);
-    curr_llk = this->log_likelihood(dataTable, true);
+    double curr_llk = this->log_likelihood(dataTable, true);
     if (std::abs(curr_llk - prev_llh) < std::abs(threshold)) {
       break;
     }
@@ -282,13 +281,12 @@ void MultiMixtureModel::print() const {
   std::cout << std::endl;
 
   std::cout << "conditional:";
-  for (size_t y = 0; y < latentCard; ++y) {
+  for (unsigned y = 0; y < latentCard; ++y) {
     std::cout << "\nZ = " << y << ": \n";
     for (unsigned X = 0; X < nbrChild; ++X) {
       auto xCard = this->cndProbs->at(y).at(X).size();
       for (unsigned x = 0; x < xCard; ++x) {
-        //std::cout < "P(X_="<< y << "): " << this->probZ->at(y) << ", ";
-        printf("P(X_%d=%d|Z=%d) = %f, ", X, x, y, this->cndProbs->at(y).at(X).at(x));
+        printf("P(X_%u=%u|Z=%u) = %f, ", X, x, y, this->cndProbs->at(y).at(X).at(x));
       }
       std::cout << std::endl;
     }

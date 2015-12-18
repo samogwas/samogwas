@@ -46,7 +46,7 @@ typedef std::shared_ptr<PositionCriteria> PositionCriteriaPtr;
 boost::filesystem::path outputDir( Options& progOpt );
 char* current_date();
 void saveClustering(std::string cltFN, std::string labFN,
-                    Partition& partition, std::string clustAlgoName);
+                    AbstractPartition& partition, std::string clustAlgoName);
 
 void compute_measures(const Options&);
 std::vector<size_t> get_rank(const std::vector<double>& vals);
@@ -93,7 +93,7 @@ int main( int argc, char** argv ) {
       simi->set_criteria(criteria);
       auto algorithm =std::make_shared<louvain::MethodLouvain>(simi);
       auto partition = algorithm->run();
-      saveClustering(clustON_LOUV, labON, partition, std::string(algorithm->name()));
+      saveClustering(clustON_LOUV, labON, *partition, std::string(algorithm->name()));
     }
     auto end = get_time::now();
     auto diff = end - start;
@@ -124,14 +124,14 @@ boost::filesystem::path outputDir( Options& progOpt ) {
 }
 
 void saveClustering(std::string cltFN, std::string labFN,
-                    Partition& partition, std::string clustAlgoName) {
+                    AbstractPartition& partition, std::string clustAlgoName) {
   std::ofstream cltFile, labFile;
   cltFile.open(cltFN, std::ios_base::app);
   labFile.open(labFN, std::ios_base::app);
-  for (size_t i = 0; i < partition.nbrItems()-1; ++i ) {
-    cltFile << partition.getLabel(i) << ",";
+  for (int i = 0; i < partition.nbr_items()-1; ++i ) {
+    cltFile << partition.get_label(i) << ",";
   }
-  cltFile << partition.getLabel(partition.nbrItems()-1);
+  cltFile << partition.get_label(partition.nbr_items()-1);
   cltFile << std::endl;
   labFile << clustAlgoName << std::endl;
   cltFile.close(); labFile.close();

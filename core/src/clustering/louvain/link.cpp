@@ -14,26 +14,22 @@ namespace samogwas
 
 namespace louvain {
 
-WeightedLink::WeightedLink( const size_t sz ) {  
- 
+WeightedLink::WeightedLink( const size_t sz ) {
   weights = std::make_shared<std::vector<Weights>>() ;
   weights->reserve(sz);
   for ( size_t i = 0; i < sz; ++i ) {
-    weights->push_back( Weights(i+1,0.0) );    
+    weights->push_back( Weights(i+1,0.0) );
   }
 }
 
 
 double WeightedLink::compute( const int varA, const int varB ) {
-  // printf("computing: %d-%d\n", varA, varB);
   if (varA < varB) return compute(varB, varA);
   return (*weights)[varA][varB];
 }
 
 void WeightedLink::setWeight( const size_t varA, const size_t varB, const double val ) {
   if (varA < varB) return setWeight(varB, varA, val);
-  // if ( varA == varB )
-  //   printf("\nselfLoop of %d: %f\n\n", varA, val);
   (*weights)[varA][varB] = val;
 }
 

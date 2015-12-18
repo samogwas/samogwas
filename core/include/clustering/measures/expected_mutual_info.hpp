@@ -82,14 +82,14 @@ inline void _compute_gamma_lg( _private::RealVec& rs, const CL& inCl, double op1
 }
 
 
-} // namespace samogwasends here. 
+} // namespace samogwasends here.
 
 /****************************** IMLEMENTATION BELOW THIS POINT **************************/
 namespace samogwas
 {
 
 double expected_mutual_information(const ContigencyMat& contigency) {
-  size_t R = contigency.size(), C = contigency[0].size();  
+  size_t R = contigency.size(), C = contigency[0].size();
   double N = 0.0, gln_N = 0, emi = 0, term2 = 0, term3 = 0, gln = 0;
   _private::RealVec gln_a, gln_b, gln_Na, gln_Nb, gln_nij, log_Nnij;
   _private::RealVec nijs, term1;
@@ -98,7 +98,7 @@ double expected_mutual_information(const ContigencyMat& contigency) {
   _private::IntVec a, b;
   sum_over_rows(a, contigency);  sum_over_cols(b, contigency);
 
-  for (auto& v: a) { N += v; } 
+  for (auto& v: a) { N += v; }
 
   auto nijs_sz = std::max(max_element(a), max_element(b));
   arrange(nijs, (double)0, (double)( nijs_sz + 1)); nijs[0] = 1;
@@ -125,7 +125,7 @@ double expected_mutual_information(const ContigencyMat& contigency) {
                - lgamma(b[j] - nij + 1)
                - lgamma(N - a[i] - b[j] + nij + 1));
         term3 = exp(gln);
-        emi += (term1[nij] * term2 * term3);        
+        emi += (term1[nij] * term2 * term3);
       }
     }
   }
@@ -179,7 +179,6 @@ inline void _compute_start_end( _private::IntMat& beg, _private::IntMat& end,
   size_t R = a.size(), C = b.size();
   beg.resize(R, _private::IntVec(C, 0));
   end.resize(R, _private::IntVec(C, 0));
- 
   for (size_t r = 0; r < R; ++r) {
     for (size_t c = 0; c < C; ++c) {
              // beg[r][c] = std::max((unsigned)1, (unsigned)(a[r]+b[c]-N));
@@ -187,7 +186,7 @@ inline void _compute_start_end( _private::IntMat& beg, _private::IntMat& end,
       end[r][c] = std::min(a[r], b[c]) + 1;
     }
   }
-  
+
 }
 
 inline double expected_mutual_information( const Partition& a, const Partition& b) {
@@ -197,22 +196,22 @@ inline double expected_mutual_information( const Partition& a, const Partition& 
 }
 
 inline void make_contigency( ContigencyMat& contigency, const Partition& pA, const Partition& pB ) {
-  auto max_cluster = std::max( pA.nbrClusters(), pB.nbrClusters() );
+  auto max_cluster = std::max( pA.nbr_clusters(), pB.nbr_clusters() );
   contigency.resize(max_cluster, std::vector<unsigned>(max_cluster, 0));
 
   for ( auto pairA: pA.get_mapping() ) {
     auto item = pairA.first;
     auto labA = pairA.second;
-    auto labB = pB.getLabel(item);
+    auto labB = pB.get_label(item);
     ++contigency[labA][labB];
-  }    
+  }
 }
 
 //////////////////////////////////////////////////////////////x
 inline void partition_to_clustering( std::vector<int>& v, const Partition& a ) {
-  v.resize( a.nbrItems(), 0);
-  for ( size_t i = 0; i < a.nbrItems(); ++i ) {
-    v[i] = a.getLabel(i);
+  v.resize( a.nbr_items(), 0);
+  for ( size_t i = 0; i < a.nbr_items(); ++i ) {
+    v[i] = a.get_label(i);
   }
 }
 
@@ -230,7 +229,7 @@ inline double mutual_information_clustering( const Partition& a, const Partition
   partition_to_clustering(vB, b);
 
   MutualInformation<EMP> mi;
-  return mi(vA, vB);  
+  return mi(vA, vB);
 }
 
 inline double adjusted_mutual_information( const Partition& a, const Partition& b ) {
@@ -247,22 +246,16 @@ inline double adjusted_mutual_information( const Partition& a, const Partition& 
   double eA = entropy(vA), eB = entropy(vB), mi = mut_info(vA,vB);
   double emi = expected_mutual_information( a, b );
 
-  double deno = ( std::max(eA, eB) - emi );
-  double nomi = ( mi - emi );
+  double deno = (std::max(eA, eB) - emi);
+  double nomi = (mi - emi);
 
   if ( deno == 0 ) return 0.0;
   return nomi / deno;
 
 }
 
-// inline double adjusted_mutual_information( const ContigencyMat& contigency ) {
-//   ContigencyMat contigency;
-//   make_contigency( contigency, a, b );
-// }
 
-
-
-} // namespace samogwas ends here. 
+} // namespace samogwas ends here.
 
 /****************************************************************************************/
 #endif // SAMOGWAS_EXPECTED_MUTUAL_INFO_HPP

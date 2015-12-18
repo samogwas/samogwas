@@ -29,11 +29,13 @@ static const std::string LEVEL = "level"; static const std::string POSITION = "p
 static const std::string CARDINALITY = "cardinality";
 static const std::string PARENT_ID = "parent_id";
 
-enum FULL { FULL_ID = 0, FULL_LABEL, FULL_LATENT, FULL_PARENT, FULL_LEVEL, FULL_POSITION, FULL_CARDINALITY };
+enum FULL { FULL_ID = 0, FULL_LABEL, FULL_LATENT, FULL_PARENT, FULL_LEVEL,
+            FULL_POSITION, FULL_CARDINALITY };
 enum LAB_POS { LP_ID = 0, LP_LABEL, LP_POSITION };
 
 // format SINGLE (one file, structure)
-enum SINGLE { SINGLE_ID = 0, SINGLE_LATENT, SINGLE_PARENT, SINGLE_LEVEL, SINGLE_CARDINALITY };
+enum SINGLE { SINGLE_ID = 0, SINGLE_LATENT, SINGLE_PARENT, SINGLE_LEVEL,
+              SINGLE_CARDINALITY };
 // by convention, SINGLE_PARENT set to -1 denotes a root.
 
 // format TULIP (two files, structure)
@@ -41,7 +43,7 @@ enum TULIP_VERTICES { TULIP_ID = 0, TULIP_LATENT, TULIP_LEVEL, TULIP_CARDINALITY
 enum TULIP_EDGES { /*TULIP_ID = 0,*/ TULIP_PARENT_ID = 1 };
 // by convention, TULIP_PARENT_ID set to -1 denotes a root.
 
-enum BAYES_VERTICES { BV_ID = 0, BV_LATENT, BV_LEVEL, BV_CARDINALITY, BV_POSITION };
+
 // format BN (two files, structure and parameters)
 enum BN_VERTICES { BN_LATENT_ID = 0, NBR_CHILDREN };
 

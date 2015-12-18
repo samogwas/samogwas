@@ -50,7 +50,7 @@ int main( int argc, char** argv ) {
 
   Graph& graphRef = *g;
 
-  printf("Done loading graph of %lu edges and %lu vertices\n", boost::num_edges(graphRef),
+  printf("Done loading graph of %zu edges and %zu vertices\n", boost::num_edges(graphRef),
          boost::num_vertices(graphRef));
 
   auto outputPath = get_output_dir(args);
@@ -144,7 +144,6 @@ std::vector<int> count_cluster_siblings( samogwas::Graph& graph ) {
   std::vector<int> sibling_count( boost::num_vertices(graph) , 0);
   for ( auto vi = boost::vertices(graph); vi.first != vi.second; ++vi.first ) {
     auto v = *vi.first;
-    Node& node = graph[v];
     auto ei = boost::out_edges(v, graph);
     int count = std::distance(ei.first, ei.second);
     for ( ; ei.first != ei.second; ++ei.first ) {
@@ -251,7 +250,7 @@ void perform_test( const samogwas::Graph& graph,
     std::vector<double> dist;
     std::vector<double> pvals;
     if ( candidates.size() ) {
-      printf("\nWe now tests %lu vars - @level: %d over %d\n\n", candidates.size(), l, levels - 1);
+      printf("\nWe now tests %zu vars - @level: %d over %d\n\n", candidates.size(), l, levels - 1);
       permutation_procedure( dist,
                              pvals,
                              statTest,
@@ -290,12 +289,12 @@ void perform_test( const samogwas::Graph& graph,
 
         if ( scores[cand] < thresholds[l]) {
           Node node = graph[cand];
-          size_t sz_start = std::numeric_limits<int>::max(), sz_end = 0;
-          size_t sum = 0, pos = 0, count = 0;
+          int sz_start = std::numeric_limits<int>::max(), sz_end = -1;
+          size_t count = 0;
           for ( auto ei = boost::out_edges(cand, graph); ei.first != ei.second; ++ei.first ) {
             auto child = graph[boost::target(*ei.first, graph)];
-            sz_start = std::min(sz_start, (size_t)child.position);
-            sz_end = std::max(sz_end, (size_t)child.position);
+            sz_start = std::min(sz_start, child.position);
+            sz_end = std::max(sz_end, child.position);
             count++;
           }
           gwasFilteredFile << "chr" << chr << sep
@@ -308,10 +307,10 @@ void perform_test( const samogwas::Graph& graph,
                            << pvals[2*i+1] << std::endl;
 
           if ( sz_start != sz_end && sz_start != node.position && sz_end != node.position  && count > 1 ) {
-            printf("level: %d, var: %lu, score: %f, thres: %f, start: %lu, end: %lu\n",
+            printf("level: %d, var: %zu, score: %f, thres: %f, start: %d, end: %d\n",
                    l, cand, scores[cand], thresholds[l], sz_start, sz_end);
             if (sz_start < 0) {
-              printf("level: %d, var: %lu, score: %f, thres: %f, start: %lu, end: %lu\n",
+              printf("level: %d, var: %zu, score: %f, thres: %f, start: %d, end: %d\n",
                      l, cand, scores[cand], thresholds[l], sz_start, sz_end);
               exit(-1);
             }

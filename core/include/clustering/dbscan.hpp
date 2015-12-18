@@ -23,7 +23,6 @@ struct DBSCAN: public ClustAlgo {
   enum { UNASSIGNED_LABEL = -1 };
   typedef int Index;
   typedef std::vector<Index> Neighbors; // An important concept of DBSCAN involves Neighbors, a set of nearby points.typedef int Index;
-    
   typedef int Label;
   typedef std::vector<Index> LabelSet; // A Label maps a point Index to its cluster Index.
                                      // A  for instance, may be instanciated as MutInfoSimilarityMatrix label indicates that the point is not yet assigned to any cluster.
@@ -49,11 +48,10 @@ struct DBSCAN: public ClustAlgo {
     this->diss = diss;
     return *this;
   }
-  
 
   /** The main method that executes the algorithm
    **/
-  inline virtual Partition run();
+  inline virtual std::shared_ptr<AbstractPartition> run();
 
   /// The method that returns the name of this algorithm, along with its parameters
   virtual char* name() const {
@@ -61,7 +59,7 @@ struct DBSCAN: public ClustAlgo {
     sprintf( name, "DBSCAN_%d_%.3f", minPts, epsilon);
     return name;
   }
-  
+
   virtual CriteriaPtr get_criteria() { return diss->get_criteria(); }
 
   virtual double measure(const size_t a, const size_t b) {
@@ -74,17 +72,15 @@ struct DBSCAN: public ClustAlgo {
   inline Neighbors find_neighbors( const Index pid ) const; 
 
   /// Converts current clustering to the partition type
-  inline static Partition toPartition( const LabelSet& LabelSet );
+  inline static std::shared_ptr<AbstractPartition> toPartition( const LabelSet& LabelSet );
 
   inline virtual void set_measure(GraphPtr g, Local2GlobalPtr& l2gp, CriteriaPtr criteria = nullptr);
 
-    
  protected:
   int minPts;
   double epsilon;
-
   DissPtr diss;
-  
+
 };
 
 
@@ -100,7 +96,7 @@ struct DBSCAN: public ClustAlgo {
  * members of the neighborhood.
  * We continue until we cannot reach any more point outside of this group. A new cluster is then formed.
  */
-Partition DBSCAN::run() {
+std::shared_ptr<AbstractPartition> DBSCAN::run() {
 
   size_t nvars = this->diss->nbr_variables();
   LabelSet m_LabelSet( nvars,  UNASSIGNED_LABEL); 
@@ -115,7 +111,7 @@ Partition DBSCAN::run() {
         for ( int i = 0; i < neighbors.size(); ++i) { // We grow this cluster by trying to reach other points
                                                      // from each of its members.
           int nPid = neighbors[i]; // 
-          if ( !visited[nPid] ) { 
+          if ( !visited[nPid] ) {
             visited[nPid] = 1;
             Neighbors subNeighbors = find_neighbors(nPid); // trying to find a new dense neighborhood
             if ( subNeighbors.size() >= minPts ) {
@@ -146,18 +142,17 @@ typename DBSCAN::Neighbors DBSCAN::find_neighbors( const Index pid ) const {
       ne.push_back(i);
     }
   }
-
   return ne;
 }
 
 /////////////////////////////////////////
-Partition DBSCAN::toPartition( const LabelSet& LabelSet ) {
-  Partition partition;
+std::shared_ptr<AbstractPartition> DBSCAN::toPartition( const LabelSet& LabelSet ) {
+  auto partition = std::make_shared<NPartition>();
   std::set<Label> labs;
   std::vector<int> singletons;
   for ( size_t i = 0; i < LabelSet.size(); ++i ) {
     if ( LabelSet.at(i) != UNASSIGNED_LABEL ) {
-      partition.setLabel( i, LabelSet.at(i) ); 
+      partition->setLabel(i, LabelSet.at(i));
       labs.insert( LabelSet.at(i) );
     } else {
       singletons.push_back(i);
@@ -166,10 +161,9 @@ Partition DBSCAN::toPartition( const LabelSet& LabelSet ) {
 
   for ( auto& i: singletons ) {
     size_t curCluster = labs.size();
-    partition.setLabel(i, curCluster);
+    partition->setLabel(i, curCluster);
     labs.insert(curCluster);
   }
-  
   return partition;
 }
 

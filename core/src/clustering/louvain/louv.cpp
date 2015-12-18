@@ -25,25 +25,19 @@ MethodLouvain::MethodLouvain(WeightsPtr wt): changed(true) {
   auto graph = std::make_shared<Graph>(wt, false);
   network = std::make_shared<Network>(graph);
   partition = std::make_shared<Partition>();
-  for ( NodeIndex n = 0; n < network->nbrNodes(); ++n ) {
+  for ( size_t n = 0; n < network->nbr_items(); ++n ) {
     partition->setLabel(n, network->getCommunity(n));
   }
-    
+
 }
 
-Partition MethodLouvain::run() {
-  // Network partition(network->nbrNodes());
-  // Network network(graph);
-  // while (changed) {
-    first_phase();
-    if (changed)
-      second_phase();
-  // }
+std::shared_ptr<AbstractPartition> MethodLouvain::run() {
 
-   // printf("\n-------------- DONE clustering -------------\n\n");
-
-  // Partition;
-  return *partition;
+  first_phase();
+  if (changed) {
+    second_phase();
+  }
+  return partition;
 }
 
 char* MethodLouvain::name() const {
@@ -51,7 +45,6 @@ char* MethodLouvain::name() const {
   sprintf( name, "LOUVAIN%s", "");
   return name;
 }
-
 
 }
 

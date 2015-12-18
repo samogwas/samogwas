@@ -36,7 +36,7 @@ find_package(Boost COMPONENTS log log_setup system regex filesystem program_opti
 set(ProBT_INCLUDE_DIR "${LIB_DIR}/probt_spl_2_3_99/include/")
 set(ProBT_LIBRARY_DIR "${LIB_DIR}/probt_spl_2_3_99/lib/" )
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${Boost_INCLUDE_DIRS}" "${ProBT_INCLUDE_DIR}"  
+include_directories(SYSTEM "${Boost_INCLUDE_DIRS}" "${ProBT_INCLUDE_DIR}"  
   "${PROJECT_SOURCE_DIR}/core/include" )
 
 link_directories("${LIB_DIR}/probt_spl_2_3_99/lib/" "${LIB_DIR}/" "${Boost_INCLUDE_DIRS}" "${Boost_LIBRARY_DIRS}")

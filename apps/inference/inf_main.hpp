@@ -24,19 +24,23 @@ typedef std::shared_ptr<PhenoVec> PhenoVecPtr;
 typedef std::vector<std::vector<double>> ValueMat;
 typedef std::shared_ptr<ValueMat> ValueMatPtr;
 typedef std::vector<int> Cardinalities;
-typedef std::vector<size_t> Candidates;
-typedef std::vector<Candidates> CandidatesByLevel;
 
 ValueMatPtr load_scores(std::string& infile);
 ValueMatPtr load_thres(std::string& infile);
 PhenoVecPtr load_phenotype(std::string& phenoFile);
 
+// void assure_graph_positions( samogwas::Graph& g );
 
 std::vector<int> get_graph_parent( const samogwas::Graph& graph );
 std::vector<int> count_cluster_siblings( samogwas::Graph& graph );
 std::map<std::string, std::string> get_snp_mapping( std::string& infile);
 
 Cardinalities get_cardinalities( const samogwas::Graph& graph );
+
+typedef std::vector<size_t> Candidates;
+typedef std::vector<Candidates> CandidatesByLevel;
+typedef std::vector<int> Cardinalities;
+
 CandidatesByLevel get_candidates_by_level( const samogwas::Graph& g );
 Cardinalities get_cardinalities( const samogwas::Graph& g );
 Cardinalities get_cardinalities( const samogwas::Graph& g, const Candidates& candidates );

@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
   std::ofstream resultOutput( (outputPath / "log.txt").string() );
 
   std::vector<double> vals;
-  
+
   Partition refPartition(refClustering);
   for (size_t i = 0; i < clusterings.size(); ++i) {
     Partition p(clusterings[i]);

@@ -45,10 +45,10 @@ BOOST_AUTO_TEST_CASE( test_CAST_1 )
   gsimi->set_criteria(criteria);
 
   CAST cast( gsimi, 0.5 );
-  Partition result = cast();
+  auto result = cast();
   for ( int i = 0; i < nrows; ++i ) {
     int expected_cluster = i / N;
-    BOOST_CHECK_EQUAL(result.getLabel(i), expected_cluster );
+    BOOST_CHECK_EQUAL(result->get_label(i), expected_cluster );
   }
 }
 
@@ -80,20 +80,20 @@ BOOST_AUTO_TEST_CASE( test_DBSCAN_1 )
   auto lim_gdiss = std::make_shared<GraphMutInfoDissimilarity>(graph, lim_l2g);
 
   DBSCAN lim_dbscan( lim_gdiss, 2, 0.45 );
-  Partition result = lim_dbscan();
+  auto result = lim_dbscan();
   for ( int i = 0; i < lim_nrows; ++i ) {
     int expected_cluster = i / N;
-    BOOST_CHECK_EQUAL(result.getLabel(i), expected_cluster );
+    BOOST_CHECK_EQUAL(result->get_label(i), expected_cluster );
   }
 
   std::vector<int> lim_l2g_dat { 0,1,3,4,5,7 };
   auto lim_l2g_2 = std::make_shared<std::vector<int>>(lim_l2g_dat);
   auto lim_gdiss_2 = std::make_shared<GraphMutInfoDissimilarity>(graph, lim_l2g_2);
   DBSCAN lim_dbscan_2( lim_gdiss_2, 1, 0.45 );
-  Partition result_2 = lim_dbscan_2();
+  auto result_2 = lim_dbscan_2();
   std::vector<int> expected_clusters {0,0,1,1,1,2};
   for ( int i = 0; i < lim_nrows; ++i ) {
-     BOOST_CHECK_EQUAL(result_2.getLabel(i), expected_clusters[i] );
+     BOOST_CHECK_EQUAL(result_2->get_label(i), expected_clusters[i] );
   }
 }
 
@@ -125,7 +125,7 @@ BOOST_AUTO_TEST_CASE( test_Louvain_1 )
   louvain::Network network(g);
 
   BOOST_CHECK_EQUAL(network.nbrCommunities(), commCount*commCard); // initially
-  BOOST_CHECK_EQUAL(network.nbrNodes(), commCount*commCard);
+  BOOST_CHECK_EQUAL(network.nbr_nodes(), commCount*commCard);
 
   for (int i = 0; i < commCard*commCount; ++i) {
     BOOST_CHECK_EQUAL( network.getCommunity(i), i ); // initially
@@ -137,10 +137,6 @@ BOOST_AUTO_TEST_CASE( test_Louvain_1 )
 
 struct Simi: public GraphSimilarity {
   Simi(std::vector< std::vector<double> > d): sim(d) {}
-
-  virtual size_t nbrVariables() const {
-    return sim.size();
-  }
 
   virtual size_t nbr_variables() const { return sim.size(); }
   virtual double compute( const int varA, const int varB ) { return sim[varA][varB]; }
@@ -174,21 +170,21 @@ BOOST_AUTO_TEST_CASE( Test_Louvain_Linked_Weights_Wikipedia ) {
   double modul_2nd = louv->network->modularity();
   auto ntw = louv->network;
   for ( auto comm: ntw->communities() ) {
-    double iw = ntw->in_weights[comm];
-    double tl = ntw->tot_linked_weights[comm];
+    double iw = ntw->get_in_weight(comm);
+    double tl = ntw->get_total_link_weight(comm);
   }
 
   BOOST_CHECK_EQUAL(modul_1st , modul_2nd);
   auto clustering = louv->run();
-  BOOST_CHECK_EQUAL( clustering.nbrClusters(), 3 );
-  BOOST_CHECK_EQUAL( clustering.getLabel(0), clustering.getLabel(1));
-  BOOST_CHECK_EQUAL( clustering.getLabel(1), clustering.getLabel(2));
-  BOOST_CHECK_EQUAL( clustering.getLabel(2), clustering.getLabel(9));
-  for ( louvain::NodeIndex n = 0; n < clustering.nbrItems(); ++n ) {
-    if ( n < 3 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 0);
-    else if ( n < 6 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 1);
-    else if ( n < 9 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 2);
-    else if ( n == 9 ) BOOST_CHECK_EQUAL( clustering.getLabel(n), 0);
+  BOOST_CHECK_EQUAL( clustering->nbr_clusters(), 3 );
+  BOOST_CHECK_EQUAL( clustering->get_label(0), clustering->get_label(1));
+  BOOST_CHECK_EQUAL( clustering->get_label(1), clustering->get_label(2));
+  BOOST_CHECK_EQUAL( clustering->get_label(2), clustering->get_label(9));
+  for ( louvain::NodeIndex n = 0; n < clustering->nbr_items(); ++n ) {
+    if ( n < 3 ) BOOST_CHECK_EQUAL( clustering->get_label(n), 0);
+    else if ( n < 6 ) BOOST_CHECK_EQUAL( clustering->get_label(n), 1);
+    else if ( n < 9 ) BOOST_CHECK_EQUAL( clustering->get_label(n), 2);
+    else if ( n == 9 ) BOOST_CHECK_EQUAL( clustering->get_label(n), 0);
   }
 }
 
@@ -229,11 +225,10 @@ BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
   double expected_modularity = 0.0;
   double tw2 = 80;
   for (int i = 0; i < commCard*commCount; ++i) {
-    double iw = network.in_weights[i];
-    double itw = network.tot_linked_weights[i];
+    double iw = network.get_in_weight(i);
+    double itw = network.get_total_link_weight(i);
     BOOST_CHECK_EQUAL( iw, 0.0 );
-    BOOST_CHECK_EQUAL( iw, 0.0 );
-    expected_modularity += ( iw - (itw/tw2)*( itw/tw2) );
+    expected_modularity += (iw - (itw/tw2)*( itw/tw2));
   }
   BOOST_CHECK_CLOSE_FRACTION(network.modularity(), -0.05, 0.1);
   auto louv1 = std::make_shared<louvain::MethodLouvain>(simi);
@@ -244,8 +239,8 @@ BOOST_AUTO_TEST_CASE( TEST_Louvain_GENERATE ) {
 
   auto louv = std::make_shared<louvain::MethodLouvain>(simi);
   auto clustering = louv->run();
-  for ( louvain::NodeIndex n = 0; n < clustering.nbrItems(); ++n ) {
-    BOOST_CHECK_EQUAL( clustering.getLabel(n), n/5 ); // initially
+  for ( louvain::NodeIndex n = 0; n < clustering->nbr_items(); ++n ) {
+    BOOST_CHECK_EQUAL( clustering->get_label(n), n/5 ); // initially
   }
 }
 
@@ -270,7 +265,6 @@ BOOST_AUTO_TEST_CASE( Test_Total_Modulariy_n ) {
 }
 
 
-
 BOOST_AUTO_TEST_CASE( Test_Linked_Weights ) {
   std::vector< std::vector<double> > sim {
     {0,1,2,0,0},
@@ -279,11 +273,6 @@ BOOST_AUTO_TEST_CASE( Test_Linked_Weights ) {
     {0,3,3,0,0},
     {0,0,4,0,0}
   };
-
-  // SimilarityMatrix* simi = new Simi(sim);
-  // std::shared_ptr<SimilarityMatrix> simi(new Simi(sim));
-  // std::shared_ptr<Graph> g(new Graph(simi));
-  // Network network(g);
 
   auto simi = std::make_shared<Simi>(sim);
   auto g = std::make_shared<louvain::Graph>( simi, false );
@@ -298,8 +287,8 @@ BOOST_AUTO_TEST_CASE( Test_Linked_Weights ) {
   BOOST_CHECK_EQUAL( network.totalWeights(), 13);
 
   double total_w_r = 0.0;
-  for ( int i = 0; i < network.nbrNodes(); ++i ) total_w_r += g->linkedWeights(i);
-  BOOST_CHECK_EQUAL( 2*network.totalWeights(), total_w_r); // becasue 
+  for ( int i = 0; i < network.nbr_nodes(); ++i ) total_w_r += g->linkedWeights(i);
+  BOOST_CHECK_EQUAL( 2*network.totalWeights(), total_w_r); // becasue
 
   BOOST_CHECK( network.modularity() > -0.5  );
 

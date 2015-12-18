@@ -36,7 +36,7 @@ inline GraphPtr init_graph( PtrMatrix& mat, Label2Index& lab2Idx,
   auto graph = std::make_shared<Graph>();
 
   auto nrows = positions.size();
-  for (int i = 0; i < nrows; ++i) {
+  for (unsigned i = 0; i < nrows; ++i) {
     plSymbol v(labels.at(i), plIntegerType(0, CARD-1) );
     auto dataVec = mat.at(i); //std::make_shared<DataVec>(data->at(i));
     createObsNode(graph, v, dataVec, positions.at(i), lab2Idx);

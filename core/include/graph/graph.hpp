@@ -9,7 +9,7 @@
 #ifndef SAMOGWAS_GRAPH_HPP
 #define SAMOGWAS_GRAPH_HPP
 
-#include <memory>
+#include <memory> // shared_ptr
 #include <math.h>
 #include <map>
 
@@ -39,146 +39,184 @@ typedef plVariablesConjunction::const_iterator VarIter;
  */
 struct Node;
 
-/* 
+/*
  *
  */
-typedef boost::adjacency_list< boost::vecS, boost::vecS, boost::directedS,
-                               Node, boost::no_property> Graph;
+typedef boost::adjacency_list< boost::vecS,
+                               boost::vecS,
+                               boost::directedS,
+                               Node,
+                               boost::no_property> Graph;
 
 typedef std::shared_ptr<Graph> GraphPtr;
 typedef std::shared_ptr<JointDist> JointDistPtr;
 typedef std::vector<double> CondObsDist;
 typedef std::shared_ptr<CondObsDist> CondObsDistPtr;
 typedef std::vector<int> DataVec;
-typedef std::shared_ptr<std::vector<int>> DataVecPtr;
+typedef std::shared_ptr<DataVec> DataVecPtr;
 typedef plVariablesConjunction Variables;
+
 /**
- * Node 
+ * Node
  */
 struct Node {
+  typedef plComputableObjectList::const_iterator plCompIte;
 
-  /****************************************************
-   */
-  IndexType index; 
-  LabelType label; // cache for variable.name()
-
-  /****************************************************
-   */
-  
   ~Node() { }
   Node(): position(-1), level(0) {}
 
   /**
    */
-  Node& set_joint_distribution( const JointDist& jointDistri );
-  Node& set_joint_distribution( const plComputableObjectList& jointDistri );
-
-  typedef plComputableObjectList::const_iterator plCompIte;
-  Node& set_marginal_distribution( plCompIte it) {
-    auto dist = std::make_shared<plDistribution>(*it);
-    return set_marginal_distribution(dist);
-  }
-
-  Node& set_marginal_distribution( DistPtr dist) {
-    this->marginalDist = dist; return *this;
-  }
-
   Node& set_children_distributions( CondObsDistPtr dist);
+
+  /**
+   */
   Node& set_children_distributions(plCompIte beg, plCompIte end);
 
-  ///
-  Variables get_children_variables() const {
-    Variables vars;
-    if (!cndChildrenDists.empty()) {
-      for (auto &d: cndChildrenDists) {
-        vars ^= d->get_left_variables()[0]; //
-      }
-    } else {
-      for (int i = 0; i < nbr_children(); ++i) {
-        auto idx = local2GlobalIdx(i);
-        vars ^= (*graph)[idx].variable;
-      }
-    }
-    return vars;
-  }
+  /**
+   */
+  Node& set_joint_distribution( const JointDist& jointDistri );
 
-  std::vector<int> get_children_global_indexes() const {
-    std::vector<int> rs(this->nbr_children(), 0);
-    for (int i = 0; i < nbr_children(); ++i) {
-      rs[i] = local2GlobalIdx(i);
-    }
-    return rs;
-  }
+  /**
+   */
+  Node& set_joint_distribution( const plComputableObjectList& jointDistri );
 
-  Node& set_local_indexes( VarIter beg, VarIter endx, const Label2Index &label2Index);
-  Node& set_local_indexes( const Label2Index &label2Index );
+  /**
+   */
+  Node& set_marginal_distribution( plCompIte it);
 
+  /**
+   */
+  Node& set_marginal_distribution( DistPtr dist);
+
+  /**
+   */
+  Variables get_children_variables() const;
+
+  /**
+   */
+  std::vector<int> get_children_global_indexes() const;
+
+  /**
+   */
+  LabelType getLabel() const;
+
+  /**
+   */
+  int nbr_children() const;
+
+  /**
+   */
+  int cardinality() const;
+
+  /**
+   */
+  int local2GlobalIdx(const int local) const;
+
+  /** global index
+   */
+  IndexType getIndex() const;
+
+  /** @todo: private vs public (local)
+   */
+  Node& set_local_indexes( VarIter beg, VarIter endx, const Label2Index &label2GlobalIndex);
+
+  /**
+   */
+  Node& set_local_indexes( const Label2Index &label2GlobalIndex );
+
+  /**
+   */
   Node& set_level(const int level) { this->level = level; return *this; }
-  
+
+
+  /** Computes in function of its children's positions
+   */
   Node& set_position();
+
+  /**
+   */
   Node& set_position(const int position) { this->position = position; return *this; }
 
+  /**
+   */
   Node& update_level();
 
+  /**
+   */
   Node& set_variable(plSymbol& var) { this->variable = var; return *this; }
+
+  /**
+   */
   Node& set_graph(GraphPtr graph) { this->graph = graph; return *this; }
+
+
+  /** global index
+   */
   Node& set_index(const int index) { this->index = index; return *this; }
-  Node& set_data_vec(DataVecPtr dtvt, const bool computeEmpDist = true); 
+
+  /** Data for observed variable. Imputed data for latent variable.
+   *
+   */
+  Node& set_data_vec(DataVecPtr dtvt, const bool computeEmpDist = true);
+
+  /** @todo: remove?
+   */
   Node& set_cnd_obs_vec(CondObsDistPtr cndObsDist, const bool computeEmpDist = true);
+
+  /** Computes P(X=a) // X: variable associated to the node
+   */
   double compute_prob(const int a) const;
 
+  /**  Computes the probability of observing value val at the observation obs
+   *   P(val,obs) = 0/1 for observed variable
+   *              = probability for latent variable
+   */
   double compute_cond_prob_obs(const int val, const int obs) const;
 
+  /** P(cNode = childVal | X=parentVal)
+   */
   double compute_cond_prob( const Node& cNode, const int childVal, const int parentVal ) const;
+
+  /** cIdx: local index of the child
+   */
   double compute_cond_prob( const int cIdx, const int childVal, const int parentVal ) const;
+
+  /**
+   */
   double compute_cond_prob( const int cIdx, const plValues& cV, const plValues& pV ) const;
 
+  /**
+   */
   Node& copy_data( const Node& n );
-  
-  IndexType getIndex() const {
-    return index;
-  }
 
-  LabelType getLabel() const {
-    return this->variable.name();
-  }
-
-  int nbr_children() const {
-    return global2localIdx.size();    
-  }
-
-  int cardinality() const {
-    return this->variable.cardinality();
-  }
-
-  int local2GlobalIdx(const int local) const {
-    int global = -1;
-    for (auto it = global2localIdx.begin(); it != global2localIdx.end(); ++it ) {
-      if (it->second == local) {
-        global = it->first;
-        break;
-      }
-    }
-    return global;
-  }
-
+  /**
+   */
   bool is_leaf() const { return level == 0; }
 
+  /**
+   */
   bool is_parent_of( const Node& ne) const ;
+
+  /**
+   */
   bool is_child_of( const Node& ne) const  { return ne.is_parent_of(*this); }
 
-  // Node& set_children(JointDist& jointDist, Label2Index &label2Index);
 
-  /****************************************************/  
+  /****************************************************/
+  IndexType index; // global index
+  LabelType label; // cache for variable.name()
+
   int position; // physical position on the genome
   int level; // indicates the level to which this node belongs.
   GraphPtr graph; // reference to its graph
   RandomVariable variable; // represents the underlying random variable.
 
   DistPtr marginalDist;
-  DataVecPtr dataVec;
-  CondObsDistPtr cndObsDist;
-  std::vector<CndDistPtr> cndChildrenDists;
+  DataVecPtr dataVec; // observed variable: vector of size nbrObservations
+  CondObsDistPtr cndObsDist; // flattened nbrObservations x cardinality matrix
+  std::vector<CndDistPtr> cndChildrenDists; // cardinality(X) = P
+  // vector of conditional distributions P(Ei|X)
   std::map<int,int> global2localIdx;
 
 };
@@ -198,10 +236,8 @@ typedef boost::graph_traits<Graph >::vertex_descriptor Vertex;
 typedef boost::graph_traits<Graph>::vertex_iterator vertex_iterator;
 typedef boost::graph_traits<Graph>::edge_iterator edge_iterator;
 
-
 typedef std::pair<vertex_iterator, vertex_iterator> vertex_iter_pair;
 typedef std::pair<edge_iterator, edge_iterator> edge_iter_pair;
-
 
 inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<int>& dataVec) {
   std::vector<double>prob( variable.cardinality(), 0.0);
@@ -235,11 +271,8 @@ inline DistPtr create_emp_distribution( plSymbol& variable, const std::vector<do
     prob[i] /= N;
 
   }
-
-
   auto dist = std::make_shared<plDistribution>(variable, prob);
   return dist;
-  
 }
 
 
@@ -250,8 +283,9 @@ inline Node& createNode( std::shared_ptr<Graph> graph,
                          const std::string label = "",
                          const int position = -1,
                          const int level = -1) {
-  
-  vertex_t vertexId = boost::add_vertex(*graph); // adds a new Node to the graph and returns the newly added node's index.
+ 
+  vertex_t vertexId = boost::add_vertex(*graph); // adds a new Node to the graph and
+  // returns the newly added node
 
   Node &newNode = (*graph)[vertexId];
   newNode.variable = RandomVariable(label, plIntegerType(0, cardinality - 1));
@@ -269,7 +303,7 @@ inline Node& createNode( std::shared_ptr<Graph> graph,
                          const std::string label = "",
                          const int position = -1,
                          const int level = -1) {
-  
+ 
   Node& node = createNode(graph, cardinality, label, position, level);  
   auto dist = create_emp_distribution( node.variable, dataVec); 
   node.set_marginal_distribution(dist);
@@ -371,7 +405,7 @@ inline Node& create_graph_node (std::shared_ptr<Graph> graph,
 }
 
 
-} // namespace novo ends here.
+} // namespace samogwas ends here.
 
 /****************************************************************************************/
 #endif // NOVO_GRAPH_HPP

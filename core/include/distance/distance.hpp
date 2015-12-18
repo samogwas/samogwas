@@ -18,10 +18,12 @@ namespace samogwas
 {
 
 typedef std::shared_ptr<std::vector<int>> PosVecPtr;
+
 struct ConstraintCriteria {
   virtual bool valid( const int vA, const int vB) const = 0;
 };
-  
+ 
+
 typedef std::shared_ptr<ConstraintCriteria> CriteriaPtr;
 
 struct AcceptAllCriteria: public ConstraintCriteria {

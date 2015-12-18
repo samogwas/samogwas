@@ -12,26 +12,25 @@
 #define MIN_DISSIMILARITY 0.0
 
 #include "simi.hpp"
-
 #include "distance_common.hpp"
+
 namespace samogwas
 {
 
 struct GraphDissimilarity {
-  
+
   GraphDissimilarity(GraphPtr g, Local2GlobalPtr& l2gp): graph(g), l2g(l2gp) {}
   virtual double compute( const int varA, const int varB)  = 0;
   virtual void invalidate_entropy_cache() = 0;
   virtual GraphDissimilarity& set_criteria(CriteriaPtr c) { criteria = c; return *this; }
   virtual size_t nbr_variables() const = 0;
 
-  // virtual void precompute_all();
 
   virtual ~GraphDissimilarity() {}
 
   CriteriaPtr get_criteria() { return criteria; }
-  
- protected:  
+
+ protected:
   GraphPtr graph;
   Local2GlobalPtr l2g;
   CriteriaPtr criteria;
@@ -40,7 +39,7 @@ struct GraphDissimilarity {
 
 //////////////////////////
 struct GraphMutInfoDissimilarity: public GraphDissimilarity {
- 
+
   GraphMutInfoDissimilarity(GraphPtr g, Local2GlobalPtr& l2gp): GraphDissimilarity(g,l2gp), simi(g,l2gp) {}
 
   virtual double compute( const int varA, const int varB) {

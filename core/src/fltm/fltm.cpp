@@ -14,7 +14,7 @@ namespace samogwas {
 
 void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph ) {
   auto lab2Idx = create_index_map(*graph);
-  Local2GlobalPtr l2g = create_local_to_global_map(*graph);  
+  Local2GlobalPtr l2g = create_local_to_global_map(*graph);
   auto criteria = clustAlgo->get_criteria();
   int verticesNb = boost::num_vertices(*graph);
 
@@ -24,13 +24,12 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
       clustAlgo->set_measure( graph, l2g, criteria );
     }
 
-   
+
     BOOST_LOG_TRIVIAL(trace) << "FLTM - step[" << step << "] over " << params.nbrSteps;
     BOOST_LOG_TRIVIAL(trace) << "running clustering " << clustAlgo->name()
                              << " on " << l2g->size() << " with maxDist: " << params.maxDist;
     auto partition = clustAlgo->run();
-    auto clustering = partition.to_clustering();
-    auto SIZE = l2g->size();
+    auto clustering = partition->to_clustering();
     int nonSingletons =  number_non_singletons(clustering);
     BOOST_LOG_TRIVIAL(trace) << "to obtain " << clustering.size() << " clusters with " << nonSingletons << " non-singletons clusters" ;
     if ( nonSingletons == 0 ) {
@@ -39,7 +38,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
     }
 
     std::vector<int> l2gTemp(*l2g);
-    Local2Global().swap(*l2g);  
+    Local2Global().swap(*l2g);
     int nbrGoodClusters = 0;
 
 //      loop without any parallelization
@@ -62,7 +61,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
    //         // l2g.push_back( currentL2G.at(item) );
    //         boost::add_edge( latentNode->index, l2gTemp.at(item), *graph);
    //       }
-            
+
    //     } else {
    //       update_index_map( *l2g, l2gTemp, cluster);
    //     }
@@ -83,7 +82,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
 
        //the parallelizable section
        #pragma omp parallel for schedule(dynamic)
-       for ( int i = 0 ; i < clustering.size() ; ++i) {
+       for ( unsigned i = 0 ; i < clustering.size() ; ++i) {
           if ( clustering[i].size() > 1 ) {
             RandVar var("latent-"+std::to_string(verticesNb + i),
                         plIntegerType(0, cardFunc->compute(clustering[i]) - 1 ));
@@ -94,7 +93,7 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
         }
 
         //the non parallelizable section
-        for ( int i = 0 ; i < clustering.size() ; ++i) {
+        for ( unsigned i = 0 ; i < clustering.size() ; ++i) {
             if (clustering[i].size() > 1 && accept_latent_variable( *graph, *latentVector[i], params.latentVarQualityThres)) {
                   nbrGoodClusters++;
                   add_latent_node( *graph, *latentVector[i] );
@@ -168,8 +167,8 @@ void FLTM::execute( ClustAlgoPtr clustAlgo, CardFuncPtr cardFunc, GraphPtr graph
 }
 
 int FLTM::number_non_singletons( const Clustering &clustering ) {
-  int singletonCount = 0, nonSingletons = 0; // reset ount
-  for ( auto clt: clustering ) {      
+  int nonSingletons = 0; // reset ount
+  for ( auto clt: clustering ) {
     if ( clt.size() <= 1) {
     } else {
       nonSingletons++;
