@@ -37,9 +37,7 @@ struct Options {
 struct GWAS_Options: public Options {
   std::string thresholdFile;
   int permutations;
-
   std::string cndDataFile;
-  // std::string dataFile;
   std::string mappingFile;
 };
 
@@ -56,20 +54,19 @@ inline GWAS_Options get_gwas_program_options(int argc, char** argv) {
         ("help,h", "Print help messages")
         ("chr,c", po::value<int>(&result.chromosome)->default_value(0), "Chromosome. Default: 0")
 
-        ("in_dat,i", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File")
-        ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File")
+        ("in_dat,i", po::value<std::string>(&result.inputDataFile)->required(), "Input Data File (output of FLTM program)")
+        ("in_lab,l", po::value<std::string>(&result.inputLabelFile)->required(), "Input Label File (output of FLTM program)")
         ("mappingFile,m", po::value<std::string>(&result.mappingFile)->default_value("../example/inputs/snp_mapping.csv"), "SNP-RS Mapping File. Default: ../example/inputs/snp_mapping.csv")
 
         ("in_pheno,p", po::value<std::string>(&result.inputPheno)->default_value("../example/inputs/phenotype.csv"), "Input Pheno File. Default: ../example/inputs/phenotype.csv")
 
-        ("in_bayes_vertex,v", po::value<std::string>(&result.bayesVertices)->required(), "Input Bayes File")
-        ("in_bayes_dist,d", po::value<std::string>(&result.bayesDist)->required(), "Input Dist File")
-
+        ("in_bayes_vertex,v", po::value<std::string>(&result.bayesVertices)->required(), "Input Bayes Vertex File (output of the FLTM program)")
+        ("in_bayes_dist,d", po::value<std::string>(&result.bayesDist)->required(), "Input Bayes Dist File (output of the FLTM program)")
         ("num_perms,n", po::value<int>(&result.permutations)->default_value(1000), "Nbr Permutations. Default: 1000")
         ("thresholdFile,r", po::value<std::string>(&result.thresholdFile)->default_value("../example/inputs/thresholds.txt"), "Thresholds. Default: ../example/inputs/thresholds.csv")
 
-        ("test,t", po::value<int>(&result.stat_test)->default_value(0), "test: 0 (chi-square)")
-        ("sep,s", po::value<char>(&result.separator)->default_value('\t'), "Output file deliminater. Default: 'tab'")
+        ("test,t", po::value<int>(&result.stat_test)->default_value(0), "Statistic Test: 0 (chi-square) - Only 0 is supported for now")
+        ("sep,s", po::value<char>(&result.separator)->default_value(','), "Output file deliminater. Default: ','")
         ("outDir,o", po::value<std::string>(&result.outputDir)->default_value("./out"), "Output Dir. Default: ./out")
         ;
 

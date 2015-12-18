@@ -48,18 +48,18 @@ using namespace std;
 ///////////////////////////////////////////////////////////////////////////////////////
 using namespace samogwas;
 int main( int argc, char** argv ) {
-
-  auto args = get_gwas_program_options( argc, argv );
+  auto args = get_program_options( argc, argv );
   std::cout << "Loading graph data...\n" << std::endl;
   auto g = std::make_shared<samogwas::Graph>();
   BayesGraphLoad graphLoad;
-  auto mat = load_data_table(args.inputDataFile);
   graphLoad( g,
              args.inputLabelFile,
              args.bayesVertices,
              args.bayesDist,
              args.cndDataFile,
              args.inputDataFile );
+  auto mat = load_data_table(args.inputDataFile);
+
   Graph& graphRef = *g;
   printf("Done loading graph of %lu edges and %lu vertices\n", boost::num_edges(graphRef),
          boost::num_vertices(graphRef));

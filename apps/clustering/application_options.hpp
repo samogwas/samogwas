@@ -34,8 +34,8 @@ struct Options {
   samogwas::FLTM_Params fltm_params;
 
 
-  std::string clustering_file;
-  std::string ref_clustering;
+  // std::string clustering_file;
+  // std::string ref_clustering;
 };
 
 
@@ -57,8 +57,8 @@ inline Options get_program_options(int argc, char** argv) {
         ("max_dist,x", po::value<unsigned>(&result.fltm_params.maxDist)->default_value(50000), "Max Dist. Default: 50000 bp")
 
         // ///////////////////////////////////////////////////////////////////////////
-        ("ref_clustering,r", po::value<std::string>(&result.ref_clustering), "ref_clustering")
-        ("clustering_file,c", po::value<std::string>(&result.clustering_file), "clusterings")
+        // ("ref_clustering,r", po::value<std::string>(&result.ref_clustering), "ref_clustering")
+        // ("clustering_file,c", po::value<std::string>(&result.clustering_file), "clusterings")
         ;
     po::variables_map vm;
     try {

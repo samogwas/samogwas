@@ -53,7 +53,11 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
 
     std::vector< plProbValue > probValuesZ;
     for ( size_t latentVal = 0; latentVal < latentNode.variable.cardinality(); ++latentVal) { // loads probability table for the latent var
-      probValuesZ.push_back( boost::lexical_cast<plProbValue>( (*distributionLine)[latentVal] ) );
+      double val = 0.0;
+      try {
+        val = boost::lexical_cast<plProbValue>((*distributionLine)[latentVal]);
+      } catch (const boost::bad_lexical_cast &) {  }
+      probValuesZ.push_back(val);
     }
     const plProbTable probTabZ(latentNode.variable, probValuesZ); ++distributionLine;
     for ( size_t child = 0; child < nbrChildren; ++child ) {
@@ -64,7 +68,13 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
       for ( size_t latentVal = 0; latentVal < latentNode.variable.cardinality(); ++latentVal ) {
         std::vector< plProbValue > probValuesXiZ_vals;
         for ( size_t childVal = 0; childVal < childNode.variable.cardinality(); ++childVal ) {
-          probValuesXiZ_vals.push_back( boost::lexical_cast<plProbValue>( (*distributionLine)[childVal] ) );
+           double val = 0.0;
+           auto str = (*distributionLine)[childVal];
+           try {
+             val = boost::lexical_cast<plProbValue>(str);
+           } catch (const boost::bad_lexical_cast &) {
+           }
+          probValuesXiZ_vals.push_back(val);
         }
         distTab_Xi_Z.push( plProbTable( childNode.variable, probValuesXiZ_vals), (int)latentVal );
         ++distributionLine;
@@ -72,7 +82,6 @@ void BayesGraphLoad::operator()( std::shared_ptr<Graph> graph,
       jointDistri *= distTab_Xi_Z; // adds the conditional table to result
       boost::add_edge( latentId, childId, graphRef );
     }
-
     auto jd = ( probTabZ * jointDistri );
 
     ++distributionLine;
@@ -147,16 +156,9 @@ void BayesGraphSave::operator()( const Graph& graph,
     const Node& node = graph[*vi];
     if ( !node.is_leaf() ) {
       auto latentVar = node.variable;
-      // plJointDistribution distribution = node.jointDistribution;
-      // plVariablesConjunction all_variables = distribution.get_variables(); // all variables (latent variable and its children)
       plVariablesConjunction childVars = node.get_children_variables(); // child childVars
-      // for (size_t i = 1; i <  all_variables.size(); ++i)
-      //   childVars ^=  all_variables[i]; // initializes child conjunction.
-      // plSymbol latentVar =  all_variables[0]; // latent variable
-      distFile << node.index << GRAPH_SEPARATOR <<  childVars.size() << std::endl;
 
-      // plComputableObjectList objLists = distribution.get_computable_object_list();
-      // plComputableObject probTableZ = objLists.get_distribution_over(latentVar); // distribution table for the latent variable
+      distFile << node.index << GRAPH_SEPARATOR <<  childVars.size() << std::endl;
       auto probTableZ = node.marginalDist; int val;
 
       for ( val = 0; val < latentVar.cardinality() - 1 ; ++val ) {
@@ -174,12 +176,9 @@ void BayesGraphSave::operator()( const Graph& graph,
         plSymbol varX = childVars[ i ]; // retrieves the child variable
         distFile << label2Index[varX.name()] << std::endl; // writes child variable's id.
         auto distTableXZ = node.cndChildrenDists.at(i);  //objLists.get_distribution_over(varX); // conditional distribution P(X_i | Z)
-        // plDistributionTable& distTableXZ =
-        //     static_cast<plDistributionTable&>( compTableXZ ); // casting P(X_i | Z) to derived class
-
         for ( val = 0; val < latentVar.cardinality(); ++val ) {
           int childVal;
-          for ( childVal = 0; childVal < varX.cardinality() - 1; ++childVal ) { // for each value x of the child variable            
+          for ( childVal = 0; childVal < varX.cardinality() - 1; ++childVal ) { // for each value x of the child variable
             distFile << std::fixed << std::setprecision(15)
                      << distTableXZ->compute( plValues().add(latentVar, val).add(varX, childVal) )
                      << GRAPH_SEPARATOR; // p(X_i = childVal | Z = val)
@@ -205,15 +204,6 @@ LabPosMap FLTMGraphReader::readLabPos( const std::string labPosFileName ) const 
   ++labPosLine;
   for( ; labPosLine != CSVIterator<std::string>(); ++labPosLine ) {
     int position; std::string label; size_t id;
-    // if (labPosLine->size() == 4) {
-    //   id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID] );
-    //   label = (*labPosLine)[LP_LABEL] ;
-    //   position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION] );
-    // } else {
-    //   id = boost::lexical_cast<size_t>( (*labPosLine)[LP_ID+1] );
-    //   label = (*labPosLine)[LP_LABEL+1] ;
-    //   position = boost::lexical_cast<int>( (*labPosLine)[LP_POSITION+1] );
-    // }
     id = boost::lexical_cast<size_t>( (*labPosLine)[0] );
     label = (*labPosLine)[1] ;
     position = boost::lexical_cast<int>( (*labPosLine)[3] );

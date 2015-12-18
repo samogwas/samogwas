@@ -361,7 +361,6 @@ std::vector<double> read_thresholds(std::string filename) {
   }
 
   samogwas::CSVIterator<double> thresholdLine(thresholdFile);
-  //auto row = std::make_shared<Vec>(thresholdLine->size(), 0);
   std::vector<double> thresholds(thresholdLine->size(), 0.0);
   for (unsigned i = 0; i < thresholdLine->size(); ++i) {
     thresholds[i] = thresholdLine->at(i);
