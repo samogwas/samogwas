@@ -47,16 +47,24 @@ int main() {
     auto ids = std::make_shared<PosVec>();
     Label2Index lab2Idx;
 
-    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/Data/chr2/lab.csv");
+    //load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/DataForFltm/chr10_T1D/Affx_gt_T2D_CaseControl_10_label.csv");
+    load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/SamogwasProject/samogwas/example/inputs/labels/lab_300.csv");
+    //load_labels_positions( *labels, *ids, *positions, "/home/jules/SAMOGWAS/DataForFltm/chr2/lab.csv");
+
+
     printf("Selected SNPs: %d -> %d\n\n", ids->front(), ids->back());
 
 
-    auto mat = load_data_table("/home/jules/SAMOGWAS/Data/chr2/dat.csv");
+    //auto mat = load_data_table("/home/jules/SAMOGWAS/DataForFltm/chr10_T1D/Affx_gt_T2D_CaseControl_10_data.csv");
+    auto mat = load_data_table("/home/jules/SAMOGWAS/SamogwasProject/samogwas/example/inputs/data/dat_300.csv");
+    //auto mat = load_data_table("/home/jules/SAMOGWAS/DataForFltm/chr2/dat.csv");
+
     auto l2g = init_index_mapping( mat->size() );
     auto graph = init_graph( *mat,  lab2Idx, 3, *labels, *positions );
 
     auto criteria = std::make_shared<PositionCriteria>( positions, 50000 );
-Clustering clusteringDBSCAN, clusteringCAST;
+    Clustering clusteringDBSCAN, clusteringCAST;
+    //we run the specific clustering with the fourth parameter between 1 and 3
 //    Clustering clusteringCAST = runClustering(graph, l2g, criteria,1);
 //    Clustering clusteringDBSCAN = runClustering(graph, l2g, criteria,2);
 //    Clustering clusteringLOUV = runClustering(graph, l2g, criteria,3);
@@ -74,6 +82,7 @@ Clustering clusteringDBSCAN, clusteringCAST;
     simi->set_criteria(criteria);
 
     std::cout<< "clusteringDBSCAN " << "\n";
+    clusteringDBSCAN = runClustering(graph, l2g, criteria,1);
 //    for (double epsilon = 0.1 ; epsilon <= 0.9 ; epsilon += 0.4) {
 //        std::cout<< epsilon << "  \t-> ";
 //        clusteringDBSCAN = runClustering(graph, l2g, criteria,2, epsilon);
@@ -82,7 +91,8 @@ Clustering clusteringDBSCAN, clusteringCAST;
 //        std::cout << std::endl;
 //    }
     std::cout << "+++++++++++++++++++++++++++++++++++++" << std::endl;
-    std::string modeName;
+    //There are 4 different methods
+   /* std::string modeName;
     for (int mode = 1 ; mode < 5 ; mode++) {
         if (mode == 1 || mode == 2) {
             modeName = "nbSNPs_";
@@ -105,7 +115,12 @@ Clustering clusteringDBSCAN, clusteringCAST;
                 name += modeName;
                 std::ofstream fichier(name, std::ios::out | std::ios::app);  // ouverture en écriture avec effacement du fichier ouvert
                 if(fichier) {
-                        fichier << getEpsilon(randomSubClustering(clusteringDBSCAN), mat,mode) << std::endl;
+                    double epsilon = 0;
+                        while (epsilon == 0) {
+                            epsilon = getEpsilon(randomSubClustering(clusteringDBSCAN), mat,mode);
+                            std::cout << "\t++" << std::endl;
+                        }
+                        fichier << epsilon << std::endl;
                         fichier.close();
                 } else
                         std::cerr << "Impossible d'ouvrir le fichier !" << std::endl;
@@ -113,23 +128,9 @@ Clustering clusteringDBSCAN, clusteringCAST;
         }
 
     }
-
-//    std::cout<< epsilon << "  \t-> ";
-//    clusteringDBSCAN = runClustering(graph, l2g, criteria,2, epsilon);
-//    clusteringAux = randomSubClustering(clusteringDBSCAN);
-//    std::cout << "NED = " << getEpsilon(clusteringDBSCAN, mat,mode);
-//    std::cout << std::endl;
+*/
 
 
-
-//    std::cout<< "clusteringCAST " << "\n";
-//    for (double epsilon = 0.2 ; epsilon < 1 ; epsilon += 1) {
-//        std::cout<< epsilon << "\t-> ";
-//        clusteringCAST = runClustering(graph, l2g, criteria,1, epsilon);
-//        std::cout << "redundancy = " << getRedundancyMeasure(clusteringCAST,simi) ;
-//        std::cout << "\tepsilon NED = " << getEpsilon(clusteringCAST, mat);
-//        std::cout << std::endl;
-//    }
 
 //    std::cout<< std::endl;
 //    double obs = getObservedEntropy(*(clusteringRES.begin()), mat);
@@ -138,19 +139,12 @@ Clustering clusteringDBSCAN, clusteringCAST;
 //    std::cout << exp <<std::endl;
 //    std::cout << (exp - obs) /exp <<std::endl;
 
-//    double epsilon = getEpsilon(clusteringCAST, mat);
-//    std::cout << std::endl << "clusteringCAST : " << epsilon <<std::endl;
-//    epsilon = getEpsilon(clusteringDBSCAN, mat);
-//    std::cout << std::endl << "clusteringDBSCAN : " << epsilon <<std::endl;
-//        epsilon = getEpsilon(clusteringLOUV, mat);
-//        std::cout << std::endl << "clusteringLOUV : " << epsilon <<std::endl;
-//        epsilon = getEpsilon(clusteringRES, mat);
-//        std::cout << std::endl << "clusteringRES : " << epsilon <<std::endl;
 
 
 //        writeResultsForTulip(clusteringDBSCAN, positions, ids, labels, "DBSCAN");
 }
 
+// pick a random clustering
 Clustering randomSubClustering(Clustering clustering) {
     int random = rand() % (38730 - 3010);
 //    int random = rand() % (3000 - 310);
@@ -167,6 +161,8 @@ Clustering randomSubClustering(Clustering clustering) {
     }
     return randomSubClustering;
 }
+
+//run a specific clustering method according to the clustering choice
 Clustering runClustering(GraphPtr graph, Local2GlobalPtr l2g, PositionCriteriaPtr criteria, int clusteringChoice, double epsilon) {
     auto start = get_time::now();
     Partition result;
@@ -205,14 +201,17 @@ Clustering runClustering(GraphPtr graph, Local2GlobalPtr l2g, PositionCriteriaPt
 
     Clustering clustering = result.to_clustering();
 
-//     std::cout <<" [";
-//     for (auto i: clustering) {
-//       std::cout << "[";
-//       for (auto j: i)
-//           std::cout << j << ',';
-//       std::cout << "],";
-//     }
-//    std::cout << "]"<< std::endl << std::endl;
+    //to print the clustering
+     std::cout <<" [";
+     for (auto i: clustering) {
+         if (i.size()>1) {
+           std::cout << "[";
+           for (auto j: i)
+               std::cout << j << ',';
+           std::cout << "\b],";
+         }
+     }
+    std::cout << "\b]"<< std::endl << std::endl;
 
     return clustering;
 }
@@ -221,7 +220,6 @@ Clustering runClustering(GraphPtr graph, Local2GlobalPtr l2g, PositionCriteriaPt
 double getEpsilon(Clustering clustering, PtrMatrixPtr mat, int mode) {
     double epsilon = 0;
     int nb = 0;
-
 
     for (auto cluster : clustering ) {
         if (cluster.size() > 1 && cluster.size() < 10) {
@@ -256,11 +254,13 @@ double getEpsilon(Clustering clustering, PtrMatrixPtr mat, int mode) {
             nb += cluster.size();
 
     }
+    if (nb==0)
+        return 0;
     return epsilon/nb;
 }
 
 
-
+//useful for the NED measure
 std::map<VecT, double> getClusterToFrequencyMap( Cluster cluster, PtrMatrixPtr mat ) {
     //this map lists all possible configurations with their occurrences
     std::map<VecT, double> clusterToFrequencyMap;
@@ -312,7 +312,7 @@ std::map<VecT, double> getClusterToFrequencyMap( Cluster cluster, PtrMatrixPtr m
 }
 
 
-
+//useful for the NED measure
 double getObservedEntropy( std::map<VecT, double> clusterToFrequencyMap ){
 
     double res = 0;
@@ -324,6 +324,7 @@ double getObservedEntropy( std::map<VecT, double> clusterToFrequencyMap ){
     return res;
 }
 
+//useful for the NED measure
 double getExpectedEntropy( std::map<VecT, double> clusterToFrequencyMap ){
     int clusterSize = clusterToFrequencyMap.begin()->first.size();
 
@@ -353,6 +354,7 @@ double getExpectedEntropy( std::map<VecT, double> clusterToFrequencyMap ){
     return res;
 }
 
+//useful for the NED measure
 double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat ){
 
     //this array gives the probabilities for  each value and each variable
@@ -382,6 +384,7 @@ double getExpectedEntropy( Cluster cluster, PtrMatrixPtr mat ){
     return res;
 }
 
+//the redundancy measure
 template <class T>
 double getRedundancyMeasure( Clustering clustering, T distance ){
     double score = 0;
@@ -405,6 +408,7 @@ double getRedundancyMeasure( Clustering clustering, T distance ){
     }
     return score / nbClusters;
 }
+
 
 
 template <class T>
